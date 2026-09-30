@@ -1,0 +1,54 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% load axztra %}
+{% block title %}Solicitudes · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="panel-cabecera">
+    <div>
+        <h1>Solicitudes</h1>
+        <p>{{ pagina.paginator.count }} resultado{{ pagina.paginator.count|pluralize }}.</p>
+    </div>
+</div>
+
+<form method="get" class="filtros-barra">
+    <input type="search" name="q" value="{{ filtros.q }}" class="form-control busqueda" placeholder="Número, título o cliente" aria-label="Buscar">
+    <select name="estado" class="form-select" aria-label="Estado">
+        <option value="">Todos los estados</option>
+        {% for e in estados %}<option value="{{ e.codigo }}"{% if e.codigo == filtros.estado %} selected{% endif %}>{{ e.nombre }}</option>{% endfor %}
+    </select>
+    <select name="tipo" class="form-select" aria-label="Tipo">
+        <option value="">Todos los tipos</option>
+        {% for clave, nombre in tipos %}<option value="{{ clave }}"{% if clave == filtros.tipo %} selected{% endif %}>{{ nombre }}</option>{% endfor %}
+    </select>
+    <select name="prioridad" class="form-select" aria-label="Prioridad">
+        <option value="">Toda prioridad</option>
+        {% for clave, nombre in prioridades %}<option value="{{ clave }}"{% if clave == filtros.prioridad %} selected{% endif %}>{{ nombre }}</option>{% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+    {% if filtros.q or filtros.estado or filtros.tipo or filtros.prioridad %}<a href="{% url 'panel_solicitudes' %}" class="btn btn-fantasma">Limpiar</a>{% endif %}
+</form>
+
+{% if pagina.object_list %}
+<div class="tabla-wrap">
+    <table class="tabla">
+        <thead><tr><th>Número</th><th>Solicitud</th><th>Cliente</th><th>Tipo</th><th>Prioridad</th><th>Estimación</th><th>Estado</th><th>Fecha</th></tr></thead>
+        <tbody>
+            {% for s in pagina %}
+            <tr>
+                <td><a class="enlace-fila numero" href="{% url 'panel_solicitud' s.pk %}">{{ s.numero }}</a></td>
+                <td><a class="enlace-fila" href="{% url 'panel_solicitud' s.pk %}">{{ s.titulo|truncatechars:48 }}</a></td>
+                <td class="text-nowrap">{{ s.cliente.get_full_name|default:s.cliente.email }}</td>
+                <td><span class="etiqueta-tipo">{{ s.get_tipo_display }}</span></td>
+                <td><span class="prioridad prioridad-{{ s.prioridad }}">{{ s.get_prioridad_display }}</span></td>
+                <td>{% if s.estimacion %}{{ s.estimacion.total|clp }}{% else %}<span class="text-muted">—</span>{% endif %}</td>
+                <td>{% include "plataforma/includes/estado.html" with estado=s.estado %}</td>
+                <td class="text-nowrap">{{ s.fecha_solicitud|date:"d-m-Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "plataforma/includes/paginacion.html" %}
+{% else %}
+<div class="tarjeta vacio"><i class="fa-solid fa-magnifying-glass"></i><h3>Sin resultados</h3><p>No hay solicitudes que coincidan con los filtros.</p></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,35 @@
+<button type="button" class="burbuja-boton" id="burbuja-boton" aria-controls="chat-ventana" aria-expanded="false" aria-label="Abrir asistente virtual">
+    <i class="fa-regular fa-comment-dots"></i>
+    <span class="punto-activo"></span>
+</button>
+
+{% if asistente_invitacion %}
+<div class="burbuja-invitacion" id="burbuja-invitacion" role="button" tabindex="0">
+    <strong>Asistente AXZTRA</strong>
+    {{ asistente_invitacion }}
+    <button type="button" class="cerrar" aria-label="Cerrar invitación">&times;</button>
+</div>
+{% endif %}
+
+<section class="chat-ventana" id="chat-ventana" hidden aria-label="Asistente virtual"
+         data-url-mensaje="{% url 'asistente_mensaje' %}"
+         data-url-historial="{% url 'asistente_historial' %}"
+         {% if asistente_saludo %}data-saludo="{{ asistente_saludo }}"{% endif %}>
+    <div class="chat-cabecera">
+        <span class="avatar"><i class="fa-solid fa-robot"></i></span>
+        <div>
+            <strong>Asistente AXZTRA</strong>
+            <small>En línea</small>
+        </div>
+        <button type="button" data-cerrar-chat aria-label="Cerrar asistente"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="chat-mensajes" aria-live="polite"></div>
+    <div class="chat-sugerencias"></div>
+    <form class="chat-form" autocomplete="off">
+        {% csrf_token %}
+        <label for="chat-entrada" class="visually-hidden">Escribe tu mensaje</label>
+        <input type="text" id="chat-entrada" maxlength="500" placeholder="Escribe tu consulta…">
+        <button type="submit" aria-label="Enviar mensaje"><i class="fa-solid fa-paper-plane"></i></button>
+    </form>
+    <p class="chat-nota">Orientación referencial. Las cotizaciones las revisa siempre nuestro equipo.</p>
+</section>

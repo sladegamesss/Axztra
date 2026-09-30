@@ -1,0 +1,7 @@
+{% autoescape off %}Hola {{ usuario.first_name|default:usuario.email }}:
+
+Tu cuenta en AXZTRA quedó creada. Desde ahora puedes solicitar la creación de un sitio web, mejoras, soporte técnico o mantenimiento, y seguir el estado de cada solicitud desde tu cuenta.
+
+Crear tu primera solicitud:
+{{ url }}
+{% include "plataforma/correos/base_firma.txt" %}{% endautoescape %}

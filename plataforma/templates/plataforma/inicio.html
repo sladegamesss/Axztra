@@ -1,0 +1,325 @@
+{% extends 'plataforma/base.html' %}
+{% load axztra %}
+{% block title %}AXZTRA · Creación, mejora y soporte de páginas web{% endblock %}
+{% block content %}
+
+<section class="hero">
+    <div class="hero-blobs" aria-hidden="true">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+        <div class="blob blob-4"></div>
+    </div>
+    <div class="hero-trama" aria-hidden="true"></div>
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-7">
+                <span class="etiqueta-hero">Desarrollo web en la Región del Biobío</span>
+                <h1>Tu página web, clara desde la primera conversación</h1>
+                <p class="bajada">Cuéntanos qué necesitas, recibe una estimación referencial al instante y sigue cada etapa de tu proyecto desde tu cuenta: creación, mejoras, soporte y mantenimiento en un solo lugar.</p>
+                <div class="hero-acciones">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'crear_web' %}" class="btn btn-primary btn-lg">Cotizar mi página web</a>
+                        <a href="{% url 'mis_solicitudes' %}" class="btn btn-outline-light btn-lg">Ver mis solicitudes</a>
+                    {% else %}
+                        <a href="{% url 'registro' %}?next={% url 'crear_web' %}" class="btn btn-primary btn-lg">Cotizar mi página web</a>
+                        <a href="{% url 'catalogo' %}" class="btn btn-outline-light btn-lg">Explorar servicios</a>
+                    {% endif %}
+                </div>
+                <div class="hero-resumen">
+                    <div><strong>4 servicios</strong>creación, mejora, soporte y mantenimiento</div>
+                    <div><strong>Estimación inmediata</strong>antes de pedir la cotización</div>
+                    <div><strong>Seguimiento en línea</strong>estado e historial de cada solicitud</div>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-md-block">
+                <div class="hero-anillo-wrap" aria-hidden="true">
+                    <div class="hero-anillo"></div>
+                    <div class="orbe orbe-1"><i class="fa-solid fa-code"></i></div>
+                    <div class="orbe orbe-2"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <div class="orbe orbe-3"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div class="orbe orbe-4"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="seccion" id="servicios">
+    <div class="container">
+        <div class="encabezado-seccion">
+            <h2>¿Qué necesitas hoy?</h2>
+            <p>Elige la opción que mejor describe tu caso. Si no estás seguro, el asistente te orienta en segundos.</p>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <a class="selector-servicio" href="{% url 'crear_web' %}">
+                    <span class="num">01</span>
+                    <div><h3>Crear una página web</h3><p>Landing pages, sitios corporativos, reservas y tiendas online desde cero.</p></div>
+                    <i class="fa-solid fa-arrow-right ir"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a class="selector-servicio" href="{% url 'solicitar_mejora' %}">
+                    <span class="num">02</span>
+                    <div><h3>Mejorar mi sitio actual</h3><p>Rediseño, velocidad, posicionamiento y nuevas funcionalidades.</p></div>
+                    <i class="fa-solid fa-arrow-right ir"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a class="selector-servicio" href="{% url 'solicitar_soporte' %}">
+                    <span class="num">03</span>
+                    <div><h3>Resolver un problema técnico</h3><p>Sitio caído, errores, formularios que no envían o problemas de seguridad.</p></div>
+                    <i class="fa-solid fa-arrow-right ir"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a class="selector-servicio" href="{% url 'solicitar_mantenimiento' %}">
+                    <span class="num">04</span>
+                    <div><h3>Mantener mi sitio al día</h3><p>Respaldos, actualizaciones de seguridad y monitoreo periódico.</p></div>
+                    <i class="fa-solid fa-arrow-right ir"></i>
+                </a>
+            </div>
+        </div>
+        <p class="text-secondary mt-4 mb-0"><a href="#" data-abrir-asistente><i class="fa-regular fa-comment-dots me-1"></i>¿No sabes qué servicio necesitas? Pregúntale al asistente</a></p>
+    </div>
+</section>
+
+{% if servicios %}
+<section class="seccion">
+    <div class="container">
+        <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+            <div class="encabezado-seccion mb-0">
+                <h2>Servicios destacados</h2>
+                <p>Precios desde, en pesos chilenos y sin IVA. El valor final se define en la cotización.</p>
+            </div>
+            <a href="{% url 'catalogo' %}" class="btn btn-outline-light">Ver catálogo completo</a>
+        </div>
+        <div class="row g-4">
+            {% for servicio in servicios %}
+            <div class="col-md-6 col-lg-4">
+                <article class="servicio-card">
+                    <div class="servicio-icono"><i class="{{ servicio.icono }}"></i></div>
+                    <h3><a href="{{ servicio.get_absolute_url }}">{{ servicio.nombre }}</a></h3>
+                    <p>{{ servicio.resumen }}</p>
+                    <div class="pie">
+                        <div class="precio-desde">{% if servicio.precio_base %}Desde<strong>{{ servicio.precio_base|clp }}</strong>{% else %}Valor<strong>A cotizar</strong>{% endif %}</div>
+                        <a href="{{ servicio.get_absolute_url }}" class="btn btn-sm btn-outline-light">Ver detalle</a>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="seccion" id="planes">
+    <div class="container">
+        <div class="encabezado-seccion">
+            <h2>Planes referenciales</h2>
+            <p>Puntos de partida según la complejidad del proyecto. Tu estimación personalizada se calcula con las funcionalidades que elijas.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="plan">
+                    <h3>Básico</h3>
+                    <p class="desc">Presencia profesional con pocas páginas.</p>
+                    <div class="desde">Desde</div>
+                    <div class="monto">$300.000 <small>CLP</small></div>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i>Hasta 5 páginas</li>
+                        <li><i class="fa-solid fa-check"></i>Diseño adaptado a celulares</li>
+                        <li><i class="fa-solid fa-check"></i>Formulario de contacto y WhatsApp</li>
+                        <li><i class="fa-solid fa-check"></i>Entrega en 1 a 2 semanas</li>
+                    </ul>
+                    <a href="{% url 'crear_web' %}" class="btn btn-outline-light w-100">Estimar mi proyecto</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="plan recomendado">
+                    <span class="sello">Recomendado para pymes</span>
+                    <h3>Medio</h3>
+                    <p class="desc">Sitios corporativos con contenido administrable.</p>
+                    <div class="desde">Desde</div>
+                    <div class="monto">$600.000 <small>CLP</small></div>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i>Hasta 10 páginas</li>
+                        <li><i class="fa-solid fa-check"></i>Blog, galería o catálogo</li>
+                        <li><i class="fa-solid fa-check"></i>Panel para editar contenido</li>
+                        <li><i class="fa-solid fa-check"></i>Entrega en 3 a 5 semanas</li>
+                    </ul>
+                    <a href="{% url 'crear_web' %}" class="btn btn-primary w-100">Estimar mi proyecto</a>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4">
+                <div class="plan">
+                    <h3>Avanzado</h3>
+                    <p class="desc">Tiendas online y plataformas con usuarios.</p>
+                    <div class="desde">Desde</div>
+                    <div class="monto">$1.000.000 <small>CLP</small></div>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i>Páginas según necesidad</li>
+                        <li><i class="fa-solid fa-check"></i>Cuentas de usuario</li>
+                        <li><i class="fa-solid fa-check"></i>Carrito y pasarela de pago</li>
+                        <li><i class="fa-solid fa-check"></i>Entrega en 5 a 8 semanas</li>
+                    </ul>
+                    <a href="{% url 'crear_web' %}" class="btn btn-outline-light w-100">Estimar mi proyecto</a>
+                </div>
+            </div>
+        </div>
+        <p class="nota-planes">Valores referenciales sin IVA. La cotización definitiva la emite el equipo AXZTRA después de revisar tus requerimientos.</p>
+    </div>
+</section>
+
+<section class="seccion" id="como-funciona">
+    <div class="container">
+        <div class="encabezado-seccion">
+            <h2>Cómo funciona</h2>
+            <p>Un proceso ordenado y visible en cada etapa, sin cadenas de correos ni información perdida.</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="paso-proceso">
+                    <div class="numero">1</div>
+                    <h3>Cuéntanos tu idea</h3>
+                    <p>Completas un formulario guiado sobre tu negocio, tus objetivos y las funciones que necesitas.</p>
+                    <span class="duracion">10 minutos</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="paso-proceso">
+                    <div class="numero">2</div>
+                    <h3>Recibe una estimación</h3>
+                    <p>La plataforma calcula un rango de precio y plazo referencial con la información que entregaste.</p>
+                    <span class="duracion">Inmediato</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="paso-proceso">
+                    <div class="numero">3</div>
+                    <h3>Aprueba la cotización</h3>
+                    <p>El equipo revisa tu caso y publica la cotización formal en tu cuenta para que la aceptes o rechaces.</p>
+                    <span class="duracion">1 a 2 días hábiles</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="paso-proceso">
+                    <div class="numero">4</div>
+                    <h3>Sigue el avance</h3>
+                    <p>Cada cambio de estado queda en tu historial y te avisamos por correo hasta la entrega.</p>
+                    <span class="duracion">Durante todo el proyecto</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="seccion">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-5">
+                <div class="encabezado-seccion">
+                    <h2>Por qué AXZTRA</h2>
+                    <p>Unimos la cercanía de un equipo local con la transparencia de una plataforma que registra todo el proceso.</p>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-4">
+                    <div class="col-sm-6">
+                        <div class="ventaja"><i class="fa-solid fa-scale-balanced"></i><div><h3>Precios transparentes</h3><p>Ves cómo se compone la estimación antes de comprometerte.</p></div></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="ventaja"><i class="fa-solid fa-list-check"></i><div><h3>Todo registrado</h3><p>Requerimientos, cotizaciones y cambios quedan en un solo historial.</p></div></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="ventaja"><i class="fa-solid fa-user-check"></i><div><h3>Revisión humana</h3><p>Cada cotización la prepara una persona del equipo, no un sistema automático.</p></div></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="ventaja"><i class="fa-solid fa-rotate"></i><div><h3>Continuidad</h3><p>Después de la entrega seguimos con soporte y mantenimiento en la misma cuenta.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="seccion" id="preguntas">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-4">
+                <div class="encabezado-seccion">
+                    <h2>Preguntas frecuentes</h2>
+                    <p>Si tu duda no aparece aquí, escríbele al asistente o al equipo por WhatsApp.</p>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="accordion acordeon" id="faq">
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">¿La estimación es el precio final?</button></h3>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">No. Es un valor orientativo calculado con reglas definidas por AXZTRA. El precio final se entrega en la cotización formal, después de que el equipo revisa tus requerimientos.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">¿Necesito conocimientos técnicos?</button></h3>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">No. El formulario usa un lenguaje simple y cada opción explica para qué sirve. Si tienes dudas, el asistente te acompaña mientras completas la solicitud.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">¿Cómo sé en qué etapa está mi proyecto?</button></h3>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">En "Mis solicitudes" verás el estado actual y el historial completo de cada solicitud. Además, te enviamos un correo cada vez que el estado cambia.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">¿Puedo pagar en línea?</button></h3>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Por ahora no. Los medios y condiciones de pago se acuerdan en la cotización formal. Los pagos en línea están considerados para una etapa posterior de la plataforma.</div></div>
+                    </div>
+                    <div class="accordion-item">
+                        <h3 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">¿Atienden sitios que no desarrollaron ustedes?</button></h3>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faq"><div class="accordion-body">Sí. Los servicios de mejora, soporte y mantenimiento están pensados para sitios existentes, estén hechos en WordPress, Shopify o a medida.</div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="seccion" id="contacto">
+    <div class="container">
+        <div class="contacto-bloque">
+            <div class="row g-5">
+                <div class="col-lg-5">
+                    <h2 class="mb-3" style="font-size: 34px; font-weight: 800;">Hablemos de tu proyecto</h2>
+                    <p class="text-secondary mb-4">Déjanos tus datos y abrimos una conversación por WhatsApp. Si prefieres que quede registrada con seguimiento, crea una solicitud desde tu cuenta.</p>
+                    <div class="dato-contacto"><i class="fa-regular fa-envelope"></i>{{ empresa.CORREO_CONTACTO }}</div>
+                    <div class="dato-contacto"><i class="fa-brands fa-whatsapp"></i>{{ empresa.WHATSAPP_VISIBLE }}</div>
+                    <div class="dato-contacto"><i class="fa-solid fa-location-dot"></i>{{ empresa.UBICACION }}</div>
+                </div>
+                <div class="col-lg-7">
+                    <form id="form-contacto" data-whatsapp="{{ empresa.WHATSAPP }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="contacto-nombre">Nombre</label>
+                                <input type="text" id="contacto-nombre" name="nombre" class="form-control" placeholder="Tu nombre" required maxlength="80">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="contacto-servicio">Servicio</label>
+                                <select id="contacto-servicio" name="servicio" class="form-select">
+                                    <option>Creación de página web</option>
+                                    <option>Mejora de página existente</option>
+                                    <option>Soporte técnico</option>
+                                    <option>Mantenimiento</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="contacto-mensaje">Cuéntanos brevemente</label>
+                                <textarea id="contacto-mensaje" name="mensaje" class="form-control" rows="4" maxlength="600" placeholder="Qué necesitas y para cuándo"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary"><i class="fa-brands fa-whatsapp me-2"></i>Continuar en WhatsApp</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

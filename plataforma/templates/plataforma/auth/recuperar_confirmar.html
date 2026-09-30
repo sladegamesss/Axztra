@@ -1,0 +1,29 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Nueva contraseña · AXZTRA{% endblock %}
+{% block content %}
+<div class="container auth-contenedor">
+    <div class="auth-tarjeta">
+        <div class="tarjeta p-4 p-md-5">
+            {% if validlink %}
+            <h1>Crea una contraseña nueva</h1>
+            <p class="bajada">Usa al menos 8 caracteres, que no sean solo números.</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for campo in form %}
+                <div class="mb-3 campo{% if campo.errors %} con-error{% endif %}">
+                    <label class="form-label" for="{{ campo.id_for_label }}">{% if forloop.first %}Nueva contraseña{% else %}Repite la contraseña{% endif %}</label>
+                    <input type="password" name="{{ campo.html_name }}" id="{{ campo.id_for_label }}" class="form-control" autocomplete="new-password" required>
+                    {% for error in campo.errors %}<div class="error-campo">{{ error }}</div>{% endfor %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100">Guardar contraseña</button>
+            </form>
+            {% else %}
+            <h1>Enlace no válido</h1>
+            <p class="bajada">El enlace ya fue usado o venció. Solicita uno nuevo para restablecer tu contraseña.</p>
+            <a href="{% url 'recuperar_clave' %}" class="btn btn-primary w-100">Solicitar un enlace nuevo</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

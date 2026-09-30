@@ -1,0 +1,44 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Mis datos · AXZTRA{% endblock %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <h1>Mis datos</h1>
+        <p>Mantén actualizada tu información de contacto para agilizar las cotizaciones.</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="tarjeta p-4 p-md-5">
+                {% if form.errors %}<div class="alerta-form">Revisa los campos marcados.</div>{% endif %}
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.first_name %}</div>
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.last_name %}</div>
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.empresa %}</div>
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.rut %}</div>
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.telefono %}</div>
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.ciudad %}</div>
+                    </div>
+                    {% include "plataforma/includes/campo.html" with campo=form.recibir_notificaciones %}
+                    <div class="acciones-form">
+                        <a href="{% url 'recuperar_clave' %}" class="small">Cambiar contraseña</a>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="tarjeta mb-4">
+                <h2>Cuenta</h2>
+                <ul class="lista-resumen">
+                    <li><span>Correo</span><strong>{{ user.email }}</strong></li>
+                    <li><span>Cliente desde</span><strong>{{ user.date_joined|date:"d-m-Y" }}</strong></li>
+                    <li><span>Solicitudes</span><strong>{{ total_solicitudes }} en total · {{ solicitudes_activas }} en curso</strong></li>
+                </ul>
+            </div>
+            <a href="{% url 'mis_solicitudes' %}" class="btn btn-outline-light w-100">Ver mis solicitudes</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends 'plataforma/base.html' %}
+{% load axztra %}
+{% block title %}{{ servicio.nombre }} · AXZTRA{% endblock %}
+{% block descripcion %}{{ servicio.resumen }}{% endblock %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'inicio' %}">Inicio</a> / <a href="{% url 'catalogo' %}">Servicios</a> / {{ servicio.nombre }}</div>
+        <span class="etiqueta-tipo mb-3 d-inline-block">{{ servicio.get_tipo_display }}</span>
+        <h1>{{ servicio.nombre }}</h1>
+        <p>{{ servicio.resumen }}</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="tarjeta mb-4">
+                <h2>Descripción</h2>
+                <p class="text-secondary mb-0" style="white-space: pre-line;">{{ servicio.descripcion }}</p>
+            </div>
+            {% if servicio.lista_incluye %}
+            <div class="tarjeta">
+                <h2>Qué incluye</h2>
+                <ul class="lista-desglose">
+                    {% for item in servicio.lista_incluye %}
+                    <li><span><i class="fa-solid fa-check me-2" style="color: var(--acento-claro);"></i>{{ item }}</span></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-4">
+            <div class="tarjeta tarjeta-destacada">
+                <div class="precio-desde mb-3">{% if servicio.precio_base %}Desde<strong style="font-size: 32px;">{{ servicio.precio_base|clp }}</strong>{% else %}Valor<strong style="font-size: 32px;">A cotizar</strong>{% endif %}</div>
+                {% if servicio.plazo_referencial %}<p class="text-secondary mb-4"><i class="fa-regular fa-clock me-2"></i>{{ servicio.plazo_referencial }}</p>{% endif %}
+                <a href="{{ servicio.url_solicitud }}" class="btn btn-primary w-100 mb-2">Solicitar este servicio</a>
+                <a href="#" class="btn btn-fantasma w-100" data-abrir-asistente>Tengo una duda</a>
+                <p class="small text-muted mt-3 mb-0">Valor referencial sin IVA. El precio final se define en la cotización formal.</p>
+            </div>
+        </div>
+    </div>
+
+    {% if relacionados %}
+    <h2 class="mt-5 mb-4" style="font-size: 24px; font-weight: 700;">Servicios relacionados</h2>
+    <div class="row g-4">
+        {% for item in relacionados %}
+        <div class="col-md-4">
+            <article class="servicio-card">
+                <div class="servicio-icono"><i class="{{ item.icono }}"></i></div>
+                <h3><a href="{{ item.get_absolute_url }}">{{ item.nombre }}</a></h3>
+                <p>{{ item.resumen }}</p>
+                <div class="pie">
+                    <div class="precio-desde">{% if item.precio_base %}Desde<strong>{{ item.precio_base|clp }}</strong>{% else %}Valor<strong>A cotizar</strong>{% endif %}</div>
+                    <a href="{{ item.get_absolute_url }}" class="btn btn-sm btn-outline-light">Ver detalle</a>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

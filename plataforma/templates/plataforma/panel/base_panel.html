@@ -1,0 +1,36 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Panel · AXZTRA{% endblock %}
+{% block cuerpo %}
+<div class="panel-movil">
+    <a class="navbar-brand" href="{% url 'panel_inicio' %}">AXZTRA<span>.</span></a>
+    <button class="btn btn-sm btn-outline-light" type="button" data-bs-toggle="offcanvas" data-bs-target="#menu-panel" aria-controls="menu-panel"><i class="fa-solid fa-bars me-1"></i>Menú</button>
+</div>
+<div class="offcanvas offcanvas-start panel-lateral-movil" tabindex="-1" id="menu-panel" style="background: var(--superficie); color: var(--texto);">
+    <div class="offcanvas-header">
+        <span class="navbar-brand">AXZTRA<span>.</span></span>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% include "plataforma/panel/menu.html" %}
+    </div>
+</div>
+
+<div class="panel-layout">
+    <aside class="panel-lateral">
+        <a class="navbar-brand" href="{% url 'panel_inicio' %}">AXZTRA<span>.</span></a>
+        {% include "plataforma/panel/menu.html" %}
+        <div class="usuario">
+            <strong>{{ user.get_full_name|default:user.email }}</strong>
+            <span>Administrador</span>
+            <form method="post" action="{% url 'logout' %}" class="mt-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-fantasma w-100"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Cerrar sesión</button>
+            </form>
+        </div>
+    </aside>
+    <main class="panel-contenido">
+        {% include "plataforma/includes/mensajes.html" %}
+        {% block panel %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

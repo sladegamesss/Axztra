@@ -1,0 +1,8 @@
+{% load axztra %}
+{% if pagina.paginator.num_pages > 1 %}
+<nav class="paginacion" aria-label="Paginación">
+    {% if pagina.has_previous %}<a href="{% url_con_parametros pagina=pagina.previous_page_number %}" aria-label="Página anterior"><i class="fa-solid fa-chevron-left"></i></a>{% endif %}
+    <span class="actual">Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}<a href="{% url_con_parametros pagina=pagina.next_page_number %}" aria-label="Página siguiente"><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+</nav>
+{% endif %}

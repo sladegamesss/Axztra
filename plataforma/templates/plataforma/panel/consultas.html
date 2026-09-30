@@ -1,0 +1,51 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% block title %}Consultas al asistente · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="panel-cabecera">
+    <div>
+        <h1>Consultas al asistente</h1>
+        <p>Mensajes que visitantes y clientes escribieron en el asistente virtual. Útil para detectar dudas frecuentes.</p>
+    </div>
+</div>
+<div class="row g-4">
+    <div class="col-xl-8">
+        {% if pagina.object_list %}
+        <div class="tabla-wrap">
+            <table class="tabla">
+                <thead><tr><th>Fecha</th><th>Usuario</th><th>Mensaje</th></tr></thead>
+                <tbody>
+                    {% for m in pagina %}
+                    <tr>
+                        <td class="text-nowrap">{{ m.fecha|date:"d-m-Y H:i" }}</td>
+                        <td>{% if m.usuario %}{{ m.usuario.get_full_name|default:m.usuario.email }}{% else %}<span class="text-muted">Visitante</span>{% endif %}</td>
+                        <td>{{ m.contenido|truncatechars:140 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "plataforma/includes/paginacion.html" %}
+        {% else %}
+        <div class="tarjeta vacio"><i class="fa-regular fa-comments"></i><h3>Aún no hay consultas</h3><p>Las preguntas enviadas al asistente aparecerán aquí.</p></div>
+        {% endif %}
+    </div>
+    <div class="col-xl-4">
+        <div class="tarjeta">
+            <h2>Temas más consultados</h2>
+            {% if intenciones %}
+            <ul class="barras">
+                {% for i in intenciones %}
+                <li >
+                    <span>{{ i.nombre }}</span>
+                    <div class="pista"><div class="relleno" style="width: {% widthratio i.cantidad max_intencion 100 %}%;"></div></div>
+                    <span class="cantidad">{{ i.cantidad }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-secondary mb-0">Sin datos todavía.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,124 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% load axztra %}
+{% block title %}Resumen · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="panel-cabecera">
+    <div>
+        <h1>Hola, {{ user.first_name|default:"equipo" }}</h1>
+        <p>Resumen de la actividad de la plataforma al {% now "d-m-Y" %}.</p>
+    </div>
+    <a href="{% url 'panel_solicitudes' %}?estado=recibida" class="btn btn-primary">Atender nuevas solicitudes{% if por_atender %} ({{ por_atender }}){% endif %}</a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="metrica">
+            <div class="icono"><i class="fa-regular fa-folder-open"></i></div>
+            <div class="etiqueta">Solicitudes totales</div>
+            <div class="valor">{{ total }}</div>
+            <div class="detalle">{{ nuevas_mes }} ingresada{{ nuevas_mes|pluralize }} este mes</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="metrica">
+            <div class="icono violeta"><i class="fa-regular fa-user"></i></div>
+            <div class="etiqueta">Clientes registrados</div>
+            <div class="valor">{{ clientes }}</div>
+            <div class="detalle">{{ clientes_mes }} nuevo{{ clientes_mes|pluralize }} este mes</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="metrica">
+            <div class="icono verde"><i class="fa-solid fa-sack-dollar"></i></div>
+            <div class="etiqueta">Cotizaciones aceptadas</div>
+            <div class="valor">{{ monto_aprobado|clp }}</div>
+            <div class="detalle">{{ monto_en_estimacion|clp }} en estimaciones abiertas</div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="metrica">
+            <div class="icono amarillo"><i class="fa-regular fa-comments"></i></div>
+            <div class="etiqueta">Consultas al asistente</div>
+            <div class="valor">{{ consultas }}</div>
+            <div class="detalle">Últimos 30 días</div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-lg-7">
+        <div class="tarjeta h-100">
+            <h2>Solicitudes por estado</h2>
+            <ul class="barras">
+                {% for e in por_estado %}
+                <li>
+                    <a href="{% url 'panel_solicitudes' %}?estado={{ e.codigo }}" class="text-secondary">{{ e.nombre }}</a>
+                    <div class="pista"><div class="relleno {{ e.color }}" style="width: {% widthratio e.cantidad max_estado 100 %}%;"></div></div>
+                    <span class="cantidad">{{ e.cantidad }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="tarjeta h-100">
+            <h2>Solicitudes por tipo de servicio</h2>
+            <ul class="barras">
+                {% for t in por_tipo %}
+                <li>
+                    <span>{{ t.nombre }}</span>
+                    <div class="pista"><div class="relleno" style="width: {% widthratio t.cantidad max_tipo 100 %}%;"></div></div>
+                    <span class="cantidad">{{ t.cantidad }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-xxl-8">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0" style="font-size: 19px; font-weight: 700;">Últimas solicitudes</h2>
+            <a href="{% url 'panel_solicitudes' %}" class="small">Ver todas</a>
+        </div>
+        {% if recientes %}
+        <div class="tabla-wrap">
+            <table class="tabla">
+                <thead><tr><th>Número</th><th>Cliente</th><th>Tipo</th><th>Estado</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    {% for s in recientes %}
+                    <tr>
+                        <td><a class="enlace-fila numero" href="{% url 'panel_solicitud' s.pk %}">{{ s.numero }}</a></td>
+                        <td class="text-nowrap">{{ s.cliente.get_full_name|default:s.cliente.email }}</td>
+                        <td><span class="etiqueta-tipo">{{ s.get_tipo_display }}</span></td>
+                        <td>{% include "plataforma/includes/estado.html" with estado=s.estado %}</td>
+                        <td class="text-nowrap">{{ s.fecha_solicitud|date:"d-m-Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="tarjeta vacio"><i class="fa-regular fa-folder-open"></i><h3>Todavía no hay solicitudes</h3><p>Aparecerán aquí apenas un cliente envíe la primera.</p></div>
+        {% endif %}
+    </div>
+    <div class="col-xxl-4">
+        <div class="tarjeta h-100">
+            <h2>Prioridad alta en curso</h2>
+            {% if urgentes %}
+            <ul class="lista-resumen">
+                {% for s in urgentes %}
+                <li>
+                    <span class="prioridad prioridad-{{ s.prioridad }}">{{ s.get_prioridad_display }} · {{ s.numero }}</span>
+                    <a class="enlace-fila" href="{% url 'panel_solicitud' s.pk %}"><strong>{{ s.titulo }}</strong></a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-secondary mb-0">No hay solicitudes urgentes o de prioridad alta pendientes.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

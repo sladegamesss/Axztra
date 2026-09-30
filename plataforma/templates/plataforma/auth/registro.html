@@ -1,0 +1,33 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Crear cuenta · AXZTRA{% endblock %}
+{% block content %}
+<div class="container auth-contenedor">
+    <div class="auth-tarjeta ancha">
+        <div class="tarjeta p-4 p-md-5">
+            <h1>Crear cuenta</h1>
+            <p class="bajada">Con tu cuenta puedes pedir cotizaciones, recibir la estimación al instante y seguir cada solicitud.</p>
+            {% if form.non_field_errors %}<div class="alerta-form">{% for e in form.non_field_errors %}{{ e }} {% endfor %}</div>{% endif %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <div class="row">
+                    <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.first_name %}</div>
+                    <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.last_name %}</div>
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.email %}
+                <div class="row">
+                    <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.empresa %}</div>
+                    <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.telefono %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.password1 %}</div>
+                    <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.password2 %}</div>
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.acepta_terminos %}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Crear mi cuenta</button>
+            </form>
+            <p class="auth-pie mb-0">¿Ya tienes cuenta? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Inicia sesión</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

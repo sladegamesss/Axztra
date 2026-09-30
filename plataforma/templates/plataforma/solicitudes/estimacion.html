@@ -1,0 +1,73 @@
+{% extends 'plataforma/base.html' %}
+{% load axztra %}
+{% block title %}Tu estimación · AXZTRA{% endblock %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'nueva_solicitud' %}">Nueva solicitud</a> / <a href="{% url 'crear_web' %}?editar=1">Creación de página web</a> / Estimación</div>
+        <h1>Tu estimación referencial</h1>
+        <p>Revisa el resumen y, si todo está correcto, envía la solicitud para que el equipo prepare tu cotización formal.</p>
+    </div>
+
+    <div class="asistente-layout">
+        <ol class="pasos-lateral" aria-label="Pasos de la solicitud">
+            <li class="hecho"><span class="bola"><i class="fa-solid fa-check"></i></span><div><strong>Información básica</strong><small>Completado</small></div></li>
+            <li class="hecho"><span class="bola"><i class="fa-solid fa-check"></i></span><div><strong>Tu negocio</strong><small>Completado</small></div></li>
+            <li class="hecho"><span class="bola"><i class="fa-solid fa-check"></i></span><div><strong>Funcionalidades</strong><small>Completado</small></div></li>
+            <li class="actual"><span class="bola">4</span><div><strong>Estimación</strong><small>En curso</small></div></li>
+        </ol>
+
+        <div>
+            <div class="tarjeta tarjeta-destacada p-4 p-md-5 mb-4">
+                <p class="text-secondary mb-1">Rango estimado para {{ datos.titulo }}</p>
+                <div class="rango-estimado mb-4">{{ estimacion.monto_minimo|clp }} – {{ estimacion.monto_maximo|clp }}</div>
+                <div class="row g-4 mb-4">
+                    <div class="col-sm-6">
+                        <div class="dato-grande"><i class="fa-regular fa-clock"></i><div><span>Tiempo estimado</span><strong>{{ estimacion.semanas_minimas }} a {{ estimacion.semanas_maximas }} semanas</strong></div></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="dato-grande"><i class="fa-regular fa-calendar"></i><div><span>Días hábiles aproximados</span><strong>{{ estimacion.dias_habiles_minimos }} a {{ estimacion.dias_habiles_maximos }} días</strong></div></div>
+                    </div>
+                </div>
+                <div class="aviso"><i class="fa-solid fa-circle-info"></i><span>Esta estimación es referencial y se calcula con las respuestas del formulario. El valor final lo confirma el equipo AXZTRA en la cotización formal. Valores sin IVA.</span></div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <div class="tarjeta h-100">
+                        <h2>Cómo se calculó</h2>
+                        <p class="small text-secondary">Precio base del tipo de sitio + funcionalidades e integraciones × factor de complejidad ({{ complejidad|lower }}: {{ estimacion.factor|floatformat:2 }}).</p>
+                        <ul class="lista-desglose">
+                            {% for linea in estimacion.desglose %}
+                            <li><span>{{ linea.concepto }}</span><strong>{{ linea.monto|clp }}</strong></li>
+                            {% endfor %}
+                            <li class="total"><span>Total de referencia</span><strong>{{ estimacion.total|clp }}</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="tarjeta h-100">
+                        <h2>Resumen</h2>
+                        <ul class="lista-resumen">
+                            <li><span>Negocio</span><strong>{{ datos.nombre_negocio }}</strong></li>
+                            <li><span>Tipo de sitio</span><strong>{{ tipo_sitio }}</strong></li>
+                            <li><span>Páginas</span><strong>{{ datos.num_paginas }}</strong></li>
+                            <li><span>Nivel de diseño</span><strong>{{ complejidad }}</strong></li>
+                            <li><span>Objetivos</span><div class="chips mt-1">{% for o in objetivos %}<span class="chip">{{ o }}</span>{% endfor %}</div></li>
+                            {% if funcionalidades %}<li><span>Funcionalidades</span><div class="chips mt-1">{% for f in funcionalidades %}<span class="chip">{{ f }}</span>{% endfor %}</div></li>{% endif %}
+                            {% if integraciones %}<li><span>Integraciones</span><div class="chips mt-1">{% for i in integraciones %}<span class="chip">{{ i }}</span>{% endfor %}</div></li>{% endif %}
+                            {% if datos.fecha_deseada %}<li><span>Fecha deseada</span><strong>{{ datos.fecha_deseada|date:"d-m-Y" }}</strong></li>{% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" class="acciones-form">
+                {% csrf_token %}
+                <a href="{% url 'crear_web' %}?editar=1" class="btn btn-fantasma"><i class="fa-solid fa-pen me-2"></i>Editar respuestas</a>
+                <button type="submit" class="btn btn-primary btn-lg">Solicitar cotización formal</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

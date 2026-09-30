@@ -1,0 +1,38 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% block title %}Clientes · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="panel-cabecera">
+    <div>
+        <h1>Clientes</h1>
+        <p>{{ pagina.paginator.count }} cliente{{ pagina.paginator.count|pluralize }} registrado{{ pagina.paginator.count|pluralize }}.</p>
+    </div>
+</div>
+<form method="get" class="filtros-barra">
+    <input type="search" name="q" value="{{ busqueda }}" class="form-control busqueda" placeholder="Nombre, correo o empresa" aria-label="Buscar cliente">
+    <button type="submit" class="btn btn-primary">Buscar</button>
+    {% if busqueda %}<a href="{% url 'panel_clientes' %}" class="btn btn-fantasma">Limpiar</a>{% endif %}
+</form>
+{% if pagina.object_list %}
+<div class="tabla-wrap">
+    <table class="tabla">
+        <thead><tr><th>Cliente</th><th>Correo</th><th>Empresa</th><th>Teléfono</th><th>Solicitudes</th><th>En curso</th><th>Registro</th></tr></thead>
+        <tbody>
+            {% for c in pagina %}
+            <tr>
+                <td><strong>{{ c.get_full_name|default:"Sin nombre" }}</strong></td>
+                <td><a href="mailto:{{ c.email }}">{{ c.email }}</a></td>
+                <td>{{ c.perfil_cliente.empresa|default:"—" }}</td>
+                <td>{{ c.perfil_cliente.telefono|default:"—" }}</td>
+                <td>{% if c.total %}<a href="{% url 'panel_solicitudes' %}?q={{ c.email|urlencode }}">{{ c.total }}</a>{% else %}0{% endif %}</td>
+                <td>{{ c.activas }}</td>
+                <td>{{ c.date_joined|date:"d-m-Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "plataforma/includes/paginacion.html" %}
+{% else %}
+<div class="tarjeta vacio"><i class="fa-regular fa-user"></i><h3>Sin clientes para mostrar</h3><p>{% if busqueda %}No hay coincidencias con la búsqueda.{% else %}Los clientes aparecerán aquí cuando se registren.{% endif %}</p></div>
+{% endif %}
+{% endblock %}

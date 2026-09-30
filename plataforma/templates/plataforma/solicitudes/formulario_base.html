@@ -1,0 +1,36 @@
+{% extends 'plataforma/base.html' %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'nueva_solicitud' %}">Nueva solicitud</a> / {% block miga %}{% endblock %}</div>
+        <h1>{% block encabezado %}{% endblock %}</h1>
+        <p>{% if servicio %}Servicio seleccionado: <strong>{{ servicio.nombre }}</strong>. {% endif %}{% block bajada %}{% endblock %}</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="tarjeta p-4 p-md-5">
+                {% if form.errors %}<div class="alerta-form">Revisa los campos marcados.</div>{% endif %}
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form.servicio }}
+                    {% block campos %}{% endblock %}
+                    <div class="acciones-form">
+                        <a href="{% url 'nueva_solicitud' %}" class="btn btn-fantasma">Cancelar</a>
+                        <button type="submit" class="btn btn-primary">Enviar solicitud</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="tarjeta">
+                <h2>Qué pasa después</h2>
+                <ul class="linea-tiempo">
+                    <li><div class="titulo">Registramos tu solicitud</div><div class="comentario">Recibirás un correo con el número de seguimiento.</div></li>
+                    <li><div class="titulo">El equipo la revisa</div><div class="comentario">{% block tiempo_respuesta %}Te contactamos dentro de 1 a 2 días hábiles.{% endblock %}</div></li>
+                    <li><div class="titulo">Recibes la cotización</div><div class="comentario">La aceptas o rechazas desde tu cuenta.</div></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

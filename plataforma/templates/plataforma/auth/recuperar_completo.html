@@ -1,0 +1,14 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Contraseña actualizada · AXZTRA{% endblock %}
+{% block content %}
+<div class="container auth-contenedor">
+    <div class="auth-tarjeta">
+        <div class="tarjeta p-4 p-md-5">
+            <div class="servicio-icono"><i class="fa-solid fa-check"></i></div>
+            <h1>Contraseña actualizada</h1>
+            <p class="bajada">Ya puedes ingresar con tu nueva contraseña.</p>
+            <a href="{% url 'login' %}" class="btn btn-primary w-100">Iniciar sesión</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

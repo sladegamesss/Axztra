@@ -1,0 +1,69 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% load axztra %}
+{% block title %}Servicios · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="panel-cabecera">
+    <div>
+        <h1>Servicios y categorías</h1>
+        <p>Administra el catálogo que ven los clientes. Los servicios desactivados no aparecen en el sitio público.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'panel_categoria_nueva' %}" class="btn btn-outline-light">Nueva categoría</a>
+        <a href="{% url 'panel_servicio_nuevo' %}" class="btn btn-primary"><i class="fa-solid fa-plus me-2"></i>Nuevo servicio</a>
+    </div>
+</div>
+
+<div class="tabla-wrap mb-5">
+    <table class="tabla">
+        <thead><tr><th>Servicio</th><th>Tipo</th><th>Categoría</th><th>Desde</th><th>Solicitudes</th><th>Estado</th><th></th></tr></thead>
+        <tbody>
+            {% for s in servicios %}
+            <tr>
+                <td><strong>{{ s.nombre }}</strong>{% if s.destacado %} <i class="fa-solid fa-star ms-1" style="color: var(--amarillo); font-size: 11px;" title="Destacado en inicio"></i>{% endif %}</td>
+                <td><span class="etiqueta-tipo">{{ s.get_tipo_display }}</span></td>
+                <td>{{ s.categoria|default:"—" }}</td>
+                <td>{% if s.precio_base %}{{ s.precio_base|clp }}{% else %}A cotizar{% endif %}</td>
+                <td>{{ s.total_solicitudes }}</td>
+                <td>{% if s.activo %}<span class="estado estado-verde">Activo</span>{% else %}<span class="estado estado-gris">Inactivo</span>{% endif %}</td>
+                <td class="text-end text-nowrap">
+                    <a href="{% url 'panel_servicio_editar' s.pk %}" class="btn btn-sm btn-outline-light">Editar</a>
+                    <form method="post" action="{% url 'panel_servicio_estado' s.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-fantasma">{% if s.activo %}Desactivar{% else %}Activar{% endif %}</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7" class="text-center py-4">Aún no hay servicios.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2 class="mb-3" style="font-size: 20px; font-weight: 700;">Categorías</h2>
+<div class="tabla-wrap">
+    <table class="tabla">
+        <thead><tr><th>Categoría</th><th>Descripción</th><th>Orden</th><th>Servicios</th><th>Estado</th><th></th></tr></thead>
+        <tbody>
+            {% for c in categorias %}
+            <tr>
+                <td><strong><i class="{{ c.icono }} me-2" style="color: var(--acento-claro);"></i>{{ c.nombre }}</strong></td>
+                <td>{{ c.descripcion|truncatechars:70 }}</td>
+                <td>{{ c.orden }}</td>
+                <td>{{ c.total_servicios }}</td>
+                <td>{% if c.activa %}<span class="estado estado-verde">Activa</span>{% else %}<span class="estado estado-gris">Inactiva</span>{% endif %}</td>
+                <td class="text-end text-nowrap">
+                    <a href="{% url 'panel_categoria_editar' c.pk %}" class="btn btn-sm btn-outline-light">Editar</a>
+                    <form method="post" action="{% url 'panel_categoria_estado' c.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-fantasma">{% if c.activa %}Desactivar{% else %}Activar{% endif %}</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center py-4">Aún no hay categorías.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

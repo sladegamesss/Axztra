@@ -1,0 +1,155 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% load axztra %}
+{% block title %}{{ solicitud.numero }} · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="migas"><a href="{% url 'panel_solicitudes' %}">Solicitudes</a> / {{ solicitud.numero }}</div>
+<div class="panel-cabecera">
+    <div>
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-1">
+            <h1 class="mb-0">{{ solicitud.titulo }}</h1>
+            {% include "plataforma/includes/estado.html" with estado=solicitud.estado %}
+        </div>
+        <p>{{ solicitud.numero }} · {{ solicitud.get_tipo_display }} · Ingresada el {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }} · Prioridad <span class="prioridad prioridad-{{ solicitud.prioridad }}">{{ solicitud.get_prioridad_display }}</span></p>
+    </div>
+</div>
+
+<div class="tarjeta mb-4">
+    <div class="seguimiento">
+        {% for paso in solicitud.pasos_seguimiento %}
+        <div class="etapa {{ paso.situacion }}"><div class="punto">{% if paso.situacion == 'hecho' %}<i class="fa-solid fa-check"></i>{% endif %}</div>{{ paso.nombre }}</div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-xl-7">
+        <div class="tarjeta mb-4">
+            <h2>Cliente</h2>
+            <dl class="dl-simple">
+                <dt>Nombre</dt><dd>{{ solicitud.cliente.get_full_name|default:"Sin nombre" }}</dd>
+                <dt>Correo</dt><dd><a href="mailto:{{ solicitud.cliente.email }}">{{ solicitud.cliente.email }}</a></dd>
+                {% if perfil.empresa %}<dt>Empresa</dt><dd>{{ perfil.empresa }}</dd>{% endif %}
+                {% if perfil.telefono %}<dt>Teléfono</dt><dd>{{ perfil.telefono }}</dd>{% endif %}
+                {% if perfil.rut %}<dt>RUT</dt><dd>{{ perfil.rut }}</dd>{% endif %}
+                {% if perfil.ciudad %}<dt>Ciudad</dt><dd>{{ perfil.ciudad }}</dd>{% endif %}
+            </dl>
+            {% if otras %}
+            <p class="small text-muted mt-3 mb-2">Otras solicitudes del cliente</p>
+            <div class="chips">{% for o in otras %}<a class="chip" href="{% url 'panel_solicitud' o.pk %}">{{ o.numero }} · {{ o.estado.nombre }}</a>{% endfor %}</div>
+            {% endif %}
+        </div>
+
+        <div class="tarjeta mb-4">
+            <h2>Detalle de la solicitud</h2>
+            <dl class="dl-simple">
+                {% if solicitud.servicio %}<dt>Servicio</dt><dd>{{ solicitud.servicio.nombre }}</dd>{% endif %}
+                {% if solicitud.url_sitio %}<dt>Sitio web</dt><dd><a href="{{ solicitud.url_sitio }}" target="_blank" rel="noopener nofollow">{{ solicitud.url_sitio }}</a></dd>{% endif %}
+                {% if solicitud.fecha_deseada %}<dt>Fecha deseada</dt><dd>{{ solicitud.fecha_deseada|date:"d-m-Y" }}</dd>{% endif %}
+                {% for clave, valor in solicitud.detalles.items %}
+                <dt>{{ clave }}</dt><dd>{% if valor|es_lista %}<div class="chips">{% for v in valor %}<span class="chip">{{ v }}</span>{% endfor %}</div>{% else %}{{ valor }}{% endif %}</dd>
+                {% endfor %}
+                <dt>Descripción</dt><dd style="white-space: pre-line;">{{ solicitud.descripcion }}</dd>
+            </dl>
+        </div>
+
+        {% with r=solicitud.requerimiento %}
+        {% if r %}
+        <div class="tarjeta mb-4">
+            <h2>Requerimientos web</h2>
+            <dl class="dl-simple">
+                <dt>Negocio</dt><dd>{{ r.nombre_negocio }}</dd>
+                <dt>Rubro</dt><dd>{{ r.nombre_rubro }}</dd>
+                <dt>Descripción</dt><dd style="white-space: pre-line;">{{ r.descripcion_negocio }}</dd>
+                {% if r.publico_objetivo %}<dt>Público objetivo</dt><dd>{{ r.publico_objetivo }}</dd>{% endif %}
+                <dt>Tipo de sitio</dt><dd>{{ r.get_tipo_sitio_display }}</dd>
+                <dt>Sitio actual</dt><dd>{% if r.tiene_sitio_actual %}{{ r.url_sitio_actual|default:"Sí" }}{% else %}No tiene{% endif %}</dd>
+                <dt>Nivel de diseño</dt><dd>{{ r.get_complejidad_display }}</dd>
+                <dt>Páginas</dt><dd>{{ r.num_paginas }}</dd>
+                <dt>Objetivos</dt><dd><div class="chips">{% for o in objetivos %}<span class="chip">{{ o }}</span>{% endfor %}</div></dd>
+                <dt>Funcionalidades</dt><dd>{% if funcionalidades %}<div class="chips">{% for f in funcionalidades %}<span class="chip">{{ f }}</span>{% endfor %}</div>{% else %}Ninguna adicional{% endif %}</dd>
+                <dt>Integraciones</dt><dd>{% if integraciones %}<div class="chips">{% for i in integraciones %}<span class="chip">{{ i }}</span>{% endfor %}</div>{% else %}Ninguna{% endif %}</dd>
+                <dt>Contenido propio</dt><dd>{{ r.tiene_contenido|yesno:"Sí,No" }}</dd>
+                {% if r.observaciones %}<dt>Observaciones</dt><dd style="white-space: pre-line;">{{ r.observaciones }}</dd>{% endif %}
+            </dl>
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% if estimacion %}
+        <div class="tarjeta mb-4">
+            <h2>Estimación referencial</h2>
+            <p class="mb-2"><strong style="font-size: 22px;">{{ estimacion.total|clp }}</strong> <span class="text-secondary small ms-2">rango mostrado al cliente: {{ estimacion.monto_minimo|clp }} – {{ estimacion.monto_maximo|clp }} · {{ estimacion.semanas_minimas }} a {{ estimacion.semanas_maximas }} semanas · factor {{ estimacion.factor_complejidad }}</span></p>
+            <ul class="lista-desglose">
+                {% for linea in estimacion.desglose %}<li><span>{{ linea.concepto }}</span><strong>{{ linea.monto|clp }}</strong></li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="tarjeta">
+            <h2>Historial</h2>
+            <ul class="linea-tiempo">
+                {% for h in historial %}
+                <li>
+                    <div class="fecha">{{ h.fecha|date:"d-m-Y H:i" }}{% if h.usuario %} · {{ h.usuario.get_full_name|default:h.usuario.email }}{% endif %}</div>
+                    <div class="titulo">{% if h.estado_anterior and h.estado_anterior != h.estado_nuevo %}{{ h.estado_anterior.nombre }} → {% endif %}{{ h.estado_nuevo.nombre }}</div>
+                    {% if h.comentario %}<div class="comentario">{{ h.comentario }}</div>{% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-xl-5">
+        <div class="tarjeta mb-4">
+            <h2>Cambiar estado</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="estado">
+                {% include "plataforma/includes/campo.html" with campo=form_estado.estado %}
+                {% include "plataforma/includes/campo.html" with campo=form_estado.comentario %}
+                {% include "plataforma/includes/campo.html" with campo=form_estado.notificar %}
+                <button type="submit" class="btn btn-primary w-100">Actualizar estado</button>
+            </form>
+        </div>
+
+        <div class="tarjeta mb-4 {% if not cotizacion %}tarjeta-destacada{% endif %}" id="cotizacion">
+            <h2>{% if cotizacion %}Cotización emitida{% else %}Emitir cotización formal{% endif %}</h2>
+            {% if cotizacion %}
+            <p class="small text-secondary">
+                Emitida el {{ cotizacion.fecha_emision|date:"d-m-Y" }}{% if cotizacion.emitida_por %} por {{ cotizacion.emitida_por.get_full_name|default:cotizacion.emitida_por.email }}{% endif %}.
+                {% if cotizacion.respuesta_cliente %}Respuesta del cliente: <strong>{{ cotizacion.get_respuesta_cliente_display }}</strong>{% if cotizacion.fecha_respuesta %} el {{ cotizacion.fecha_respuesta|date:"d-m-Y" }}{% endif %}.{% elif cotizacion.vigente %}Esperando respuesta del cliente.{% else %}Vencida sin respuesta.{% endif %}
+            </p>
+            {% if cotizacion.comentario_cliente %}<div class="aviso mb-3"><i class="fa-regular fa-comment"></i><span>{{ cotizacion.comentario_cliente }}</span></div>{% endif %}
+            {% endif %}
+            {% if solicitud.estado.es_final and solicitud.estado.codigo != 'rechazada' %}
+            <p class="text-secondary small mb-0">La solicitud está cerrada; no se pueden emitir nuevas cotizaciones.</p>
+            {% elif cotizacion.respuesta_cliente == 'aceptada' %}
+            <p class="text-secondary small mb-0">El cliente ya aceptó esta cotización.</p>
+            {% else %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="cotizacion">
+                <div class="row">
+                    <div class="col-sm-6">{% include "plataforma/includes/campo.html" with campo=form_cotizacion.monto %}</div>
+                    <div class="col-sm-6">{% include "plataforma/includes/campo.html" with campo=form_cotizacion.plazo_dias %}</div>
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form_cotizacion.validez_dias %}
+                {% include "plataforma/includes/campo.html" with campo=form_cotizacion.detalle %}
+                <button type="submit" class="btn {% if cotizacion %}btn-outline-light{% else %}btn-primary{% endif %} w-100">{% if cotizacion %}Actualizar y reenviar cotización{% else %}Emitir y enviar al cliente{% endif %}</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <div class="tarjeta">
+            <h2>Gestión interna</h2>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="gestion">
+                {% include "plataforma/includes/campo.html" with campo=form_gestion.prioridad %}
+                {% include "plataforma/includes/campo.html" with campo=form_gestion.notas_internas %}
+                <button type="submit" class="btn btn-outline-light w-100">Guardar</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

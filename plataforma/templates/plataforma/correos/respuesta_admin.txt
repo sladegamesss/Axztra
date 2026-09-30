@@ -1,0 +1,8 @@
+{% load axztra %}{% autoescape off %}El cliente {{ solicitud.cliente.get_full_name }} <{{ solicitud.cliente.email }}> {{ cotizacion.get_respuesta_cliente_display|lower }} la cotización de {{ solicitud.numero }}.
+
+Monto cotizado: {{ cotizacion.monto|clp }}{% if cotizacion.comentario_cliente %}
+Comentario: {{ cotizacion.comentario_cliente }}{% endif %}
+
+Ver en el panel:
+{{ url }}
+{% endautoescape %}

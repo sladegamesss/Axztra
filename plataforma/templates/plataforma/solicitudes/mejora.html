@@ -1,0 +1,15 @@
+{% extends 'plataforma/solicitudes/formulario_base.html' %}
+{% block title %}Mejora de página existente · AXZTRA{% endblock %}
+{% block miga %}Mejora de página existente{% endblock %}
+{% block encabezado %}Mejora de tu sitio actual{% endblock %}
+{% block bajada %}Cuéntanos qué quieres cambiar y revisaremos tu sitio para preparar una propuesta.{% endblock %}
+{% block campos %}
+    {% include "plataforma/includes/campo.html" with campo=form.titulo %}
+    {% include "plataforma/includes/campo.html" with campo=form.url_sitio %}
+    <div class="grupo mb-4">
+        <p class="form-label">{{ form.tipos_mejora.label }}<span class="requerido">*</span></p>
+        {% include "plataforma/includes/opciones.html" with campo=form.tipos_mejora icono="fa-solid fa-wand-magic-sparkles" %}
+    </div>
+    {% include "plataforma/includes/campo.html" with campo=form.descripcion %}
+    {% include "plataforma/includes/campo.html" with campo=form.fecha_deseada %}
+{% endblock %}

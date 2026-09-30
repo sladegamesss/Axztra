@@ -1,0 +1,8 @@
+{% autoescape off %}Hola {{ usuario.first_name|default:usuario.email }}:
+
+Tu código para ingresar al panel de administración de AXZTRA es:
+
+    {{ codigo }}
+
+El código vence en {{ minutos }} minutos y solo puede usarse una vez. Si no intentaste ingresar, cambia tu contraseña de inmediato.
+{% include "plataforma/correos/base_firma.txt" %}{% endautoescape %}

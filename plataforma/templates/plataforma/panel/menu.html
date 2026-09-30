@@ -1,0 +1,10 @@
+<nav aria-label="Menú del panel">
+    <a href="{% url 'panel_inicio' %}" class="{% if seccion == 'inicio' %}activo{% endif %}"><i class="fa-solid fa-gauge"></i>Resumen</a>
+    <a href="{% url 'panel_solicitudes' %}" class="{% if seccion == 'solicitudes' %}activo{% endif %}"><i class="fa-regular fa-folder-open"></i>Solicitudes</a>
+    <a href="{% url 'panel_servicios' %}" class="{% if seccion == 'servicios' %}activo{% endif %}"><i class="fa-solid fa-layer-group"></i>Servicios</a>
+    <a href="{% url 'panel_clientes' %}" class="{% if seccion == 'clientes' %}activo{% endif %}"><i class="fa-regular fa-user"></i>Clientes</a>
+    <a href="{% url 'panel_consultas' %}" class="{% if seccion == 'consultas' %}activo{% endif %}"><i class="fa-regular fa-comments"></i>Consultas al asistente</a>
+    <div class="separador">Otros accesos</div>
+    <a href="{% url 'inicio' %}"><i class="fa-solid fa-globe"></i>Ver sitio público</a>
+    <a href="{% url 'admin:index' %}"><i class="fa-solid fa-database"></i>Administración de datos</a>
+</nav>

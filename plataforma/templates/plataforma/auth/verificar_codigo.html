@@ -1,0 +1,23 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Verificación en dos pasos · AXZTRA{% endblock %}
+{% block content %}
+<div class="container auth-contenedor">
+    <div class="auth-tarjeta">
+        <div class="tarjeta p-4 p-md-5">
+            <div class="servicio-icono"><i class="fa-solid fa-shield-halved"></i></div>
+            <h1>Verifica tu identidad</h1>
+            <p class="bajada">Enviamos un código de 6 dígitos a <strong>{{ correo_oculto }}</strong>. Ingrésalo para acceder al panel de administración.</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% include "plataforma/includes/campo.html" with campo=form.codigo %}
+                <button type="submit" class="btn btn-primary w-100">Verificar y continuar</button>
+            </form>
+            <form method="post" action="{% url 'reenviar_codigo' %}" class="text-center mt-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-fantasma btn-sm">Enviar un código nuevo</button>
+            </form>
+            <p class="auth-pie mb-0 small">El código vence en {{ empresa.CODIGO_VERIFICACION_MINUTOS }} minutos. En el entorno de desarrollo el correo se muestra en la terminal donde se ejecuta el servidor.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

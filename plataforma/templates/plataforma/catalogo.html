@@ -1,0 +1,58 @@
+{% extends 'plataforma/base.html' %}
+{% load axztra %}
+{% block title %}Servicios · AXZTRA{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'inicio' %}">Inicio</a> / Servicios</div>
+        <h1>Catálogo de servicios</h1>
+        <p>Todo lo que necesitas para crear, mejorar y cuidar tu sitio web. Los precios son valores desde, en pesos chilenos y sin IVA.</p>
+    </div>
+
+    <form method="get" class="filtros-barra" role="search">
+        <input type="search" name="q" value="{{ busqueda }}" class="form-control busqueda" placeholder="Buscar un servicio" aria-label="Buscar un servicio">
+        <select name="tipo" class="form-select" aria-label="Filtrar por tipo">
+            <option value="">Todos los tipos</option>
+            {% for clave, nombre in tipos %}<option value="{{ clave }}"{% if clave == tipo_activo %} selected{% endif %}>{{ nombre }}</option>{% endfor %}
+        </select>
+        <select name="categoria" class="form-select" aria-label="Filtrar por categoría">
+            <option value="">Todas las categorías</option>
+            {% for categoria in categorias %}<option value="{{ categoria.pk }}"{% if categoria.pk|stringformat:"s" == categoria_activa %} selected{% endif %}>{{ categoria.nombre }}</option>{% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        {% if hay_filtros %}<a href="{% url 'catalogo' %}" class="btn btn-fantasma">Limpiar</a>{% endif %}
+    </form>
+
+    <div class="pb-5 mb-4">
+        {% if servicios %}
+        <p class="text-muted small mb-3">{{ servicios|length }} servicio{{ servicios|length|pluralize }} disponible{{ servicios|length|pluralize }}</p>
+        <div class="row g-4">
+            {% for servicio in servicios %}
+            <div class="col-md-6 col-lg-4">
+                <article class="servicio-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="servicio-icono"><i class="{{ servicio.icono }}"></i></div>
+                        <span class="etiqueta-tipo">{{ servicio.get_tipo_display }}</span>
+                    </div>
+                    <h3><a href="{{ servicio.get_absolute_url }}">{{ servicio.nombre }}</a></h3>
+                    <p>{{ servicio.resumen }}</p>
+                    {% if servicio.plazo_referencial %}<p class="small mb-3"><i class="fa-regular fa-clock me-2 text-muted"></i>{{ servicio.plazo_referencial }}</p>{% endif %}
+                    <div class="pie">
+                        <div class="precio-desde">{% if servicio.precio_base %}Desde<strong>{{ servicio.precio_base|clp }}</strong>{% else %}Valor<strong>A cotizar</strong>{% endif %}</div>
+                        <a href="{{ servicio.url_solicitud }}" class="btn btn-sm btn-primary">Solicitar</a>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="tarjeta vacio">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <h3>No hay servicios con esos filtros</h3>
+            <p>Prueba con otra búsqueda o revisa el catálogo completo.</p>
+            <a href="{% url 'catalogo' %}" class="btn btn-outline-light">Ver todos los servicios</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

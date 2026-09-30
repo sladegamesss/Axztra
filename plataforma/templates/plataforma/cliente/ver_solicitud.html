@@ -1,0 +1,145 @@
+{% extends 'plataforma/base.html' %}
+{% load axztra %}
+{% block title %}{{ solicitud.numero }} · AXZTRA{% endblock %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'mis_solicitudes' %}">Mis solicitudes</a> / {{ solicitud.numero }}</div>
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-2">
+            <h1 class="mb-0">{{ solicitud.titulo }}</h1>
+            {% include "plataforma/includes/estado.html" with estado=solicitud.estado %}
+        </div>
+        <p>{{ solicitud.numero }} · {{ solicitud.get_tipo_display }} · Enviada el {{ solicitud.fecha_solicitud|date:"d-m-Y H:i" }}</p>
+    </div>
+
+    {% if user.is_staff and not es_duenio %}
+    <div class="aviso mb-4"><i class="fa-solid fa-user-shield"></i><span>Estás viendo la solicitud como administrador. <a href="{% url 'panel_solicitud' solicitud.pk %}">Gestionarla en el panel</a>.</span></div>
+    {% endif %}
+
+    <div class="tarjeta mb-4">
+        <h2>Seguimiento</h2>
+        {% if solicitud.estado.codigo == 'cancelada' or solicitud.estado.codigo == 'rechazada' %}
+        <div class="aviso advertencia"><i class="fa-solid fa-circle-exclamation"></i><span>{{ solicitud.estado.descripcion }}</span></div>
+        {% else %}
+        <div class="seguimiento">
+            {% for paso in solicitud.pasos_seguimiento %}
+            <div class="etapa {{ paso.situacion }}">
+                <div class="punto">{% if paso.situacion == 'hecho' %}<i class="fa-solid fa-check"></i>{% endif %}</div>
+                {{ paso.nombre }}
+            </div>
+            {% endfor %}
+        </div>
+        {% if solicitud.estado.descripcion %}<p class="text-secondary small mt-3 mb-0">{{ solicitud.estado.descripcion }}</p>{% endif %}
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            {% if cotizacion %}
+            <div class="tarjeta tarjeta-destacada mb-4" id="cotizacion">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+                    <div>
+                        <h2 class="mb-1">Cotización formal</h2>
+                        <p class="text-secondary small mb-0">Emitida el {{ cotizacion.fecha_emision|date:"d-m-Y" }} · Vigente hasta el {{ cotizacion.fecha_vencimiento|date:"d-m-Y" }}</p>
+                    </div>
+                    {% if cotizacion.respuesta_cliente == 'aceptada' %}<span class="estado estado-verde">Aceptada</span>{% elif cotizacion.respuesta_cliente == 'rechazada' %}<span class="estado estado-gris">Rechazada</span>{% elif not cotizacion.vigente %}<span class="estado estado-rojo">Vencida</span>{% else %}<span class="estado estado-violeta">Esperando tu respuesta</span>{% endif %}
+                </div>
+                <div class="row g-4 my-2">
+                    <div class="col-sm-6"><div class="dato-grande"><i class="fa-solid fa-sack-dollar"></i><div><span>Monto (sin IVA)</span><strong>{{ cotizacion.monto|clp }}</strong></div></div></div>
+                    <div class="col-sm-6"><div class="dato-grande"><i class="fa-regular fa-clock"></i><div><span>Plazo de entrega</span><strong>{{ cotizacion.plazo_dias }} días hábiles</strong></div></div></div>
+                </div>
+                <p class="mb-0" style="white-space: pre-line; color: var(--texto-2);">{{ cotizacion.detalle }}</p>
+                {% if cotizacion.comentario_cliente %}<p class="small text-muted mt-3 mb-0">Tu comentario: {{ cotizacion.comentario_cliente }}</p>{% endif %}
+
+                {% if es_duenio and solicitud.cotizacion_pendiente %}
+                    {% if cotizacion.vigente %}
+                    <form method="post" action="{% url 'responder_cotizacion' solicitud.pk %}" class="mt-4 pt-4" style="border-top: 1px solid var(--borde);">
+                        {% csrf_token %}
+                        {% include "plataforma/includes/campo.html" with campo=form_respuesta.comentario %}
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="submit" name="respuesta" value="aceptada" class="btn btn-exito"><i class="fa-solid fa-check me-2"></i>Aceptar cotización</button>
+                            <button type="submit" name="respuesta" value="rechazada" class="btn btn-peligro" onclick="return confirm('¿Confirmas que quieres rechazar esta cotización?');">Rechazar</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="aviso advertencia mt-4"><i class="fa-solid fa-clock-rotate-left"></i><span>La cotización venció. Escríbenos por WhatsApp para emitir una actualizada.</span></div>
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="tarjeta mb-4">
+                <h2>Detalle de la solicitud</h2>
+                <dl class="dl-simple">
+                    {% if solicitud.servicio %}<dt>Servicio</dt><dd>{{ solicitud.servicio.nombre }}</dd>{% endif %}
+                    {% if solicitud.url_sitio %}<dt>Sitio web</dt><dd><a href="{{ solicitud.url_sitio }}" target="_blank" rel="noopener nofollow">{{ solicitud.url_sitio }}</a></dd>{% endif %}
+                    <dt>Prioridad</dt><dd><span class="prioridad prioridad-{{ solicitud.prioridad }}">{{ solicitud.get_prioridad_display }}</span></dd>
+                    {% if solicitud.fecha_deseada %}<dt>Fecha deseada</dt><dd>{{ solicitud.fecha_deseada|date:"d-m-Y" }}</dd>{% endif %}
+                    {% for clave, valor in solicitud.detalles.items %}
+                    <dt>{{ clave }}</dt>
+                    <dd>{% if valor|es_lista %}<div class="chips">{% for v in valor %}<span class="chip">{{ v }}</span>{% endfor %}</div>{% else %}{{ valor }}{% endif %}</dd>
+                    {% endfor %}
+                    <dt>Descripción</dt><dd style="white-space: pre-line;">{{ solicitud.descripcion }}</dd>
+                </dl>
+            </div>
+
+            {% with r=solicitud.requerimiento %}
+            {% if r %}
+            <div class="tarjeta mb-4">
+                <h2>Requerimientos del sitio</h2>
+                <dl class="dl-simple">
+                    <dt>Negocio</dt><dd>{{ r.nombre_negocio }}</dd>
+                    <dt>Rubro</dt><dd>{{ r.nombre_rubro }}</dd>
+                    <dt>Tipo de sitio</dt><dd>{{ r.get_tipo_sitio_display }}</dd>
+                    <dt>Nivel de diseño</dt><dd>{{ r.get_complejidad_display }}</dd>
+                    <dt>Páginas</dt><dd>{{ r.num_paginas }}</dd>
+                    {% if r.publico_objetivo %}<dt>Público objetivo</dt><dd>{{ r.publico_objetivo }}</dd>{% endif %}
+                    <dt>Objetivos</dt><dd><div class="chips">{% for o in objetivos %}<span class="chip">{{ o }}</span>{% endfor %}</div></dd>
+                    {% if funcionalidades %}<dt>Funcionalidades</dt><dd><div class="chips">{% for f in funcionalidades %}<span class="chip">{{ f }}</span>{% endfor %}</div></dd>{% endif %}
+                    {% if integraciones %}<dt>Integraciones</dt><dd><div class="chips">{% for i in integraciones %}<span class="chip">{{ i }}</span>{% endfor %}</div></dd>{% endif %}
+                    <dt>Contenido propio</dt><dd>{% if r.tiene_contenido %}Cuenta con textos, logo e imágenes{% else %}Requiere apoyo con el contenido{% endif %}</dd>
+                </dl>
+            </div>
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="col-lg-4">
+            {% if estimacion %}
+            <div class="tarjeta mb-4">
+                <h2>Estimación referencial</h2>
+                <div class="rango-estimado" style="font-size: 24px;">{{ estimacion.monto_minimo|clp }} – {{ estimacion.monto_maximo|clp }}</div>
+                <p class="small text-secondary mt-2">Plazo estimado: {{ estimacion.semanas_minimas }} a {{ estimacion.semanas_maximas }} semanas.</p>
+                <details>
+                    <summary class="small" style="cursor: pointer; color: var(--acento-claro);">Ver desglose</summary>
+                    <ul class="lista-desglose mt-2">
+                        {% for linea in estimacion.desglose %}<li><span>{{ linea.concepto }}</span><strong>{{ linea.monto|clp }}</strong></li>{% endfor %}
+                        <li class="total"><span>Total</span><strong>{{ estimacion.total|clp }}</strong></li>
+                    </ul>
+                </details>
+            </div>
+            {% endif %}
+
+            <div class="tarjeta mb-4">
+                <h2>Historial</h2>
+                <ul class="linea-tiempo">
+                    {% for h in historial %}
+                    <li>
+                        <div class="fecha">{{ h.fecha|date:"d-m-Y H:i" }}</div>
+                        <div class="titulo">{{ h.estado_nuevo.nombre }}</div>
+                        {% if h.comentario %}<div class="comentario">{{ h.comentario }}</div>{% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% if es_duenio and solicitud.cancelable %}
+            <form method="post" action="{% url 'cancelar_solicitud' solicitud.pk %}" data-confirmar="¿Seguro que quieres cancelar esta solicitud? Esta acción no se puede deshacer.">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-peligro w-100">Cancelar solicitud</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

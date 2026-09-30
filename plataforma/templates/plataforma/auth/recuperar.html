@@ -1,0 +1,22 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Recuperar contraseña · AXZTRA{% endblock %}
+{% block content %}
+<div class="container auth-contenedor">
+    <div class="auth-tarjeta">
+        <div class="tarjeta p-4 p-md-5">
+            <h1>Recuperar contraseña</h1>
+            <p class="bajada">Escribe el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.</p>
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="mb-3 campo{% if form.email.errors %} con-error{% endif %}">
+                    <label class="form-label" for="id_email">Correo electrónico</label>
+                    <input type="email" name="email" id="id_email" class="form-control" value="{{ form.email.value|default:'' }}" autocomplete="email" required autofocus>
+                    {% for error in form.email.errors %}<div class="error-campo">{{ error }}</div>{% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Enviar enlace</button>
+            </form>
+            <p class="auth-pie mb-0"><a href="{% url 'login' %}">Volver a iniciar sesión</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

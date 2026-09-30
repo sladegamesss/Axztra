@@ -1,0 +1,19 @@
+{% load axztra %}
+<div class="opciones-grid{% if columnas == 2 %} dos{% endif %}"{% if requiere %} data-requiere-seleccion="{{ requiere }}"{% endif %}>
+    {% for opcion in campo %}
+    {% with info=catalogo|obtener:opcion.data.value %}
+    <label class="opcion" for="{{ opcion.id_for_label }}">
+        {{ opcion.tag }}
+        <span class="caja">
+            {% if info.icono %}<i class="{{ info.icono }}"></i>{% elif icono %}<i class="{{ icono }}"></i>{% endif %}
+            <span>
+                <strong>{{ opcion.choice_label }}</strong>
+                {% if info.descripcion %}<small>{{ info.descripcion }}</small>{% endif %}
+            </span>
+            <span class="marca"><i class="fa-solid fa-check"></i></span>
+        </span>
+    </label>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% for error in campo.errors %}<div class="error-campo">{{ error }}</div>{% endfor %}

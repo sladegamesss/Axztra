@@ -1,0 +1,21 @@
+{% extends 'plataforma/solicitudes/formulario_base.html' %}
+{% block title %}Mantenimiento · AXZTRA{% endblock %}
+{% block miga %}Mantenimiento{% endblock %}
+{% block encabezado %}Plan de mantenimiento{% endblock %}
+{% block bajada %}Elige la frecuencia y las tareas que necesitas para mantener tu sitio seguro y actualizado.{% endblock %}
+{% block campos %}
+    {% include "plataforma/includes/campo.html" with campo=form.titulo %}
+    <div class="row">
+        <div class="col-md-7">{% include "plataforma/includes/campo.html" with campo=form.url_sitio %}</div>
+        <div class="col-md-5">{% include "plataforma/includes/campo.html" with campo=form.plataforma %}</div>
+    </div>
+    <div class="grupo mb-4">
+        <p class="form-label">{{ form.frecuencia.label }}</p>
+        {% include "plataforma/includes/opciones.html" with campo=form.frecuencia icono="fa-regular fa-calendar" columnas=2 %}
+    </div>
+    <div class="grupo mb-4">
+        <p class="form-label">{{ form.tareas.label }}<span class="requerido">*</span></p>
+        {% include "plataforma/includes/opciones.html" with campo=form.tareas icono="fa-solid fa-screwdriver-wrench" %}
+    </div>
+    {% include "plataforma/includes/campo.html" with campo=form.descripcion %}
+{% endblock %}

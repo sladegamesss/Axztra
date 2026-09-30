@@ -1,0 +1,156 @@
+﻿AXZTRA - INSTRUCCIONES PARA EJECUTAR EL PROYECTO EN VISUAL STUDIO CODE (WINDOWS)
+===============================================================================
+
+REQUISITOS
+----------
+- Python 3.12 (el mismo que ya tienen instalado).
+- Visual Studio Code con la extensión "Python" de Microsoft.
+- Conexión a internet la primera vez (para instalar Django) y al navegar
+  (los estilos de Bootstrap, los iconos y las fuentes se cargan desde internet).
+
+
+1. ABRIR EL PROYECTO
+--------------------
+1.1 Descomprimir axztra.zip, por ejemplo en: C:\Users\TU_USUARIO\Documents\axztra
+1.2 Abrir Visual Studio Code.
+1.3 Menú Archivo > Abrir carpeta... y seleccionar la carpeta "axztra"
+    (la que contiene el archivo manage.py).
+1.4 Abrir una terminal: menú Terminal > Nueva terminal (o Ctrl + ñ).
+
+
+2. CREAR Y ACTIVAR EL ENTORNO VIRTUAL (solo la primera vez)
+-----------------------------------------------------------
+Escribir en la terminal:
+
+    python -m venv venv
+
+Activarlo:
+
+    venv\Scripts\activate
+
+Si aparece un error rojo que dice "la ejecución de scripts está deshabilitada",
+ejecutar esta línea y luego repetir la activación:
+
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+Cuando el entorno está activo, la línea de la terminal comienza con (venv).
+
+Si el comando "python" no funciona, probar con "py" en su lugar.
+
+
+3. INSTALAR DEPENDENCIAS (solo la primera vez)
+----------------------------------------------
+
+    pip install -r requirements.txt
+
+
+4. CREAR LA BASE DE DATOS (solo la primera vez)
+-----------------------------------------------
+
+    python manage.py migrate
+
+Este paso crea el archivo db.sqlite3 con las tablas, los estados de solicitud,
+las categorías y los 10 servicios del catálogo.
+
+
+5. CARGAR DATOS DE DEMOSTRACIÓN (recomendado para presentar)
+------------------------------------------------------------
+
+    python manage.py datos_demo
+
+Crea estas cuentas y 5 solicitudes de ejemplo en distintos estados:
+
+    Administrador:  admin@axztra.cl     /  AxztraAdmin2026
+    Cliente:        cliente@axztra.cl   /  Cliente2026
+
+Para volver a generar las solicitudes de ejemplo desde cero:
+
+    python manage.py datos_demo --reiniciar
+
+
+6. EJECUTAR EL SERVIDOR
+-----------------------
+
+    python manage.py runserver
+
+Abrir en el navegador:  http://127.0.0.1:8000
+
+Para detener el servidor: Ctrl + C en la terminal.
+
+
+7. INGRESAR COMO ADMINISTRADOR (verificación en dos pasos)
+----------------------------------------------------------
+7.1 Ir a "Iniciar sesión" e ingresar con admin@axztra.cl / AxztraAdmin2026
+7.2 La página pedirá un código de 6 dígitos.
+7.3 Mirar la terminal de VS Code donde corre el servidor: ahí aparece el
+    correo "Tu código de acceso al panel AXZTRA" con el código.
+7.4 Escribir el código y presionar "Verificar y continuar".
+
+Accesos del administrador:
+    Panel de administración:        http://127.0.0.1:8000/panel/
+    Administración de datos Django:  http://127.0.0.1:8000/admin/
+
+Todos los correos del sistema (bienvenida, solicitud recibida, cambio de
+estado, cotización, recuperación de contraseña) se muestran en esa misma
+terminal mientras se trabaja en modo desarrollo.
+
+
+8. CREAR UN ADMINISTRADOR PROPIO (opcional)
+-------------------------------------------
+
+    python manage.py createsuperuser
+
+Importante: el inicio de sesión es con CORREO, por lo que se debe completar
+el campo "Dirección de correo electrónico" cuando lo pida.
+
+
+9. RECORRIDO SUGERIDO PARA LA PRESENTACIÓN
+------------------------------------------
+1. Inicio: servicios, planes referenciales, preguntas frecuentes y el
+   asistente virtual (botón azul de la esquina inferior derecha).
+2. Catálogo de servicios con búsqueda y filtros.
+3. Ingresar como cliente > Nueva solicitud > Creación de página web:
+   completar los 3 pasos y revisar la estimación (paso 4).
+4. Solicitar la cotización formal y ver el seguimiento de la solicitud.
+5. En otra ventana de incógnito ingresar como administrador (código en la
+   terminal) > Panel > abrir la solicitud > cambiar estado y emitir cotización.
+6. Volver a la ventana del cliente y aceptar la cotización.
+7. Panel: resumen con métricas, servicios, clientes y consultas al asistente.
+
+
+10. EJECUTAR LAS PRUEBAS AUTOMATIZADAS
+--------------------------------------
+
+    python manage.py test
+
+Resultado esperado: "Ran 53 tests ... OK"
+
+
+11. CAMBIAR DATOS DE CONTACTO
+-----------------------------
+El número de WhatsApp y el correo de la empresa están en:
+
+    axztra\settings.py  ->  bloque AXZTRA (WHATSAPP, WHATSAPP_VISIBLE, CORREO_CONTACTO)
+
+El número de WhatsApp debe escribirse sin "+" ni espacios, por ejemplo: 56912345678
+
+
+12. PROBLEMAS FRECUENTES
+------------------------
+- "No module named django": el entorno virtual no está activo.
+  Ejecutar venv\Scripts\activate y repetir el comando.
+
+- "That port is already in use": ya hay un servidor abierto. Cerrar la otra
+  terminal o usar otro puerto:  python manage.py runserver 8001
+
+- "no such table": falta crear la base de datos. Ejecutar
+  python manage.py migrate
+
+- La página se ve sin estilos: revisar la conexión a internet
+  (Bootstrap e iconos se cargan desde internet).
+
+- Para empezar con una base de datos limpia: detener el servidor, borrar el
+  archivo db.sqlite3 y repetir los pasos 4 y 5.
+
+- En VS Code, si aparece "Seleccionar intérprete", elegir el que dice
+  ('venv': venv) dentro de la carpeta del proyecto.

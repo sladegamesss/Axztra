@@ -1,0 +1,95 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Creación de página web · AXZTRA{% endblock %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'nueva_solicitud' %}">Nueva solicitud</a> / Creación de página web</div>
+        <h1>Cuéntanos sobre tu proyecto</h1>
+        <p>{% if servicio %}Servicio seleccionado: <strong>{{ servicio.nombre }}</strong>. {% endif %}Completa los tres pasos y obtén una estimación referencial antes de enviar tu solicitud.</p>
+    </div>
+
+    <div class="asistente-layout">
+        <ol class="pasos-lateral" aria-label="Pasos de la solicitud">
+            <li data-paso="1" class="actual"><span class="bola">1</span><div><strong>Información básica</strong><small>En curso</small></div></li>
+            <li data-paso="2" class="pendiente"><span class="bola">2</span><div><strong>Tu negocio</strong><small>Pendiente</small></div></li>
+            <li data-paso="3" class="pendiente"><span class="bola">3</span><div><strong>Funcionalidades</strong><small>Pendiente</small></div></li>
+            <li class="pendiente"><span class="bola">4</span><div><strong>Estimación</strong><small>Pendiente</small></div></li>
+        </ol>
+
+        <div class="tarjeta p-4 p-md-5">
+            {% if form.errors %}<div class="alerta-form">Revisa los campos marcados antes de continuar.{% for e in form.non_field_errors %} {{ e }}{% endfor %}</div>{% endif %}
+            <form method="post" id="form-asistente" class="sin-js" data-paso-inicial="{{ paso_inicial }}" novalidate>
+                {% csrf_token %}
+                {{ form.servicio }}
+
+                <div class="paso-form" data-paso="1">
+                    <h2>Información básica</h2>
+                    <p class="indicador">Paso 1 de 3</p>
+                    {% include "plataforma/includes/campo.html" with campo=form.titulo %}
+                    <div class="grupo">
+                        <p class="grupo-titulo">¿Qué tipo de sitio necesitas?<span class="requerido">*</span></p>
+                        {% include "plataforma/includes/opciones.html" with campo=form.tipo_sitio catalogo=info_tipos requiere="Selecciona el tipo de sitio." %}
+                    </div>
+                    <div class="grupo">
+                        <p class="grupo-titulo">{{ form.tiene_sitio_actual.label }}</p>
+                        {% include "plataforma/includes/opciones.html" with campo=form.tiene_sitio_actual catalogo=info_sitio_actual columnas=2 %}
+                    </div>
+                    <div id="bloque-url-actual">
+                        {% include "plataforma/includes/campo.html" with campo=form.url_sitio_actual %}
+                    </div>
+                    <div class="acciones-form">
+                        <a href="{% url 'nueva_solicitud' %}" class="btn btn-fantasma">Cancelar</a>
+                        <button type="button" class="btn btn-primary" data-siguiente>Siguiente</button>
+                    </div>
+                </div>
+
+                <div class="paso-form" data-paso="2">
+                    <h2>Tu negocio</h2>
+                    <p class="indicador">Paso 2 de 3</p>
+                    <div class="row">
+                        <div class="col-md-7">{% include "plataforma/includes/campo.html" with campo=form.nombre_negocio %}</div>
+                        <div class="col-md-5">{% include "plataforma/includes/campo.html" with campo=form.rubro %}</div>
+                    </div>
+                    {% include "plataforma/includes/campo.html" with campo=form.descripcion_negocio %}
+                    {% include "plataforma/includes/campo.html" with campo=form.publico_objetivo %}
+                    <div class="grupo">
+                        <p class="grupo-titulo">{{ form.objetivos.label }}<span class="requerido">*</span></p>
+                        {% include "plataforma/includes/opciones.html" with campo=form.objetivos icono="fa-solid fa-flag" requiere="Selecciona al menos un objetivo." %}
+                    </div>
+                    <div class="acciones-form">
+                        <button type="button" class="btn btn-fantasma" data-anterior>Anterior</button>
+                        <button type="button" class="btn btn-primary" data-siguiente>Siguiente</button>
+                    </div>
+                </div>
+
+                <div class="paso-form" data-paso="3">
+                    <h2>Funcionalidades</h2>
+                    <p class="indicador">Paso 3 de 3 · El diseño adaptado a celulares y el menú de navegación vienen incluidos.</p>
+                    <div class="grupo">
+                        <p class="grupo-titulo">¿Qué funciones debe tener tu sitio?</p>
+                        {% include "plataforma/includes/opciones.html" with campo=form.funcionalidades catalogo=funcionalidades columnas=2 %}
+                    </div>
+                    <div class="grupo">
+                        <p class="grupo-titulo">Integraciones</p>
+                        {% include "plataforma/includes/opciones.html" with campo=form.integraciones catalogo=integraciones %}
+                    </div>
+                    <div class="grupo">
+                        <p class="grupo-titulo">{{ form.complejidad.label }}</p>
+                        {% include "plataforma/includes/opciones.html" with campo=form.complejidad catalogo=info_complejidad %}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.num_paginas %}</div>
+                        <div class="col-md-6">{% include "plataforma/includes/campo.html" with campo=form.fecha_deseada %}</div>
+                    </div>
+                    {% include "plataforma/includes/campo.html" with campo=form.tiene_contenido %}
+                    {% include "plataforma/includes/campo.html" with campo=form.observaciones %}
+                    <div class="acciones-form">
+                        <button type="button" class="btn btn-fantasma" data-anterior>Anterior</button>
+                        <button type="submit" class="btn btn-primary">Ver mi estimación</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

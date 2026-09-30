@@ -1,0 +1,12 @@
+{% load axztra %}{% autoescape off %}Ingresó una nueva solicitud en la plataforma.
+
+Número: {{ solicitud.numero }}
+Tipo: {{ solicitud.get_tipo_display }}
+Cliente: {{ solicitud.cliente.get_full_name }} <{{ solicitud.cliente.email }}>
+Título: {{ solicitud.titulo }}
+Prioridad: {{ solicitud.get_prioridad_display }}{% if solicitud.estimacion %}
+Estimación referencial: {{ solicitud.estimacion.total|clp }}{% endif %}
+
+Revisar en el panel:
+{{ url }}
+{% endautoescape %}

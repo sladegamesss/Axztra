@@ -1,0 +1,14 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Revisa tu correo · AXZTRA{% endblock %}
+{% block content %}
+<div class="container auth-contenedor">
+    <div class="auth-tarjeta">
+        <div class="tarjeta p-4 p-md-5">
+            <div class="servicio-icono"><i class="fa-regular fa-envelope-open"></i></div>
+            <h1>Revisa tu correo</h1>
+            <p class="bajada">Si el correo corresponde a una cuenta registrada, recibirás un enlace para restablecer tu contraseña. Revisa también la carpeta de spam.</p>
+            <a href="{% url 'login' %}" class="btn btn-outline-light w-100">Volver a iniciar sesión</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'plataforma/solicitudes/formulario_base.html' %}
+{% block title %}Soporte técnico · AXZTRA{% endblock %}
+{% block miga %}Soporte técnico{% endblock %}
+{% block encabezado %}Solicitud de soporte técnico{% endblock %}
+{% block bajada %}Describe el problema con el mayor detalle posible para diagnosticarlo más rápido.{% endblock %}
+{% block tiempo_respuesta %}Respondemos dentro del siguiente día hábil. Las solicitudes urgentes se atienden primero.{% endblock %}
+{% block campos %}
+    {% include "plataforma/includes/campo.html" with campo=form.titulo %}
+    {% include "plataforma/includes/campo.html" with campo=form.url_sitio %}
+    <div class="row">
+        <div class="col-md-7">{% include "plataforma/includes/campo.html" with campo=form.tipo_problema %}</div>
+        <div class="col-md-5">{% include "plataforma/includes/campo.html" with campo=form.prioridad %}</div>
+    </div>
+    {% include "plataforma/includes/campo.html" with campo=form.desde_cuando %}
+    {% include "plataforma/includes/campo.html" with campo=form.descripcion %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{% block title %}{{ titulo }} · Panel AXZTRA{% endblock %}
+{% block panel %}
+<div class="migas"><a href="{% url volver %}">Servicios y categorías</a> / {{ titulo }}</div>
+<div class="panel-cabecera"><div><h1>{{ titulo }}</h1></div></div>
+<div class="row">
+    <div class="col-xl-8">
+        <div class="tarjeta p-4 p-md-5">
+            {% if form.errors %}<div class="alerta-form">Revisa los campos marcados.{% for e in form.non_field_errors %} {{ e }}{% endfor %}</div>{% endif %}
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {% for campo in form %}
+                    {% include "plataforma/includes/campo.html" with campo=campo %}
+                {% endfor %}
+                <div class="acciones-form">
+                    <a href="{% url volver %}" class="btn btn-fantasma">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

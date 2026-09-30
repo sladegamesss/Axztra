@@ -1,0 +1,42 @@
+{% extends 'plataforma/base.html' %}
+{% block title %}Nueva solicitud · AXZTRA{% endblock %}
+{% block content %}
+<div class="container pb-5 mb-4">
+    <div class="pagina-titulo">
+        <div class="migas"><a href="{% url 'mis_solicitudes' %}">Mis solicitudes</a> / Nueva solicitud</div>
+        <h1>¿Qué tipo de servicio necesitas?</h1>
+        <p>Selecciona una opción para continuar. Cada formulario está adaptado al tipo de servicio.</p>
+    </div>
+    <div class="row g-3">
+        <div class="col-md-6">
+            <a class="selector-servicio" href="{% url 'crear_web' %}">
+                <span class="servicio-icono mb-0"><i class="fa-solid fa-laptop-code"></i></span>
+                <div><h3>Creación de página web</h3><p>Un sitio nuevo desde cero. Incluye estimación referencial inmediata de precio y plazo.</p></div>
+                <i class="fa-solid fa-arrow-right ir"></i>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a class="selector-servicio" href="{% url 'solicitar_mejora' %}">
+                <span class="servicio-icono mb-0"><i class="fa-solid fa-arrow-trend-up"></i></span>
+                <div><h3>Mejora de página existente</h3><p>Rediseño, velocidad, posicionamiento o nuevas funciones para un sitio que ya tienes.</p></div>
+                <i class="fa-solid fa-arrow-right ir"></i>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a class="selector-servicio" href="{% url 'solicitar_soporte' %}">
+                <span class="servicio-icono mb-0"><i class="fa-solid fa-headset"></i></span>
+                <div><h3>Soporte técnico</h3><p>Errores, caídas, problemas de seguridad o funciones que dejaron de responder.</p></div>
+                <i class="fa-solid fa-arrow-right ir"></i>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a class="selector-servicio" href="{% url 'solicitar_mantenimiento' %}">
+                <span class="servicio-icono mb-0"><i class="fa-solid fa-gear"></i></span>
+                <div><h3>Mantenimiento</h3><p>Respaldos, actualizaciones y monitoreo periódico de tu sitio.</p></div>
+                <i class="fa-solid fa-arrow-right ir"></i>
+            </a>
+        </div>
+    </div>
+    <div class="aviso mt-4"><i class="fa-regular fa-comment-dots"></i><span>¿No estás seguro de cuál elegir? <a href="#" data-abrir-asistente>Consulta al asistente</a> y te recomienda el servicio adecuado.</span></div>
+</div>
+{% endblock %}
