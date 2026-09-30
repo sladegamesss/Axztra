@@ -1,0 +1,12 @@
+﻿python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py datos_demo
+python manage.py runserver
+
+Administrador: admin@axztra.cl / AxztraAdmin2026
+Equipo: soporte@axztra.cl / Equipo2026
+Cliente: cliente@axztra.cl / Cliente2026
+
+
