@@ -1,0 +1,16 @@
+{% load axztra %}{% autoescape off %}Hola {{ solicitud.cliente.first_name|default:solicitud.cliente.email }}:
+
+Ya está disponible la cotización formal de tu solicitud {{ solicitud.numero }}{% if cotizacion.version > 1 %} (versión {{ cotizacion.version }}){% endif %}.
+
+Neto: {{ cotizacion.monto|clp }}
+IVA ({{ empresa.IVA }}%): {{ cotizacion.monto_iva|clp }}
+Total: {{ cotizacion.total|clp }}
+Plazo de entrega: {{ cotizacion.plazo_dias }} días hábiles
+Vigencia: hasta el {{ cotizacion.fecha_vencimiento|date:"d-m-Y" }}
+
+Alcance:
+{{ cotizacion.detalle }}
+
+Puedes revisarla, descargarla y aceptarla o rechazarla desde tu cuenta:
+{{ url }}
+{% include "plataforma/correos/base_firma.txt" %}{% endautoescape %}

@@ -1,0 +1,59 @@
+{% extends 'plataforma/base.html' %}
+{# CU01 Consultar catálogo de servicios: búsqueda y filtros por tipo y categoría. #}
+{% load axztra %}
+{% block title %}Servicios - AXZTRA{% endblock %}
+{% block descripcion %}Catálogo de servicios web de AXZTRA: creación de sitios, mejoras, soporte técnico y mantenimiento, con precios referenciales.{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Servicios</h1>
+        <p>Todo lo que necesitas para tener un sitio web que funcione y se mantenga al día. Los precios son referenciales, en pesos chilenos y sin IVA.</p>
+    </header>
+
+    <form method="get" class="filtros" role="search" aria-label="Filtrar servicios">
+        <label class="visualmente-oculto" for="filtro-q">Buscar</label>
+        <input class="control busqueda" type="search" id="filtro-q" name="q" value="{{ busqueda }}" placeholder="Buscar por nombre o descripción" maxlength="80">
+        <label class="visualmente-oculto" for="filtro-categoria">Categoría</label>
+        <select class="control" id="filtro-categoria" name="categoria">
+            <option value="">Todas las categorías</option>
+            {% for categoria in categorias %}
+            <option value="{{ categoria.pk }}"{% if categoria_activa == categoria.pk|stringformat:'s' %} selected{% endif %}>{{ categoria.nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="boton boton-secundario">Buscar</button>
+        {% if hay_filtros %}<a class="boton boton-fantasma" href="{% url 'catalogo' %}">Quitar filtros</a>{% endif %}
+    </form>
+
+    <div class="pestanas" aria-label="Tipo de servicio">
+        <a href="{% url_con_parametros tipo='' %}"{% if not tipo_activo %} aria-current="true"{% endif %}>Todos</a>
+        {% for clave, nombre in tipos %}
+        <a href="{% url_con_parametros tipo=clave %}"{% if tipo_activo == clave %} aria-current="true"{% endif %}><i class="{{ iconos_tipo|obtener:clave }}" aria-hidden="true"></i> {{ nombre }}</a>
+        {% endfor %}
+    </div>
+
+    <p class="pequeno texto-3 mb-m">{{ servicios|length }} servicio{{ servicios|length|pluralize }}</p>
+
+    {% if servicios %}
+    <div class="grilla grilla-3 mb-l">
+        {% for servicio in servicios %}
+        {% include "plataforma/includes/ficha_servicio.html" with mostrar_tipo=True %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="tarjeta vacio mb-l">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <h3>No encontramos servicios con esos filtros</h3>
+        <p>Prueba con otra búsqueda o revisa el catálogo completo.</p>
+        <a class="boton boton-secundario" href="{% url 'catalogo' %}">Ver todos los servicios</a>
+    </div>
+    {% endif %}
+
+    <div class="llamado mb-l">
+        <div>
+            <h2>¿No sabes qué servicio elegir?</h2>
+            <p>Comienza tu solicitud y el asistente te ayudará a definir lo que necesitas.</p>
+        </div>
+        <a class="boton boton-oscuro boton-grande" href="{% url 'nueva_solicitud' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Comenzar mi solicitud</a>
+    </div>
+</div>
+{% endblock %}

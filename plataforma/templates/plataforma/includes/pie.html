@@ -1,0 +1,48 @@
+{# Pie de página con enlaces y datos de contacto. #}
+<footer class="pie">
+    <div class="contenedor">
+        <div class="pie-grilla">
+            <div>
+                {% include "plataforma/includes/marca.html" %}
+                <p class="mt-m">Creamos, mejoramos y mantenemos sitios web para emprendedores y pymes, con un proceso claro de principio a fin.</p>
+            </div>
+            <div>
+                <h2>Servicios</h2>
+                <ul>
+                    <li><a href="{% url 'catalogo' %}?tipo=Creacion">Creación de sitios</a></li>
+                    <li><a href="{% url 'catalogo' %}?tipo=Mejora">Mejoras</a></li>
+                    <li><a href="{% url 'catalogo' %}?tipo=Soporte">Soporte técnico</a></li>
+                    <li><a href="{% url 'catalogo' %}?tipo=Mantenimiento">Mantenimiento</a></li>
+                </ul>
+            </div>
+            <div>
+                <h2>Plataforma</h2>
+                <ul>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'nueva_solicitud' %}">Nueva solicitud</a></li>
+                    <li><a href="{% url 'mis_solicitudes' %}">Mis solicitudes</a></li>
+                    {% else %}
+                    <li><a href="{% url 'registro' %}">Crear cuenta</a></li>
+                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                    {% endif %}
+                    <li><a href="{% url 'nosotros' %}">Nosotros</a></li>
+                </ul>
+            </div>
+            <div>
+                <h2>Contacto</h2>
+                <ul>
+                    <li><a href="mailto:{{ sitio.correo_contacto }}">{{ sitio.correo_contacto }}</a></li>
+                    <li><a href="https://wa.me/{{ sitio.whatsapp }}" target="_blank" rel="noopener">WhatsApp {{ sitio.whatsapp_visible }}</a></li>
+                    <li>{{ sitio.ubicacion }}</li>
+                    <li>{{ sitio.horario }}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="pie-legal">
+            <span>&copy; {% now "Y" %} AXZTRA. Todos los derechos reservados.</span>
+            <span><a href="{% url 'terminos' %}">Términos de uso</a> &nbsp; <a href="{% url 'privacidad' %}">Política de privacidad</a></span>
+            <a class="volver-arriba" href="#contenido"><i class="fa-solid fa-arrow-up" aria-hidden="true"></i>Volver arriba</a>
+        </div>
+    </div>
+</footer>

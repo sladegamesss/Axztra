@@ -1,0 +1,72 @@
+{% extends 'plataforma/base.html' %}
+{# Ficha de un servicio (CU01). El botón principal lleva al formulario que corresponde a su tipo. #}
+{% load axztra %}
+{% block title %}{{ servicio.nombre }} - AXZTRA{% endblock %}
+{% block descripcion %}{{ servicio.resumen }}{% endblock %}
+{% block og_titulo %}{{ servicio.nombre }} - AXZTRA{% endblock %}
+{% block og_descripcion %}{{ servicio.resumen }}{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <ol class="migas">
+            <li><a href="{% url 'inicio' %}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="{% url 'catalogo' %}">Servicios</a></li>
+            <li aria-current="page">{{ servicio.nombre }}</li>
+        </ol>
+        <div class="fila mb-s">
+            <span class="icono-caja"><i class="{{ servicio.icono }}" aria-hidden="true"></i></span>
+            <span class="insignia">{{ servicio.get_tipo_display }}</span>
+            {% if servicio.categoria %}<span class="insignia">{{ servicio.categoria.nombre }}</span>{% endif %}
+        </div>
+        <h1>{{ servicio.nombre }}</h1>
+        <p>{{ servicio.resumen }}</p>
+    </header>
+
+    <div class="grilla grilla-lateral mb-l">
+        <div>
+            <section class="tarjeta">
+                <h2>Descripción</h2>
+                <p class="texto-2 texto-largo sin-margen">{{ servicio.descripcion }}</p>
+            </section>
+            {% if servicio.lista_incluye %}
+            <section class="tarjeta">
+                <h2>Qué incluye</h2>
+                <ul class="lista-simple">
+                    {% for item in servicio.lista_incluye %}
+                    <li><i class="fa-solid fa-check texto-3" aria-hidden="true"></i> {{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </section>
+            {% endif %}
+        </div>
+        <aside class="tarjeta tarjeta-resaltada">
+            <div class="mb-m">
+                <span class="pequeno texto-2">{% if servicio.precio_base %}Desde{% else %}Valor{% endif %}</span>
+                <span class="monto-estimado">{% if servicio.precio_base %}{{ servicio.precio_base|clp }}{% else %}A cotizar{% endif %}</span>
+                <span class="pequeno texto-3">{% if servicio.precio_base %}Valor referencial sin IVA{% else %}Según diagnóstico{% endif %}</span>
+            </div>
+            {% if servicio.plazo_referencial %}
+            <p class="texto-2"><i class="fa-regular fa-clock" aria-hidden="true"></i> Plazo referencial: {{ servicio.plazo_referencial }}</p>
+            {% endif %}
+            {% if user.is_authenticated %}
+            <a class="boton boton-primario ancho-completo" href="{{ servicio.url_solicitud }}">Solicitar este servicio</a>
+            {% else %}
+            <a class="boton boton-primario ancho-completo" href="{% url 'registro' %}?next={{ servicio.url_solicitud|urlencode }}">Crear cuenta y solicitar</a>
+            <p class="pequeno texto-3 centrado mt-s sin-margen">¿Ya tienes cuenta? <a href="{% url 'login' %}?next={{ servicio.url_solicitud|urlencode }}">Inicia sesión</a></p>
+            {% endif %}
+            <p class="pequeno texto-3 mt-m sin-margen">La cotización formal la emite el equipo después de revisar tu caso, normalmente en 1 a 2 días hábiles.</p>
+        </aside>
+    </div>
+
+    {% if relacionados %}
+    <section class="mb-l">
+        <h2>Servicios relacionados</h2>
+        <div class="grilla grilla-3">
+            {% for servicio in relacionados %}
+            {% include "plataforma/includes/ficha_servicio.html" %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

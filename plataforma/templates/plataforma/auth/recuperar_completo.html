@@ -1,0 +1,14 @@
+{% extends 'plataforma/base.html' %}
+{# CU06 Recuperar contraseña: confirmación final. #}
+{% block title %}Contraseña actualizada - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja centrado">
+        <span class="icono-caja verde mb-m"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+        <h1>Contraseña actualizada</h1>
+        <p class="bajada">Ya puedes ingresar con tu nueva contraseña.</p>
+        <a class="boton boton-primario" href="{% url 'login' %}">Iniciar sesión</a>
+    </div>
+</div>
+{% endblock %}

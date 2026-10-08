@@ -1,0 +1,43 @@
+{% extends 'plataforma/base.html' %}
+{# CU04 Registrarse. #}
+{% block title %}Crear cuenta - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja ancha">
+        <h1>Crear cuenta</h1>
+        <p class="bajada">Con tu cuenta puedes enviar solicitudes, recibir cotizaciones y seguir el avance de tus proyectos.</p>
+        <div class="tarjeta tarjeta-grande">
+            {% for error in form.non_field_errors %}
+            <div class="alerta alerta-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><p>{{ error }}</p></div>
+            {% endfor %}
+            <form method="post" novalidate data-validar>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.first_name %}
+                    {% include "plataforma/includes/campo.html" with campo=form.last_name %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.email %}
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.empresa %}
+                    {% include "plataforma/includes/campo.html" with campo=form.telefono %}
+                </div>
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.password1 %}
+                    {% include "plataforma/includes/campo.html" with campo=form.password2 %}
+                </div>
+                <div class="campo{% if form.acepta_terminos.errors %} con-error{% endif %}">
+                    <div class="campo-casilla">
+                        {{ form.acepta_terminos }}
+                        <label for="{{ form.acepta_terminos.id_for_label }}">Acepto los <a href="{% url 'terminos' %}" target="_blank" rel="noopener">términos de uso</a> y la <a href="{% url 'privacidad' %}" target="_blank" rel="noopener">política de privacidad</a></label>
+                    </div>
+                    {% for error in form.acepta_terminos.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                </div>
+                <button type="submit" class="boton boton-primario ancho-completo boton-grande">Crear mi cuenta</button>
+            </form>
+        </div>
+        <p class="acceso-pie">¿Ya tienes cuenta? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Inicia sesión</a></p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'plataforma/base.html' %}
+{# CU11 Detalle de una solicitud para el cliente. #}
+{% load axztra %}
+{% block title %}{{ solicitud.numero }} - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <ol class="migas">
+            <li><a href="{% url 'inicio' %}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="{% url 'mis_solicitudes' %}">Mis solicitudes</a></li>
+            <li aria-current="page">{{ solicitud.numero }}</li>
+        </ol>
+        <div class="fila mb-s">
+            {% include "plataforma/includes/estado.html" with estado=solicitud.estado %}
+            <span class="insignia">{{ solicitud.get_tipo_display }}</span>
+            <span class="prioridad prioridad-{{ solicitud.prioridad }}">Prioridad {{ solicitud.get_prioridad_display|lower }}</span>
+        </div>
+        <h1>{{ solicitud.titulo }}</h1>
+        <p>Solicitud {{ solicitud.numero }}, ingresada el {{ solicitud.fecha_solicitud|date:"d-m-Y" }} a las {{ solicitud.fecha_solicitud|date:"H:i" }}.</p>
+    </header>
+
+    {% if solicitud.cotizacion_pendiente and es_duenio %}
+    {# Cotización por responder (CU12). Solo aparece si hay una vigente. #}
+    <section class="tarjeta tarjeta-resaltada tarjeta-grande mb-m" aria-labelledby="titulo-cotizacion">
+        <div class="fila-entre">
+            <div>
+                <h2 id="titulo-cotizacion" class="sin-margen">Tu cotización está lista</h2>
+                <p class="texto-2 sin-margen">Versión {{ cotizacion.version }}, válida hasta el {{ cotizacion.fecha_vencimiento|date:"d-m-Y" }}. Plazo de entrega: {{ cotizacion.plazo_dias }} días hábiles.</p>
+            </div>
+            <div class="derecha">
+                <span class="pequeno texto-2">Total con IVA</span>
+                <span class="monto-estimado">{{ cotizacion.total|clp }}</span>
+            </div>
+        </div>
+        {% if cotizacion.vigente %}
+        <form method="post" action="{% url 'responder_cotizacion' solicitud.pk %}" class="mt-m" data-validar novalidate>
+            {% csrf_token %}
+            <div class="campo">
+                <label class="etiqueta" for="comentario-respuesta">Comentario para el equipo (opcional)</label>
+                <textarea class="control" id="comentario-respuesta" name="comentario" rows="2" maxlength="1000" placeholder="Por ejemplo, la fecha en que te gustaría comenzar"></textarea>
+            </div>
+            <div class="fila">
+                <button type="submit" name="respuesta" value="aceptada" class="boton boton-exito"><i class="fa-solid fa-check" aria-hidden="true"></i>Aceptar cotización</button>
+                <button type="submit" name="respuesta" value="rechazada" class="boton boton-peligro" data-confirmar="¿Confirmas que quieres rechazar esta cotización?">Rechazar</button>
+                <a class="boton boton-secundario" href="{% url 'cotizacion_documento' solicitud.pk %}" target="_blank" rel="noopener"><i class="fa-regular fa-file-lines" aria-hidden="true"></i>Ver documento</a>
+            </div>
+        </form>
+        {% else %}
+        <div class="alerta alerta-ambar mt-m sin-margen"><i class="fa-solid fa-clock" aria-hidden="true"></i><p>La cotización venció. Escríbenos en los mensajes de esta solicitud y emitiremos una actualizada.</p></div>
+        {% endif %}
+    </section>
+    {% endif %}
+
+    {# Barra de avance con las etapas de la solicitud. #}
+    <section class="tarjeta mb-m" aria-label="Avance de la solicitud">
+        {% if solicitud.estado.codigo == 'rechazada' or solicitud.estado.codigo == 'cancelada' %}
+        <div class="alerta sin-margen"><i class="fa-solid fa-circle-info" aria-hidden="true"></i><p>{{ solicitud.estado.descripcion }} Si necesitas retomarla, crea una nueva solicitud o escríbenos por WhatsApp.</p></div>
+        {% else %}
+        <ol class="avance">
+            {% for paso in solicitud.pasos_seguimiento %}
+            <li class="{{ paso.situacion }}"><span class="punto">{% if paso.situacion == 'hecho' %}<i class="fa-solid fa-check" aria-hidden="true"></i>{% endif %}</span>{{ paso.nombre }}</li>
+            {% endfor %}
+        </ol>
+        <p class="pequeno texto-2 centrado mt-s sin-margen">{{ solicitud.estado.descripcion }}</p>
+        {% endif %}
+    </section>
+
+    <div class="grilla grilla-lateral mb-l">
+        <div>
+            <section class="tarjeta">
+                <h2>Detalle de la solicitud</h2>
+                {% if solicitud.requerimiento %}
+                {% with r=solicitud.requerimiento %}
+                {% include "plataforma/includes/requerimiento_web.html" %}
+                {% endwith %}
+                {% else %}
+                <dl class="datos">
+                    {% if solicitud.url_sitio %}<dt>Sitio</dt><dd><a href="{{ solicitud.url_sitio }}" target="_blank" rel="noopener nofollow">{{ solicitud.url_sitio }}</a></dd>{% endif %}
+                    {% for clave, valor in solicitud.detalles.items %}
+                    <dt>{{ clave }}</dt><dd>{% if valor|es_lista %}{{ valor|join:", " }}{% else %}{{ valor }}{% endif %}</dd>
+                    {% endfor %}
+                    {% if solicitud.fecha_deseada %}<dt>Fecha deseada</dt><dd>{{ solicitud.fecha_deseada|date:"d-m-Y" }}</dd>{% endif %}
+                </dl>
+                {% if solicitud.descripcion != 'Sin información adicional.' %}
+                <h3 class="mt-m">Descripción</h3>
+                <p class="texto-2 texto-largo sin-margen">{{ solicitud.descripcion }}</p>
+                {% endif %}
+                {% endif %}
+            </section>
+
+            {# Conversación con el equipo (CU13). #}
+            <section class="tarjeta" id="mensajes">
+                <div class="tarjeta-titulo"><h2>Mensajes</h2><span class="pequeno texto-3">{{ mensajes_solicitud|length }}</span></div>
+                {% if mensajes_solicitud %}
+                <div class="conversacion">
+                    {% for m in mensajes_solicitud %}
+                    <div class="mensaje{% if not m.es_equipo %} mensaje-propio{% endif %}">
+                        <div class="mensaje-cuerpo">{{ m.texto }}</div>
+                        <div class="mensaje-meta">{% if not m.es_equipo %}Tú{% elif m.autor.first_name %}{{ m.autor.first_name }}, equipo AXZTRA{% else %}Equipo AXZTRA{% endif %}, {{ m.fecha|date:"d-m-Y H:i" }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="texto-2">¿Tienes dudas o información adicional? Escríbele al equipo y te responderemos en esta misma solicitud.</p>
+                {% endif %}
+                {% if puede_escribir %}
+                <form method="post" action="{% url 'enviar_mensaje' solicitud.pk %}" data-validar novalidate>
+                    {% csrf_token %}
+                    {% include "plataforma/includes/campo.html" with campo=form_mensaje.texto %}
+                    <button type="submit" class="boton boton-primario"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i>Enviar mensaje</button>
+                </form>
+                {% endif %}
+            </section>
+
+            {# Archivos de la solicitud (CU10). #}
+            <section class="tarjeta" id="archivos">
+                <div class="tarjeta-titulo"><h2>Archivos</h2><span class="pequeno texto-3">{{ adjuntos|length }}</span></div>
+                {% if adjuntos %}
+                <ul class="archivos">
+                    {% for a in adjuntos %}
+                    <li>
+                        <i class="{{ a.icono }}" aria-hidden="true"></i>
+                        <div>
+                            <a href="{% url 'descargar_adjunto' a.pk %}">{{ a.nombre_original }}</a>
+                            <div class="detalle">{{ a.tamano|peso_archivo }}, {% if a.es_equipo %}subido por el equipo{% else %}subido por ti{% endif %} el {{ a.fecha|date:"d-m-Y" }}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="texto-2">Adjunta logos, imágenes de referencia, textos o capturas de pantalla para tu proyecto.</p>
+                {% endif %}
+                {% if puede_escribir %}
+                <form method="post" action="{% url 'subir_adjunto' solicitud.pk %}" enctype="multipart/form-data" data-validar novalidate>
+                    {% csrf_token %}
+                    {% include "plataforma/includes/campo.html" with campo=form_adjunto.archivo %}
+                    <button type="submit" class="boton boton-secundario"><i class="fa-solid fa-paperclip" aria-hidden="true"></i>Adjuntar archivo</button>
+                </form>
+                {% endif %}
+            </section>
+
+            <section class="tarjeta">
+                <h2>Historial</h2>
+                <ol class="linea-tiempo">
+                    {% for h in historial %}
+                    <li>
+                        <div class="fecha">{{ h.fecha|date:"d-m-Y H:i" }}</div>
+                        <div class="titulo">{{ h.estado_nuevo.nombre }}</div>
+                        {% if h.comentario %}<div class="comentario">{{ h.comentario }}</div>{% endif %}
+                    </li>
+                    {% endfor %}
+                </ol>
+            </section>
+        </div>
+
+        {# Columna lateral: estimación, responsable, historial y cancelar. #}
+        <aside>
+            <section class="tarjeta">
+                <h2>Resumen</h2>
+                <ul class="lista-simple">
+                    <li><span>Número</span>{{ solicitud.numero }}</li>
+                    <li><span>Responsable</span>{% if solicitud.responsable %}{{ solicitud.responsable.get_full_name|default:solicitud.responsable.email }}{% else %}Por asignar{% endif %}</li>
+                    {% if solicitud.servicio %}<li><span>Servicio</span><a href="{{ solicitud.servicio.get_absolute_url }}">{{ solicitud.servicio.nombre }}</a></li>{% endif %}
+                    {% if solicitud.relacionada %}<li><span>Relacionada con</span><a href="{{ solicitud.relacionada.get_absolute_url }}">{{ solicitud.relacionada.numero }}</a></li>{% endif %}
+                    {% for d in derivadas %}<li><span>Solicitud derivada</span><a href="{{ d.get_absolute_url }}">{{ d.numero }}</a> {% include "plataforma/includes/estado.html" with estado=d.estado %}</li>{% endfor %}
+                    <li><span>Última actualización</span>{{ solicitud.fecha_actualizacion|date:"d-m-Y H:i" }}</li>
+                </ul>
+            </section>
+
+            {% if estimacion %}
+            <section class="tarjeta">
+                <h2>Estimación referencial</h2>
+                <span class="monto-estimado">{{ estimacion.monto_minimo|clp }} a {{ estimacion.monto_maximo|clp }}</span>
+                <p class="pequeno texto-2 sin-margen">Plazo estimado de {{ estimacion.semanas_minimas }} a {{ estimacion.semanas_maximas }} semanas, sin IVA.</p>
+            </section>
+            {% endif %}
+
+            {% if cotizacion and not solicitud.cotizacion_pendiente %}
+            <section class="tarjeta">
+                <h2>Cotización</h2>
+                <div class="totales">
+                    <div><span>Neto</span><strong>{{ cotizacion.monto|clp }}</strong></div>
+                    <div><span>IVA</span><strong>{{ cotizacion.monto_iva|clp }}</strong></div>
+                    <div class="total"><span>Total</span><strong>{{ cotizacion.total|clp }}</strong></div>
+                </div>
+                {% if cotizacion.respuesta_cliente %}<p class="pequeno texto-2 mt-s">{{ cotizacion.get_respuesta_cliente_display }} el {{ cotizacion.fecha_respuesta|date:"d-m-Y" }}.</p>{% endif %}
+                <a class="boton boton-secundario ancho-completo mt-s" href="{% url 'cotizacion_documento' solicitud.pk %}" target="_blank" rel="noopener"><i class="fa-regular fa-file-lines" aria-hidden="true"></i>Ver documento</a>
+            </section>
+            {% endif %}
+
+            {% if es_duenio and solicitud.cancelable %}
+            <section class="tarjeta">
+                <h2>¿Ya no la necesitas?</h2>
+                <p class="pequeno texto-2">Puedes cancelar la solicitud mientras no tenga una cotización emitida.</p>
+                <form method="post" action="{% url 'cancelar_solicitud' solicitud.pk %}" data-confirmar="¿Seguro que quieres cancelar esta solicitud? Esta acción no se puede deshacer.">
+                    {% csrf_token %}
+                    <button type="submit" class="boton boton-peligro ancho-completo">Cancelar solicitud</button>
+                </form>
+            </section>
+            {% endif %}
+        </aside>
+    </div>
+</div>
+{% endblock %}

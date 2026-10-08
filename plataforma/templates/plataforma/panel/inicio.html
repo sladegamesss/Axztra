@@ -1,0 +1,149 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# CU20 Consultar indicadores: resumen del panel con métricas y gráficos. #}
+{% load axztra %}
+{% block title %}Resumen - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Hola, {{ user.first_name|default:"equipo" }}</h1>
+        <p>Resumen de la operación al {% now "d-m-Y H:i" %}.</p>
+    </div>
+    <div class="fila">
+        <a class="boton boton-secundario" href="{% url 'panel_tablero' %}"><i class="fa-solid fa-table-columns" aria-hidden="true"></i>Tablero</a>
+        <a class="boton boton-primario" href="{% url 'panel_solicitudes' %}?estado=recibida"><i class="fa-solid fa-inbox" aria-hidden="true"></i>Por atender ({{ resumen.por_atender }})</a>
+    </div>
+</header>
+
+<div class="metricas">
+    <a class="metrica" href="{% url 'panel_solicitudes' %}?estado=abiertas">
+        <span class="rotulo"><i class="fa-solid fa-folder-open" aria-hidden="true"></i>Solicitudes abiertas</span>
+        <div class="valor" data-contar="{{ resumen.abiertas }}">{{ resumen.abiertas }}</div>
+        <span class="detalle">{{ resumen.nuevas_mes }} nuevas este mes</span>
+    </a>
+    <a class="metrica{% if total_atrasadas %} alerta-metrica{% endif %}" href="{% url 'panel_solicitudes' %}?atrasadas=1">
+        <span class="rotulo"><i class="fa-regular fa-clock" aria-hidden="true"></i>Fuera de plazo de respuesta</span>
+        <div class="valor" data-contar="{{ total_atrasadas }}">{{ total_atrasadas }}</div>
+        <span class="detalle">{% if respuesta_media_horas is not None %}Primera respuesta media: {{ respuesta_media_horas }} h{% else %}Sin datos de respuesta en 30 días{% endif %}</span>
+    </a>
+    <div class="metrica">
+        <span class="rotulo"><i class="fa-solid fa-sack-dollar" aria-hidden="true"></i>Ingresos por cotizaciones aceptadas</span>
+        <div class="valor" data-contar="{{ monto_aceptado }}" data-formato="clp">{{ monto_aceptado|clp }}</div>
+        <span class="detalle">{% if tasa_aceptacion is not None %}Tasa de aceptación: {{ tasa_aceptacion }}%{% else %}Aún sin respuestas de clientes{% endif %}</span>
+    </div>
+    <a class="metrica" href="{% url 'panel_clientes' %}">
+        <span class="rotulo"><i class="fa-solid fa-users" aria-hidden="true"></i>Clientes activos</span>
+        <div class="valor" data-contar="{{ clientes }}">{{ clientes }}</div>
+        <span class="detalle">{{ clientes_mes }} registrados este mes</span>
+    </a>
+</div>
+
+<div class="grilla grilla-2 mb-m">
+    <section class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Solicitudes por mes</h2><span class="pequeno texto-3">Últimos 6 meses</span></div>
+        <div class="grafico-meses" role="img" aria-label="Cantidad de solicitudes por mes">
+            {% for mes in meses %}
+            <div class="columna">
+                <span class="valor">{{ mes.cantidad }}</span>
+                <div class="barra" style="height: {{ mes.alto }}%"></div>
+                <span class="mes">{{ mes.etiqueta }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    <section class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Por estado</h2><a class="pequeno" href="{% url 'panel_tablero' %}">Ver tablero</a></div>
+        <ul class="barras">
+            {% for estado in por_estado %}
+            <li>
+                <span>{{ estado.nombre }}</span>
+                <span class="pista"><span class="relleno {{ estado.color }}" style="width: {% widthratio estado.cantidad max_estado 100 %}%"></span></span>
+                <span class="cantidad">{{ estado.cantidad }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+
+<div class="grilla grilla-2 mb-m">
+    <section class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Requieren atención</h2><a class="pequeno" href="{% url 'panel_solicitudes' %}?atrasadas=1">Ver todas</a></div>
+        {% if atrasadas %}
+        <ul class="lista-simple">
+            {% for s in atrasadas %}
+            <li>
+                <a class="principal" href="{% url 'panel_solicitud' s.pk %}">{{ s.numero }}: {{ s.titulo }}</a>
+                <span>{{ s.cliente.get_full_name|default:s.cliente.email }}, <span class="atrasada">vencida {{ s.vence_respuesta|hace }}</span>{% if not s.responsable %}, sin responsable{% endif %}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="texto-2 sin-margen"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Todas las solicitudes nuevas están dentro del plazo de primera respuesta.</p>
+        {% endif %}
+        <div class="fila mt-m">
+            <a class="chip" href="{% url 'panel_solicitudes' %}?responsable=mias&amp;estado=abiertas">Asignadas a mí: {{ resumen.mias }}</a>
+            <a class="chip" href="{% url 'panel_solicitudes' %}?responsable=sin&amp;estado=abiertas">Sin responsable: {{ resumen.sin_asignar }}</a>
+        </div>
+    </section>
+    <section class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Mensajes sin leer</h2></div>
+        {% if mensajes_pendientes %}
+        <ul class="lista-simple">
+            {% for s in mensajes_pendientes %}
+            <li>
+                <a class="principal" href="{% url 'panel_solicitud' s.pk %}#mensajes">{{ s.numero }}: {{ s.titulo }}</a>
+                <span>{{ s.no_leidos }} mensaje{{ s.no_leidos|pluralize }} de {{ s.cliente.get_full_name|default:s.cliente.email }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="texto-2 sin-margen">No hay mensajes de clientes pendientes de lectura.</p>
+        {% endif %}
+    </section>
+</div>
+
+<div class="grilla grilla-2 mb-m">
+    <section class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Por tipo de servicio</h2></div>
+        <ul class="barras">
+            {% for tipo in por_tipo %}
+            <li>
+                <span>{{ tipo.nombre }}</span>
+                <span class="pista"><span class="relleno" style="width: {% widthratio tipo.cantidad max_tipo 100 %}%"></span></span>
+                <span class="cantidad">{{ tipo.cantidad }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </section>
+    <section class="tarjeta">
+        <div class="tarjeta-titulo"><h2>Indicadores</h2></div>
+        <ul class="lista-simple">
+            <li><span>Monto en estimaciones de solicitudes abiertas</span>{{ monto_en_estimacion|clp }}</li>
+            <li><span>Consultas al asistente en los últimos 30 días</span>{{ consultas }}</li>
+            <li><span>Total histórico de solicitudes</span>{{ resumen.total }}</li>
+        </ul>
+    </section>
+</div>
+
+<section>
+    <div class="tarjeta-titulo"><h2>Últimas solicitudes</h2><a class="pequeno" href="{% url 'panel_solicitudes' %}">Ver todas</a></div>
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead><tr><th>Número</th><th>Solicitud</th><th>Cliente</th><th>Responsable</th><th>Estado</th><th>Ingreso</th></tr></thead>
+            <tbody>
+                {% for s in recientes %}
+                <tr>
+                    <td class="numero"><a href="{% url 'panel_solicitud' s.pk %}">{{ s.numero }}</a></td>
+                    <td><a class="principal" href="{% url 'panel_solicitud' s.pk %}">{{ s.titulo|truncatechars:48 }}</a></td>
+                    <td>{{ s.cliente.get_full_name|default:s.cliente.email }}</td>
+                    <td>{% if s.responsable %}{{ s.responsable.first_name|default:s.responsable.email }}{% else %}<span class="texto-3">Sin asignar</span>{% endif %}</td>
+                    <td>{% include "plataforma/includes/estado.html" with estado=s.estado %}</td>
+                    <td class="nowrap">{{ s.fecha_solicitud|hace }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="centrado">Aún no hay solicitudes.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

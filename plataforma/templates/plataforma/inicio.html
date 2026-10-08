@@ -1,0 +1,314 @@
+{% extends 'plataforma/base.html' %}
+{# Portada del sitio (vista publico.inicio). #}
+{% load static axztra %}
+{% block title %}AXZTRA - Creación, mejora y soporte de páginas web{% endblock %}
+{% block content %}
+{# Portada con el estimador referencial (CU02). La lógica está en static/js/estimador.js. #}
+<section class="portada">
+    <div class="aurora" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="contenedor portada-grilla">
+        <div class="portada-texto">
+            <h1 data-palabras>Tu sitio web con un <span class="resaltado">precio claro</span> desde el primer minuto</h1>
+            <p class="bajada">Elige el tipo de sitio y las funciones que necesitas, mira una estimación referencial al instante y sigue tu proyecto en línea hasta la entrega. Creación, mejoras, soporte y mantenimiento en un solo lugar.</p>
+            <div class="fila">
+                {% if user.is_authenticated %}
+                <a class="boton boton-primario boton-grande" href="{% url 'nueva_solicitud' %}">Comenzar mi solicitud</a>
+                {% else %}
+                <a class="boton boton-primario boton-grande" href="{% url 'registro' %}?next={% url 'nueva_solicitud' %}">Comenzar mi solicitud</a>
+                {% endif %}
+                <a class="boton boton-secundario boton-grande" href="{% url 'catalogo' %}">Ver servicios</a>
+            </div>
+            <ul class="portada-datos">
+                <li><i class="fa-solid fa-calculator" aria-hidden="true"></i>Estimación inmediata y sin compromiso</li>
+                <li><i class="fa-regular fa-clock" aria-hidden="true"></i>Cotización formal en 1 a 2 días hábiles</li>
+                <li><i class="fa-solid fa-list-check" aria-hidden="true"></i>Seguimiento del proyecto en tu cuenta</li>
+            </ul>
+        </div>
+
+        <div class="estimador" id="estimador-portada" role="region" aria-labelledby="titulo-estimador">
+            <div class="estimador-titulo">
+                <h2 id="titulo-estimador">Calcula tu estimación</h2>
+                <span>Valores referenciales sin IVA</span>
+            </div>
+            <fieldset>
+                <legend>Tipo de sitio</legend>
+                <div class="segmentado">
+                    {% for clave, nombre in tipos_sitio %}
+                    <label><input type="radio" name="tipo_sitio" value="{{ clave }}"{% if clave == 'corporativo' %} checked{% endif %}><span>{{ nombre }}</span></label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Nivel de diseño</legend>
+                <div class="segmentado">
+                    {% for clave, nombre in complejidades %}
+                    <label><input type="radio" name="complejidad" value="{{ clave }}"{% if clave == 'media' %} checked{% endif %}><span>{{ nombre }}</span></label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend><label for="paginas-portada">Cantidad de páginas</label></legend>
+                <div class="deslizador">
+                    <input type="range" id="paginas-portada" name="num_paginas" min="1" max="30" value="5">
+                    <output for="paginas-portada">5</output>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Funcionalidades</legend>
+                <div class="segmentado">
+                    {% for clave, nombre in funcionalidades_portada %}
+                    <label><input type="checkbox" name="funcionalidades" value="{{ clave }}"{% if clave == 'formulario' %} checked{% endif %}><span>{{ nombre }}</span></label>
+                    {% endfor %}
+                </div>
+            </fieldset>
+            <div class="estimador-resultado" aria-live="polite">
+                <span class="rotulo">Rango referencial</span>
+                <span class="monto-estimado" data-monto>$0</span>
+                <div class="fila-entre">
+                    <span class="pequeno texto-2"><i class="fa-regular fa-calendar" aria-hidden="true"></i> Plazo estimado: <span data-plazo></span></span>
+                    <a class="boton boton-primario" href="{% url 'crear_web' %}" data-continuar data-destino="{% url 'crear_web' %}"{% if not user.is_authenticated %} data-registro="{% url 'registro' %}"{% endif %}>Continuar con esta configuración</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Cinta animada con los tipos de servicio (solo decorativa). #}
+<div class="cinta" aria-hidden="true">
+    <div class="cinta-pista">
+        {% for vuelta in '12' %}
+        <span><i class="fa-regular fa-building"></i>Sitios corporativos</span>
+        <span><i class="fa-solid fa-store"></i>Tiendas online</span>
+        <span><i class="fa-regular fa-calendar-check"></i>Reservas en línea</span>
+        <span><i class="fa-solid fa-bullseye"></i>Landing pages</span>
+        <span><i class="fa-solid fa-wand-magic-sparkles"></i>Rediseños</span>
+        <span><i class="fa-solid fa-gauge-high"></i>Velocidad y SEO</span>
+        <span><i class="fa-solid fa-headset"></i>Soporte técnico</span>
+        <span><i class="fa-solid fa-shield-halved"></i>Mantenimiento y respaldos</span>
+        {% endfor %}
+    </div>
+</div>
+
+{# ¿Qué necesitas hoy?: accesos a los cuatro tipos de solicitud (CU08). #}
+<section class="seccion" id="servicios">
+    <div class="contenedor">
+        <div class="seccion-encabezado">
+            <h2>¿Qué necesitas hoy?</h2>
+            <p>Elige la opción que mejor describe tu caso. Si no estás seguro, el asistente te ayudará a definirlo cuando completes tu solicitud.</p>
+        </div>
+        <div class="grilla grilla-2">
+            <a class="opcion-servicio" href="{% url 'crear_web' %}">
+                <span class="icono-caja"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span>
+                <span><h3>Crear una página web</h3><p>Landing pages, sitios corporativos, reservas y tiendas online desde cero.</p></span>
+                <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+            </a>
+            <a class="opcion-servicio" href="{% url 'solicitar_mejora' %}">
+                <span class="icono-caja violeta"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i></span>
+                <span><h3>Mejorar mi sitio actual</h3><p>Rediseño, velocidad, posicionamiento en Google y nuevas funcionalidades.</p></span>
+                <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+            </a>
+            <a class="opcion-servicio" href="{% url 'solicitar_soporte' %}">
+                <span class="icono-caja rojo"><i class="fa-solid fa-headset" aria-hidden="true"></i></span>
+                <span><h3>Resolver un problema técnico</h3><p>Sitio caído, errores, formularios que no envían o problemas de seguridad.</p></span>
+                <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+            </a>
+            <a class="opcion-servicio" href="{% url 'solicitar_mantenimiento' %}">
+                <span class="icono-caja verde"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
+                <span><h3>Mantener mi sitio al día</h3><p>Respaldos, actualizaciones de seguridad y monitoreo periódico.</p></span>
+                <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+{% if servicios %}
+<section class="seccion">
+    <div class="contenedor">
+        <div class="fila-entre mb-l">
+            <div class="seccion-encabezado sin-margen">
+                <h2>Servicios destacados</h2>
+                <p>Precios desde, en pesos chilenos y sin IVA. El valor final se define en la cotización formal.</p>
+            </div>
+            <a class="boton boton-secundario" href="{% url 'catalogo' %}">Ver catálogo completo</a>
+        </div>
+        <div class="grilla grilla-3">
+            {% for servicio in servicios %}
+            {% include "plataforma/includes/ficha_servicio.html" %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{# Cómo funciona: pasos del proceso (resumen del diagrama de flujo de procesos). #}
+<section class="seccion" id="como-funciona">
+    <div class="contenedor">
+        <div class="seccion-encabezado">
+            <h2>Cómo funciona</h2>
+            <p>Un proceso ordenado y visible en cada etapa, sin cadenas de correos ni información perdida.</p>
+        </div>
+        <ol class="pasos-proceso">
+            <li>
+                <h3>Cuéntanos tu idea</h3>
+                <p>Completas un formulario guiado sobre tu negocio, tus objetivos y las funciones que necesitas.</p>
+                <span class="duracion">Unos 10 minutos</span>
+            </li>
+            <li>
+                <h3>Mira la estimación</h3>
+                <p>Mientras completas el formulario ves un rango de precio y plazo calculado con tus respuestas.</p>
+                <span class="duracion">Al instante</span>
+            </li>
+            <li>
+                <h3>Recibe la cotización</h3>
+                <p>El equipo revisa tu caso y publica la cotización formal en tu cuenta para que la aceptes o rechaces.</p>
+                <span class="duracion">1 a 2 días hábiles</span>
+            </li>
+            <li>
+                <h3>Sigue el avance</h3>
+                <p>Cada cambio queda en tu historial, conversas con tu responsable y te avisamos por correo hasta la entrega.</p>
+                <span class="duracion">Durante todo el proyecto</span>
+            </li>
+        </ol>
+    </div>
+</section>
+
+{# Planes referenciales: cada botón abre el formulario con el plan preseleccionado. #}
+<section class="seccion" id="planes">
+    <div class="contenedor">
+        <div class="seccion-encabezado">
+            <h2>Planes referenciales</h2>
+            <p>Puntos de partida según el alcance del proyecto. Tu estimación personalizada depende de las funciones que elijas.</p>
+        </div>
+        <div class="planes">
+            <div class="plan">
+                <h3>Básico</h3>
+                <p class="descripcion">Presencia profesional con pocas páginas.</p>
+                <div class="monto"><span data-contar="300000" data-formato="clp">$300.000</span> <small>desde</small></div>
+                <ul>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Hasta 5 páginas</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Diseño adaptado a celulares</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Formulario de contacto y WhatsApp</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Entrega en 1 a 2 semanas</li>
+                </ul>
+                <a class="boton boton-secundario" href="{% url 'crear_web' %}?complejidad=basica&amp;tipo_sitio=corporativo&amp;funcionalidades=formulario&amp;integraciones=whatsapp">Estimar este plan</a>
+            </div>
+            <div class="plan destacado">
+                <span class="sello">Recomendado para pymes</span>
+                <h3>Medio</h3>
+                <p class="descripcion">Sitios corporativos con contenido administrable.</p>
+                <div class="monto"><span data-contar="600000" data-formato="clp">$600.000</span> <small>desde</small></div>
+                <ul>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Hasta 10 páginas</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Blog, galería o catálogo</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Panel para editar contenido</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Entrega en 3 a 5 semanas</li>
+                </ul>
+                <a class="boton boton-primario" href="{% url 'crear_web' %}?complejidad=media&amp;tipo_sitio=corporativo&amp;num_paginas=10&amp;funcionalidades=formulario&amp;funcionalidades=blog&amp;funcionalidades=panel">Estimar este plan</a>
+            </div>
+            <div class="plan">
+                <h3>Avanzado</h3>
+                <p class="descripcion">Tiendas online y plataformas con usuarios.</p>
+                <div class="monto"><span data-contar="1000000" data-formato="clp">$1.000.000</span> <small>desde</small></div>
+                <ul>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Páginas según necesidad</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Cuentas de usuario</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Carrito y pasarela de pago</li>
+                    <li><i class="fa-solid fa-check" aria-hidden="true"></i>Entrega en 5 a 8 semanas</li>
+                </ul>
+                <a class="boton boton-secundario" href="{% url 'crear_web' %}?complejidad=alta&amp;tipo_sitio=tienda&amp;funcionalidades=catalogo&amp;funcionalidades=tienda&amp;funcionalidades=login&amp;integraciones=pagos">Estimar este plan</a>
+            </div>
+        </div>
+        <p class="pequeno texto-3 mt-m">Valores referenciales sin IVA. La cotización definitiva la emite el equipo AXZTRA después de revisar tus requerimientos.</p>
+    </div>
+</section>
+
+<section class="seccion">
+    <div class="contenedor grilla grilla-seccion">
+        <div class="seccion-encabezado">
+            <h2>Por qué AXZTRA</h2>
+            <p>La cercanía de un equipo local con la trazabilidad de una plataforma que registra todo el proceso.</p>
+        </div>
+        <div class="ventajas">
+            <div class="ventaja"><span class="icono-caja ambar"><i class="fa-solid fa-scale-balanced" aria-hidden="true"></i></span><div><h3>Precios transparentes</h3><p>Ves cómo se compone la estimación antes de comprometerte.</p></div></div>
+            <div class="ventaja"><span class="icono-caja"><i class="fa-solid fa-folder-tree" aria-hidden="true"></i></span><div><h3>Todo en un solo lugar</h3><p>Requerimientos, archivos, mensajes y cotizaciones quedan en la misma solicitud.</p></div></div>
+            <div class="ventaja"><span class="icono-caja verde"><i class="fa-solid fa-user-check" aria-hidden="true"></i></span><div><h3>Un responsable visible</h3><p>Sabes quién está a cargo de tu proyecto y puedes escribirle directamente.</p></div></div>
+            <div class="ventaja"><span class="icono-caja violeta"><i class="fa-solid fa-rotate" aria-hidden="true"></i></span><div><h3>Continuidad</h3><p>Después de la entrega seguimos con soporte y mantenimiento en la misma cuenta.</p></div></div>
+        </div>
+    </div>
+</section>
+
+{% if preguntas %}
+<section class="seccion">
+    <div class="contenedor">
+        {# Llamado a calcular la estimación. #}
+        <div class="llamado">
+            <div>
+                <h2>Descubre cuánto costaría tu sitio en dos minutos</h2>
+                <p>Responde unas preguntas simples y obtén una estimación referencial sin compromiso.</p>
+            </div>
+            <a class="boton boton-oscuro boton-grande" href="{% url 'crear_web' %}"><i class="fa-solid fa-calculator" aria-hidden="true"></i>Calcular mi estimación</a>
+        </div>
+    </div>
+</section>
+
+{# Preguntas frecuentes (se administran en el panel, CU19). #}
+<section class="seccion" id="preguntas">
+    <div class="contenedor grilla grilla-seccion">
+        <div class="seccion-encabezado">
+            <h2>Preguntas frecuentes</h2>
+            <p>¿No encuentras tu respuesta? <a href="#contacto">Escríbenos</a> y te respondemos a la brevedad.</p>
+        </div>
+        <div class="preguntas">
+            {% for pregunta in preguntas %}
+            <details>
+                <summary>{{ pregunta.pregunta }}</summary>
+                <p>{{ pregunta.respuesta }}</p>
+            </details>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{# Contacto: el formulario arma un mensaje y lo abre en WhatsApp (static/js/app.js). #}
+<section class="seccion" id="contacto">
+    <div class="contenedor">
+        <div class="bloque-contacto">
+            <div>
+                <h2>Hablemos de tu proyecto</h2>
+                <p class="texto-2">Déjanos tus datos y seguimos la conversación por WhatsApp. Si prefieres que quede registrada con seguimiento, crea una solicitud desde tu cuenta.</p>
+                <ul class="datos-contacto">
+                    <li><i class="fa-regular fa-envelope" aria-hidden="true"></i><a href="mailto:{{ sitio.correo_contacto }}">{{ sitio.correo_contacto }}</a></li>
+                    <li><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>{{ sitio.whatsapp_visible }}</li>
+                    <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{ sitio.ubicacion }}</li>
+                    <li><i class="fa-regular fa-clock" aria-hidden="true"></i>{{ sitio.horario }}</li>
+                </ul>
+            </div>
+            <form id="form-contacto" data-whatsapp="{{ sitio.whatsapp }}" novalidate>
+                <div class="grilla grilla-2">
+                    <div class="campo">
+                        <label class="etiqueta" for="contacto-nombre">Nombre<span class="requerido" aria-hidden="true">*</span></label>
+                        <input class="control" type="text" id="contacto-nombre" name="nombre" required maxlength="80" autocomplete="name">
+                    </div>
+                    <div class="campo">
+                        <label class="etiqueta" for="contacto-servicio">Servicio</label>
+                        <select class="control" id="contacto-servicio" name="servicio">
+                            <option>Creación de página web</option>
+                            <option>Mejora de página existente</option>
+                            <option>Soporte técnico</option>
+                            <option>Mantenimiento</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="campo">
+                    <label class="etiqueta" for="contacto-mensaje">Cuéntanos brevemente</label>
+                    <textarea class="control" id="contacto-mensaje" name="mensaje" rows="4" maxlength="600" placeholder="Qué necesitas y para cuándo"></textarea>
+                </div>
+                <button type="submit" class="boton boton-primario"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>Continuar en WhatsApp</button>
+            </form>
+        </div>
+    </div>
+</section>
+{{ config_estimacion|json_script:"config-estimacion" }}
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/estimador.js' %}" defer></script>{% endblock %}

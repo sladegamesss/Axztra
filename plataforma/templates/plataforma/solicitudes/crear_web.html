@@ -1,0 +1,170 @@
+{% extends 'plataforma/base.html' %}
+{# CU08 + CU09: formulario de cuatro pasos para crear una página web (diagrama DA-02). #}
+{# Los campos de cada paso están en SolicitudWebForm.PASOS (forms.py). El cambio de paso lo maneja static/js/estimador.js. #}
+{% load static %}
+{% block title %}Crear página web - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <ol class="migas">
+            <li><a href="{% url 'inicio' %}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="{% url 'nueva_solicitud' %}">Nueva solicitud</a></li>
+            <li aria-current="page">Crear página web</li>
+        </ol>
+        <h1>Cuéntanos sobre tu proyecto</h1>
+        <p>{% if servicio %}Servicio seleccionado: <strong>{{ servicio.nombre }}</strong>. {% endif %}Completa los cuatro pasos y verás la estimación referencial antes de enviar la solicitud.</p>
+    </header>
+
+    <div class="grilla-formulario mb-l">
+        <ol class="pasos" aria-label="Progreso del formulario">
+            <li data-paso="1" class="actual"><span class="bola">1</span><span><strong>Tu proyecto</strong><small>En curso</small></span></li>
+            <li data-paso="2"><span class="bola">2</span><span><strong>Tu negocio</strong><small>Pendiente</small></span></li>
+            <li data-paso="3"><span class="bola">3</span><span><strong>Funcionalidades</strong><small>Pendiente</small></span></li>
+            <li data-paso="4"><span class="bola">4</span><span><strong>Diseño y detalles</strong><small>Pendiente</small></span></li>
+        </ol>
+
+        <form method="post" id="form-pasos" class="formulario-pasos tarjeta tarjeta-grande sin-js" novalidate data-validar data-pasos data-paso-inicial="{{ paso_inicial }}">
+            {% csrf_token %}
+            {{ form.servicio }}
+            {{ form.token_envio }}
+            {% if form.non_field_errors %}
+            <div class="alerta alerta-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div></div>
+            {% endif %}
+
+            {# Paso 1: tu proyecto. #}
+            <section class="paso-formulario visible" data-paso="1">
+                <h2>Tu proyecto</h2>
+                <p class="indicador">Paso 1 de 4</p>
+                {% include "plataforma/includes/campo.html" with campo=form.titulo %}
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.tipo_sitio.label }}<span class="requerido" aria-hidden="true">*</span></div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.tipo_sitio catalogo=info_tipos requiere="Selecciona el tipo de sitio." anchas=True %}
+                </div>
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.tiene_sitio_actual.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.tiene_sitio_actual catalogo=info_sitio_actual anchas=True %}
+                </div>
+                <div data-muestra-si="input[name=tiene_sitio_actual]=si">
+                    <div class="campo{% if form.url_sitio_actual.errors %} con-error{% endif %}">
+                        <label class="etiqueta" for="{{ form.url_sitio_actual.id_for_label }}">{{ form.url_sitio_actual.label }}<span class="requerido" aria-hidden="true">*</span></label>
+                        {{ form.url_sitio_actual }}
+                        {% for error in form.url_sitio_actual.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                <div class="acciones">
+                    <span></span>
+                    <button type="button" class="boton boton-primario" data-siguiente>Continuar</button>
+                </div>
+            </section>
+
+            {# Paso 2: tu negocio. #}
+            <section class="paso-formulario" data-paso="2">
+                <h2>Tu negocio</h2>
+                <p class="indicador">Paso 2 de 4</p>
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.nombre_negocio %}
+                    {% include "plataforma/includes/campo.html" with campo=form.rubro %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.descripcion_negocio %}
+                {% include "plataforma/includes/campo.html" with campo=form.publico_objetivo %}
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.objetivos.label }}<span class="requerido" aria-hidden="true">*</span></div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.objetivos requiere="Selecciona al menos un objetivo." icono="fa-regular fa-flag" %}
+                </div>
+                <div class="acciones">
+                    <button type="button" class="boton boton-secundario" data-anterior>Volver</button>
+                    <button type="button" class="boton boton-primario" data-siguiente>Continuar</button>
+                </div>
+            </section>
+
+            {# Paso 3: funcionalidades y alcance (estos datos calculan la estimación). #}
+            <section class="paso-formulario" data-paso="3">
+                <h2>Funcionalidades y alcance</h2>
+                <p class="indicador">Paso 3 de 4</p>
+                <div class="sugerencias-asistente" id="sugerencias-asistente" data-url="{% url 'asistente_sugerencias' %}">
+                    <div class="fila-entre">
+                        <strong><i class="fa-solid fa-wand-magic-sparkles" aria-hidden="true"></i> Sugerencias para tu negocio</strong>
+                        <button type="button" class="boton boton-secundario boton-chico" data-pedir>Sugerir funcionalidades</button>
+                    </div>
+                    <div data-resultado class="pequeno texto-2 mt-s">El asistente revisa lo que escribiste en el paso anterior y te recomienda funcionalidades. Tú decides cuáles marcar.</div>
+                    <button type="button" class="boton boton-primario boton-chico" data-aplicar hidden>Marcar sugerencias</button>
+                </div>
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.funcionalidades.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.funcionalidades catalogo=funcionalidades mostrar_precio=True anchas=True %}
+                </div>
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.integraciones.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.integraciones catalogo=integraciones mostrar_precio=True anchas=True %}
+                </div>
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.complejidad.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.complejidad catalogo=info_complejidad %}
+                </div>
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.num_paginas %}
+                </div>
+                <div class="acciones">
+                    <button type="button" class="boton boton-secundario" data-anterior>Volver</button>
+                    <button type="button" class="boton boton-primario" data-siguiente>Continuar</button>
+                </div>
+            </section>
+
+            {# Paso 4: diseño y detalles (estilo, contenido, presupuesto y contacto). #}
+            <section class="paso-formulario" data-paso="4">
+                <h2>Diseño y detalles</h2>
+                <p class="indicador">Paso 4 de 4</p>
+
+                <h3 class="subtitulo-paso">Estilo del sitio</h3>
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.estilo_visual.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.estilo_visual catalogo=info_estilos %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.colores %}
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.secciones.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.secciones icono="fa-regular fa-square-check" %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.sitios_referencia %}
+
+                <h3 class="subtitulo-paso">Contenido</h3>
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.situacion_logo.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.situacion_logo catalogo=info_logo %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.tiene_contenido %}
+                <p class="pequeno texto-2">Podrás adjuntar tu logo, fotos o textos desde la solicitud una vez enviada.</p>
+
+                <h3 class="subtitulo-paso">Plazos y contacto</h3>
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.dominio %}
+                    {% include "plataforma/includes/campo.html" with campo=form.presupuesto %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.fecha_deseada %}
+                <div class="grupo">
+                    <div class="grupo-titulo">{{ form.medio_contacto.label }}</div>
+                    {% include "plataforma/includes/opciones.html" with campo=form.medio_contacto icono="fa-regular fa-comment-dots" %}
+                </div>
+                {% include "plataforma/includes/campo.html" with campo=form.observaciones %}
+                <div class="acciones">
+                    <button type="button" class="boton boton-secundario" data-anterior>Volver</button>
+                    <button type="submit" class="boton boton-primario">Ver mi estimación</button>
+                </div>
+            </section>
+        </form>
+
+        {# Resumen con la estimación que se actualiza mientras el cliente responde. #}
+        <aside class="tarjeta tarjeta-resaltada resumen-vivo" id="resumen-vivo" aria-live="polite">
+            <span class="pequeno texto-2">Estimación referencial</span>
+            <span class="monto-estimado" data-monto>-</span>
+            <span class="pequeno texto-2"><i class="fa-regular fa-calendar" aria-hidden="true"></i> <span data-plazo>-</span></span>
+            <ul></ul>
+            <p class="muy-pequeno texto-3 mt-m sin-margen">Valores sin IVA que se actualizan con cada respuesta. La cotización definitiva la emite el equipo.</p>
+        </aside>
+    </div>
+</div>
+{{ config_estimacion|json_script:"config-estimacion" }}
+{% endblock %}
+{% block asistente %}{% include "plataforma/includes/asistente_solicitud.html" %}{% endblock %}
+{% block extra_js %}<script src="{% static 'js/estimador.js' %}" defer></script>{% endblock %}

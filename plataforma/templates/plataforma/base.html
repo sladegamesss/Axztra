@@ -1,0 +1,65 @@
+{% load static %}<!DOCTYPE html>
+{# Plantilla base: todas las páginas públicas y del cliente la extienden. #}
+{# Incluye la cabecera, los mensajes, el pie y la barra inferior del celular. #}
+{# El asistente virtual NO está aquí: solo lo agregan las pantallas de solicitud con el bloque "asistente". #}
+<html lang="es-CL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>{% block title %}AXZTRA - Creación, mejora y soporte de páginas web{% endblock %}</title>
+    <meta name="description" content="{% block descripcion %}Creamos, mejoramos y mantenemos sitios web para emprendedores y pymes. Calcula una estimación referencial al instante y sigue cada etapa de tu proyecto en línea.{% endblock %}">
+    <meta name="theme-color" content="#060608">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="AXZTRA">
+    <meta property="og:locale" content="es_CL">
+    <meta property="og:title" content="{% block og_titulo %}AXZTRA - Desarrollo y servicios web{% endblock %}">
+    <meta property="og:description" content="{% block og_descripcion %}Estimación referencial al instante y seguimiento en línea de tu proyecto web.{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-axztra.png' %}">
+    <meta name="twitter:card" content="summary_large_image">
+    {% block robots %}{% endblock %}
+    <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+    <script src="{% static 'js/carga-temprana.js' %}"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+    <link rel="stylesheet" href="{% static 'vendor/fontawesome/css/iconos.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/animaciones.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tema.css' %}">
+    <link rel="stylesheet" href="{% static 'css/adaptable.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block clase_body %}{% endblock %}">
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+{% block cuerpo %}
+    <div class="progreso-lectura" id="progreso-lectura" aria-hidden="true"></div>
+    {% if sitio.aviso %}<div class="aviso-sitio">{{ sitio.aviso }}</div>{% endif %}
+    {% include "plataforma/includes/cabecera.html" %}
+    {% include "plataforma/includes/mensajes.html" %}
+    <main id="contenido" tabindex="-1">
+        {% block content %}{% endblock %}
+    </main>
+    {% include "plataforma/includes/pie.html" %}
+    {% with ruta=request.resolver_match.url_name %}
+    {# Barra inferior para celulares (ver Tabla 31 del informe). #}
+    <nav class="barra-movil" aria-label="Accesos rápidos">
+        <a href="{% url 'inicio' %}"{% if ruta == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-house" aria-hidden="true"></i><span>Inicio</span></a>
+        <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}><i class="fa-solid fa-layer-group" aria-hidden="true"></i><span>Servicios</span></a>
+        <a href="{% url 'nueva_solicitud' %}"{% if ruta == 'nueva_solicitud' or ruta == 'crear_web' or ruta == 'estimacion_web' %} aria-current="page"{% endif %}><i class="fa-solid fa-plus" aria-hidden="true"></i><span>Solicitar</span></a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}><i class="fa-regular fa-folder-open" aria-hidden="true"></i><span>Mis solicitudes</span>{% if avisos.total %}<span class="contador">{{ avisos.total }}</span>{% endif %}</a>
+        {% else %}
+        <a href="{% url 'login' %}"{% if ruta == 'login' or ruta == 'registro' %} aria-current="page"{% endif %}><i class="fa-regular fa-circle-user" aria-hidden="true"></i><span>Ingresar</span></a>
+        {% endif %}
+        <a href="{% url 'inicio' %}#contacto"><i class="fa-regular fa-envelope" aria-hidden="true"></i><span>Contacto</span></a>
+    </nav>
+    {% endwith %}
+    {# Las pantallas de solicitud llenan este bloque con el asistente virtual (CU03). #}
+    {% block asistente %}{% endblock %}
+{% endblock %}
+<script src="{% static 'js/app.js' %}" defer></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

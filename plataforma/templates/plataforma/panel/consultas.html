@@ -1,0 +1,61 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# Conversaciones de los clientes con el asistente virtual. #}
+{% block title %}Consultas al asistente - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Consultas al asistente</h1>
+        <p>Lo que preguntan los visitantes ayuda a mejorar el catálogo y las preguntas frecuentes.</p>
+    </div>
+    {% if perms.plataforma.change_preguntafrecuente %}<a class="boton boton-secundario" href="{% url 'panel_pregunta_nueva' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Nueva pregunta frecuente</a>{% endif %}
+</header>
+<div class="grilla grilla-lateral">
+    <section>
+        {% if pagina.object_list %}
+        <div class="tabla-contenedor">
+            <table class="tabla">
+                <thead><tr><th>Consulta</th><th>Usuario</th><th>Fecha</th></tr></thead>
+                <tbody>
+                    {% for m in pagina %}
+                    <tr>
+                        <td class="principal">{{ m.contenido|truncatechars:140 }}</td>
+                        <td>{% if m.usuario %}{{ m.usuario.email }}{% else %}<span class="texto-3">Visitante</span>{% endif %}</td>
+                        <td class="nowrap">{{ m.fecha|date:"d-m-Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "plataforma/includes/paginacion.html" %}
+        {% else %}
+        <div class="tarjeta vacio">
+            <i class="fa-regular fa-comments" aria-hidden="true"></i>
+            <h3>Aún no hay consultas</h3>
+            <p>Cuando los visitantes usen el asistente, sus preguntas aparecerán aquí.</p>
+        </div>
+        {% endif %}
+    </section>
+    <aside>
+        <section class="tarjeta">
+            <h2>Temas más consultados</h2>
+            {% if intenciones %}
+            <ul class="barras">
+                {% for i in intenciones %}
+                <li>
+                    <span>{{ i.nombre }}</span>
+                    <span class="pista"><span class="relleno" style="width: {% widthratio i.cantidad max_intencion 100 %}%"></span></span>
+                    <span class="cantidad">{{ i.cantidad }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="texto-2 sin-margen">Sin datos todavía.</p>
+            {% endif %}
+        </section>
+        <section class="tarjeta">
+            <h2>Sin respuesta automática</h2>
+            <p class="texto-2">{{ no_reconocidas }} consulta{{ no_reconocidas|pluralize }} no coincidieron con ningún tema conocido. Revisarlas ayuda a crear nuevas preguntas frecuentes.</p>
+        </section>
+    </aside>
+</div>
+{% endblock %}

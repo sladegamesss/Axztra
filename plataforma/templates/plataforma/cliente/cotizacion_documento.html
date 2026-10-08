@@ -1,0 +1,69 @@
+{% extends 'plataforma/base.html' %}
+{# Documento imprimible de la cotización (fondo blanco, se puede guardar como PDF). #}
+{% load axztra %}
+{% block title %}Cotización {{ solicitud.numero }} - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block cuerpo %}
+<div class="barra-documento">
+    <a class="boton boton-secundario" href="{% if user.is_staff and not user == solicitud.cliente %}{% url 'panel_solicitud' solicitud.pk %}{% else %}{{ solicitud.get_absolute_url }}{% endif %}"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i>Volver a la solicitud</a>
+    <button type="button" class="boton boton-primario" data-imprimir><i class="fa-solid fa-print" aria-hidden="true"></i>Imprimir o guardar PDF</button>
+</div>
+<main id="contenido" class="documento">
+    <header class="documento-cabecera">
+        <div>
+            <span class="marca"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="10.5" fill="none" stroke="#f0521a" stroke-width="5"/><circle cx="16" cy="16" r="2.6" fill="#e8a400"/></svg><span>AXZTRA</span></span>
+            <div class="emisor">{{ sitio.ubicacion }}<br>{{ sitio.correo_contacto }}<br>{{ sitio.whatsapp_visible }}</div>
+        </div>
+        <div class="folio">
+            <strong>Cotización</strong>
+            <span>N° {{ solicitud.numero }}-V{{ cotizacion.version }}</span>
+            <span>Emitida el {{ cotizacion.fecha_emision|date:"d-m-Y" }}</span>
+            <span>Válida hasta el {{ cotizacion.fecha_vencimiento|date:"d-m-Y" }}</span>
+        </div>
+    </header>
+
+    <div class="partes">
+        <div>
+            <h3>Cliente</h3>
+            <strong>{{ solicitud.cliente.get_full_name|default:solicitud.cliente.email }}</strong><br>
+            {% if perfil.empresa %}{{ perfil.empresa }}<br>{% endif %}
+            {% if perfil.rut %}RUT {{ perfil.rut }}<br>{% endif %}
+            {{ solicitud.cliente.email }}{% if perfil.telefono %}<br>{{ perfil.telefono }}{% endif %}
+        </div>
+        <div>
+            <h3>Proyecto</h3>
+            <strong>{{ solicitud.titulo }}</strong><br>
+            {{ solicitud.get_tipo_display }}<br>
+            Plazo de entrega: {{ cotizacion.plazo_dias }} días hábiles
+        </div>
+    </div>
+
+    <div class="documento-tabla">
+    <table>
+        <thead>
+            <tr><th>Descripción</th><th class="num">Cantidad</th><th class="num">Precio unitario</th><th class="num">Subtotal</th></tr>
+        </thead>
+        <tbody>
+            {% for item in cotizacion.lineas %}
+            <tr><td>{{ item.descripcion }}</td><td class="num">{{ item.cantidad }}</td><td class="num">{{ item.precio_unitario|clp }}</td><td class="num">{{ item.subtotal|clp }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    <div class="totales">
+        <div><span>Neto</span><strong>{{ cotizacion.monto|clp }}</strong></div>
+        <div><span>IVA ({{ empresa.IVA }}%)</span><strong>{{ cotizacion.monto_iva|clp }}</strong></div>
+        <div class="total"><span>Total</span><strong>{{ cotizacion.total|clp }}</strong></div>
+    </div>
+
+    <section class="condiciones">
+        <h3>Alcance y condiciones</h3>
+        {{ cotizacion.detalle }}
+    </section>
+
+    <div class="firma">
+        <div>AXZTRA<br>{% if cotizacion.emitida_por %}{{ cotizacion.emitida_por.get_full_name }}{% endif %}</div>
+        <div>Aceptación del cliente{% if cotizacion.respuesta_cliente == 'aceptada' %}<br>Aceptada en línea el {{ cotizacion.fecha_respuesta|date:"d-m-Y H:i" }}{% endif %}</div>
+    </div>
+</main>
+{% endblock %}

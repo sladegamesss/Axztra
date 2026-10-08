@@ -1,0 +1,4 @@
+
+Equipo {{ empresa.NOMBRE }}
+{{ sitio.correo_contacto }} | WhatsApp {{ sitio.whatsapp_visible }}
+{{ sitio.ubicacion }}

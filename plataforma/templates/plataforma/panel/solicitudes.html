@@ -1,0 +1,85 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# CU15 Gestionar solicitudes: listado con filtros y exportación a CSV. #}
+{% load axztra %}
+{% block title %}Solicitudes - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Solicitudes</h1>
+        <p>{{ pagina.paginator.count }} resultado{{ pagina.paginator.count|pluralize }}{% if hay_filtros %} con los filtros aplicados{% endif %}.</p>
+    </div>
+    <div class="fila">
+        <a class="boton boton-secundario" href="{% url_con_parametros exportar='csv' pagina='' %}"><i class="fa-solid fa-file-csv" aria-hidden="true"></i>Exportar CSV</a>
+        <a class="boton boton-secundario" href="{% url 'panel_tablero' %}"><i class="fa-solid fa-table-columns" aria-hidden="true"></i>Ver tablero</a>
+    </div>
+</header>
+
+<form method="get" class="filtros" role="search" aria-label="Filtrar solicitudes">
+    <label class="visualmente-oculto" for="f-q">Buscar</label>
+    <input class="control busqueda" type="search" id="f-q" name="q" value="{{ filtros.q }}" placeholder="Número, título, cliente o empresa" maxlength="80">
+    <label class="visualmente-oculto" for="f-estado">Estado</label>
+    <select class="control" id="f-estado" name="estado">
+        <option value="">Todos los estados</option>
+        <option value="abiertas"{% if filtros.estado == 'abiertas' %} selected{% endif %}>Abiertas</option>
+        {% for estado in estados %}<option value="{{ estado.codigo }}"{% if filtros.estado == estado.codigo %} selected{% endif %}>{{ estado.nombre }}</option>{% endfor %}
+    </select>
+    <label class="visualmente-oculto" for="f-tipo">Tipo</label>
+    <select class="control" id="f-tipo" name="tipo">
+        <option value="">Todos los tipos</option>
+        {% for clave, nombre in tipos %}<option value="{{ clave }}"{% if filtros.tipo == clave %} selected{% endif %}>{{ nombre }}</option>{% endfor %}
+    </select>
+    <label class="visualmente-oculto" for="f-prioridad">Prioridad</label>
+    <select class="control" id="f-prioridad" name="prioridad">
+        <option value="">Toda prioridad</option>
+        {% for clave, nombre in prioridades %}<option value="{{ clave }}"{% if filtros.prioridad == clave %} selected{% endif %}>{{ nombre }}</option>{% endfor %}
+    </select>
+    <label class="visualmente-oculto" for="f-responsable">Responsable</label>
+    <select class="control" id="f-responsable" name="responsable">
+        <option value="">Cualquier responsable</option>
+        <option value="mias"{% if filtros.responsable == 'mias' %} selected{% endif %}>Asignadas a mí</option>
+        <option value="sin"{% if filtros.responsable == 'sin' %} selected{% endif %}>Sin responsable</option>
+        {% for persona in equipo %}<option value="{{ persona.pk }}"{% if filtros.responsable == persona.pk|stringformat:'s' %} selected{% endif %}>{{ persona.get_full_name|default:persona.email }}</option>{% endfor %}
+    </select>
+    {% if filtros.atrasadas %}<input type="hidden" name="atrasadas" value="1">{% endif %}
+    <button type="submit" class="boton boton-secundario">Filtrar</button>
+    {% if hay_filtros %}<a class="boton boton-fantasma" href="{% url 'panel_solicitudes' %}">Limpiar</a>{% endif %}
+</form>
+{% if filtros.atrasadas %}
+<div class="alerta alerta-error"><i class="fa-regular fa-clock" aria-hidden="true"></i><p>Mostrando solicitudes recibidas que superaron su plazo de primera respuesta. <a href="{% url_con_parametros atrasadas='' %}">Quitar este filtro</a></p></div>
+{% endif %}
+
+{% if pagina.object_list %}
+<div class="tabla-contenedor">
+    <table class="tabla">
+        <thead>
+            <tr><th>Número</th><th>Solicitud</th><th>Cliente</th><th>Responsable</th><th>Prioridad</th><th>Estado</th><th class="num">Estimación</th><th>Ingreso</th></tr>
+        </thead>
+        <tbody>
+            {% for s in pagina %}
+            <tr>
+                <td class="numero"><a href="{% url 'panel_solicitud' s.pk %}">{{ s.numero }}</a></td>
+                <td>
+                    <a class="principal" href="{% url 'panel_solicitud' s.pk %}">{{ s.titulo|truncatechars:52 }}</a>
+                    <div class="muy-pequeno texto-3">{{ s.get_tipo_display }}{% if s.no_leidos %}, <i class="fa-regular fa-comment" aria-hidden="true"></i> {{ s.no_leidos }} sin leer{% endif %}</div>
+                </td>
+                <td>{{ s.cliente.get_full_name|default:s.cliente.email }}</td>
+                <td>{% if s.responsable %}<span class="avatar-mini" title="{{ s.responsable.get_full_name|default:s.responsable.email }}">{{ s.responsable|iniciales }}</span>{% else %}<span class="texto-3">Sin asignar</span>{% endif %}</td>
+                <td><span class="prioridad prioridad-{{ s.prioridad }}">{{ s.get_prioridad_display }}</span>{% if s.atrasada %}<div class="atrasada">Fuera de plazo</div>{% endif %}</td>
+                <td>{% include "plataforma/includes/estado.html" with estado=s.estado %}</td>
+                <td class="num">{% if s.estimacion %}{{ s.estimacion.total|clp }}{% else %}<span class="texto-3">-</span>{% endif %}</td>
+                <td class="nowrap">{{ s.fecha_solicitud|date:"d-m-Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "plataforma/includes/paginacion.html" %}
+{% else %}
+<div class="tarjeta vacio">
+    <i class="fa-solid fa-inbox" aria-hidden="true"></i>
+    <h3>No hay solicitudes con estos filtros</h3>
+    <p>Ajusta los filtros o revisa todas las solicitudes.</p>
+    <a class="boton boton-secundario" href="{% url 'panel_solicitudes' %}">Ver todas</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,219 @@
+/*
+ * AXZTRA: animaciones y efectos.
+ *
+ * Todas se desactivan solas si el sistema pide reducir el movimiento (ver adaptable.css).
+ */
+
+
+/* ---------- Definición de las animaciones ---------- */
+@keyframes aparecer { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes aparecer-suave { from { opacity: 0; } to { opacity: 1; } }
+@keyframes entrar-derecha { from { opacity: 0; transform: translateX(22px); } to { opacity: 1; transform: none; } }
+@keyframes entrar-izquierda { from { opacity: 0; transform: translateX(-22px); } to { opacity: 1; transform: none; } }
+@keyframes desplegar { from { opacity: 0; transform: translateY(-8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes abrir-ventana { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
+@keyframes marcar { 0% { transform: scale(0.3); } 65% { transform: scale(1.18); } 100% { transform: scale(1); } }
+@keyframes marcar-suave { 0% { transform: scale(0.94); } 100% { transform: scale(1); } }
+@keyframes resaltar { 0% { transform: scale(1); } 35% { transform: scale(1.04); text-shadow: 0 0 22px rgba(255, 197, 61, 0.55); } 100% { transform: scale(1); } }
+@keyframes crecer-ancho { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes crecer-alto { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes flotar-brillo { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-60px, 40px) scale(1.12); } }
+@keyframes latido { 0% { box-shadow: 0 0 0 0 rgba(255, 106, 43, 0.5); } 80%, 100% { box-shadow: 0 0 0 12px rgba(255, 106, 43, 0); } }
+@keyframes onda { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(1.75); opacity: 0; } }
+@keyframes girar { to { transform: rotate(360deg); } }
+@keyframes destello { 0% { box-shadow: 0 0 0 0 rgba(47, 224, 160, 0.6); border-color: var(--verde); } 100% { box-shadow: 0 0 0 14px rgba(47, 224, 160, 0); } }
+@keyframes brillo-texto { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+@keyframes saludar { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } 60% { transform: translateY(0); } 80% { transform: translateY(-3px); } }
+
+main { animation: aparecer-suave 0.35s ease backwards; }
+
+.portada::after {
+    content: "";
+    position: absolute;
+    width: 620px;
+    height: 620px;
+    right: -120px;
+    top: -140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 106, 43, 0.16), rgba(255, 106, 43, 0) 65%);
+    pointer-events: none;
+    animation: flotar-brillo 16s ease-in-out infinite;
+}
+.portada-grilla { z-index: 1; }
+.portada-texto > * { animation: aparecer 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.portada-texto > :nth-child(2) { animation-delay: 0.08s; }
+.portada-texto > :nth-child(3) { animation-delay: 0.16s; }
+.portada-texto > :nth-child(4) { animation-delay: 0.24s; }
+.estimador { animation: aparecer 0.8s 0.15s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+@property --angulo-borde {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+@keyframes girar-borde { to { --angulo-borde: 360deg; } }
+.estimador::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
+    background: conic-gradient(from var(--angulo-borde), transparent 0 62%, #ffc53d 70%, #ff6a2b 81%, #ff3d7f 91%, transparent 100%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: girar-borde 7s linear infinite;
+}
+.monto-estimado.cambio { animation: resaltar 0.5s ease; }
+.segmentado input:checked + span { animation: marcar-suave 0.25s ease; }
+
+.cabecera { transition: box-shadow 0.3s ease, background-color 0.3s ease; }
+.cabecera.con-sombra { background: rgba(6, 6, 8, 0.95); box-shadow: 0 12px 32px -14px rgba(0, 0, 0, 0.75); }
+details[open] > .desplegable-menu { animation: desplegar 0.18s ease backwards; transform-origin: top right; }
+.menu-movil[open] nav { animation: desplegar 0.22s ease backwards; }
+.menu-movil[open] nav > * { animation: aparecer 0.35s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.menu-movil[open] nav > :nth-child(2) { animation-delay: 0.03s; }
+.menu-movil[open] nav > :nth-child(3) { animation-delay: 0.06s; }
+.menu-movil[open] nav > :nth-child(4) { animation-delay: 0.09s; }
+.menu-movil[open] nav > :nth-child(5) { animation-delay: 0.12s; }
+.menu-movil[open] nav > :nth-child(6) { animation-delay: 0.15s; }
+.menu-movil[open] nav > :nth-child(n+7) { animation-delay: 0.18s; }
+.menu-movil[open] summary i { animation: marcar 0.3s ease; }
+
+.boton-primario:hover { box-shadow: 0 12px 26px -10px rgba(255, 106, 43, 0.75); }
+.boton-exito:hover { box-shadow: 0 12px 26px -10px rgba(47, 224, 160, 0.65); }
+.boton-peligro:hover { box-shadow: 0 12px 26px -12px rgba(255, 84, 104, 0.55); }
+.boton.cargando { position: relative; color: transparent !important; pointer-events: none; }
+.boton.cargando > * { visibility: hidden; }
+.boton.cargando::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.1rem;
+    height: 1.1rem;
+    margin: -0.55rem 0 0 -0.55rem;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: girar 0.7s linear infinite;
+}
+
+.ficha-servicio, .opcion-servicio, .persona, a.metrica, .tarjeta-tablero, .fila-solicitud {
+    transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.28s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.ficha-servicio:hover, .opcion-servicio:hover, .persona:hover, a.metrica:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -22px rgba(0, 0, 0, 0.85);
+}
+.ficha-servicio:hover, .persona:hover { border-color: var(--linea-2); }
+.tarjeta-tablero:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.8); }
+.icono-caja { transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.ficha-servicio:hover .icono-caja, .opcion-servicio:hover .icono-caja, .ventaja:hover .icono-caja { transform: scale(1.1) rotate(-5deg); }
+.opcion-servicio .flecha { transition: transform 0.25s ease, color 0.2s ease; }
+.opcion-servicio:hover .flecha { transform: translateX(5px); }
+.plan { transition: background-color 0.25s ease; }
+.plan:hover { background: var(--plano-2); }
+.pasos-proceso li { position: relative; }
+.pasos-proceso li::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primario), var(--ambar));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s;
+}
+.pasos-proceso li.revelado::after { transform: scaleX(1); }
+.preguntas summary { transition: color 0.2s ease; }
+.preguntas summary:hover { color: var(--primario-2); }
+.preguntas details[open] p { animation: aparecer 0.35s ease backwards; }
+
+.opcion-caja { transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease; }
+.opcion:active .opcion-caja { transform: scale(0.985); }
+.opcion input:checked + .opcion-caja .opcion-marca { animation: marcar 0.32s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.paso-formulario.visible { animation: entrar-derecha 0.38s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.formulario-pasos[data-direccion="atras"] .paso-formulario.visible { animation-name: entrar-izquierda; }
+.pasos .bola { transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease; }
+.pasos li.actual .bola { animation: latido 1.8s ease-out 0.3s 3; }
+.error[data-error-js], .error[data-error-grupo] { animation: aparecer 0.25s ease backwards; }
+
+.avance li.hecho::before, .avance li.actual::before { transform-origin: left; animation: crecer-ancho 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.avance li:nth-child(2)::before { animation-delay: 0.1s; }
+.avance li:nth-child(3)::before { animation-delay: 0.2s; }
+.avance li:nth-child(4)::before { animation-delay: 0.3s; }
+.avance li:nth-child(5)::before { animation-delay: 0.4s; }
+.avance li:nth-child(6)::before { animation-delay: 0.5s; }
+.avance li.actual .punto { animation: latido 2.2s ease-out 1s infinite; }
+
+.asistente-boton { transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease; animation: aparecer 0.5s 0.5s backwards, saludar 1.2s ease 3s 2; }
+.asistente-boton:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(240, 82, 26, 0.55); }
+.asistente-ventana:not([hidden]) { animation: abrir-ventana 0.26s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; transform-origin: bottom right; }
+.burbuja { animation: aparecer 0.3s ease backwards; }
+.asistente-sugerencias button { transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.15s ease; }
+.asistente-sugerencias button:hover { transform: translateY(-1px); }
+
+.metricas > * { animation: aparecer 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
+.metricas > :nth-child(2) { animation-delay: 0.06s; }
+.metricas > :nth-child(3) { animation-delay: 0.12s; }
+.metricas > :nth-child(4) { animation-delay: 0.18s; }
+.barras .relleno { transform-origin: left; animation: crecer-ancho 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.15s backwards; }
+.barras li:nth-child(2) .relleno { animation-delay: 0.2s; }
+.barras li:nth-child(3) .relleno { animation-delay: 0.25s; }
+.barras li:nth-child(4) .relleno { animation-delay: 0.3s; }
+.barras li:nth-child(5) .relleno { animation-delay: 0.35s; }
+.barras li:nth-child(6) .relleno { animation-delay: 0.4s; }
+.barras li:nth-child(7) .relleno { animation-delay: 0.45s; }
+.barras li:nth-child(n+8) .relleno { animation-delay: 0.5s; }
+.grafico-meses .barra { transform-origin: bottom; animation: crecer-alto 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s backwards; }
+.grafico-meses .columna:nth-child(2) .barra { animation-delay: 0.16s; }
+.grafico-meses .columna:nth-child(3) .barra { animation-delay: 0.22s; }
+.grafico-meses .columna:nth-child(4) .barra { animation-delay: 0.28s; }
+.grafico-meses .columna:nth-child(5) .barra { animation-delay: 0.34s; }
+.grafico-meses .columna:nth-child(6) .barra { animation-delay: 0.4s; }
+.tarjeta-tablero.recien-movida { animation: destello 1.2s ease-out; }
+.panel-menu a { transition: background-color 0.2s ease, color 0.2s ease, padding-left 0.2s ease; }
+.panel-menu a:hover { padding-left: 0.95rem; }
+.tabla td { transition: background-color 0.15s ease; }
+
+
+.control-clave { position: relative; display: block; }
+.control-clave .control { padding-right: 3.1rem; }
+.ver-clave {
+    position: absolute;
+    top: 50%;
+    right: 0.35rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-top: -1.25rem;
+    border: 0;
+    border-radius: var(--radio-s);
+    background: transparent;
+    color: var(--texto-3);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+.ver-clave:hover { color: var(--texto); background: var(--plano-2); }
+
+.aviso-flotante { position: relative; overflow: hidden; }
+.aviso-tiempo { position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--primario); opacity: 0.7; transform-origin: left; animation: consumir 6.5s linear forwards; }
+.tipo-success .aviso-tiempo { background: var(--verde); }
+.tipo-warning .aviso-tiempo { background: var(--ambar); }
+@keyframes consumir { from { transform: scaleX(1); } to { transform: scaleX(0); } }
+
+
+.barra-movil { display: none; }
+
+
+/* ---------- Aparición de secciones al bajar por la página (la activa app.js) ---------- */
+.revelar {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.65s cubic-bezier(0.2, 0.7, 0.2, 1), transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--retardo, 0ms);
+}
+.revelar.visible { opacity: 1; transform: none; }

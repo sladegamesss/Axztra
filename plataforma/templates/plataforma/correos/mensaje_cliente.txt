@@ -1,0 +1,9 @@
+{% autoescape off %}Hola {{ solicitud.cliente.first_name|default:solicitud.cliente.email }}:
+
+El equipo te escribió sobre tu solicitud {{ solicitud.numero }} ({{ solicitud.titulo }}):
+
+{{ mensaje.texto }}
+
+Para responder, entra a tu solicitud:
+{{ url }}
+{% include "plataforma/correos/base_firma.txt" %}{% endautoescape %}

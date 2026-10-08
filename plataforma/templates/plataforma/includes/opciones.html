@@ -1,0 +1,21 @@
+{% load axztra %}
+{# Dibuja opciones como tarjetas seleccionables (radio o casillas). #}
+<div class="opciones{% if anchas %} anchas{% endif %}"{% if requiere %} data-requiere-seleccion="{{ requiere }}"{% endif %} role="group" aria-label="{{ campo.label }}">
+    {% for opcion in campo %}
+    {% with info=catalogo|obtener:opcion.data.value %}
+    <label class="opcion" for="{{ opcion.id_for_label }}">
+        {{ opcion.tag }}
+        <span class="opcion-caja">
+            {% if info.icono %}<i class="{{ info.icono }}" aria-hidden="true"></i>{% elif icono %}<i class="{{ icono }}" aria-hidden="true"></i>{% endif %}
+            <span>
+                <strong>{{ opcion.choice_label }}</strong>
+                {% if info.descripcion %}<small>{{ info.descripcion }}</small>{% endif %}
+                {% if mostrar_precio and info.precio %}<span class="precio-opcion">desde {{ info.precio|clp }}</span>{% endif %}
+            </span>
+            <span class="opcion-marca" aria-hidden="true"><i class="fa-solid fa-check"></i></span>
+        </span>
+    </label>
+    {% endwith %}
+    {% endfor %}
+</div>
+{% for error in campo.errors %}<div class="error">{{ error }}</div>{% endfor %}

@@ -1,0 +1,24 @@
+{% extends 'plataforma/base.html' %}
+{# CU06 Recuperar contraseña: paso 1, pedir el correo. #}
+{% block title %}Recuperar contraseña - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja">
+        <h1>Recuperar contraseña</h1>
+        <p class="bajada">Ingresa el correo de tu cuenta y te enviaremos un enlace para crear una contraseña nueva.</p>
+        <div class="tarjeta tarjeta-grande">
+            <form method="post" novalidate data-validar>
+                {% csrf_token %}
+                <div class="campo{% if form.email.errors %} con-error{% endif %}">
+                    <label class="etiqueta" for="id_email">Correo electrónico<span class="requerido" aria-hidden="true">*</span></label>
+                    <input class="control" type="email" name="email" id="id_email" required maxlength="254" autocomplete="email" placeholder="nombre@empresa.cl" value="{{ form.email.value|default:'' }}">
+                    {% for error in form.email.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                </div>
+                <button type="submit" class="boton boton-primario ancho-completo boton-grande">Enviar enlace</button>
+            </form>
+        </div>
+        <p class="acceso-pie"><a href="{% url 'login' %}">Volver a iniciar sesión</a></p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,6 @@
+{# Carga el asistente en las pantallas de solicitud: Botpress si está configurado o el asistente propio. #}
+{% if botpress_scripts %}
+    {% for script in botpress_scripts %}<script src="{{ script }}" defer></script>{% endfor %}
+{% else %}
+    {% include "plataforma/includes/asistente.html" %}
+{% endif %}

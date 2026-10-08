@@ -1,0 +1,7 @@
+{% autoescape off %}{{ solicitud.cliente.get_full_name|default:solicitud.cliente.email }} escribió en la solicitud {{ solicitud.numero }} ({{ solicitud.titulo }}):
+
+{{ mensaje.texto }}
+
+Responder desde el panel:
+{{ url }}
+{% endautoescape %}

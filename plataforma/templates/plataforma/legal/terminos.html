@@ -1,0 +1,38 @@
+{% extends 'plataforma/base.html' %}
+{# Términos y condiciones de uso. #}
+{% block title %}Términos de uso - AXZTRA{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Términos de uso</h1>
+        <p>Última actualización: 26 de septiembre de 2026.</p>
+    </header>
+    <article class="texto-legal mb-l">
+        <p>Estos términos regulan el uso de la plataforma AXZTRA, disponible en este sitio web. Al crear una cuenta o enviar una solicitud aceptas las condiciones que se describen a continuación.</p>
+
+        <h2>Servicios ofrecidos</h2>
+        <p>AXZTRA ofrece servicios de creación, mejora, soporte técnico y mantenimiento de sitios web. La descripción y los precios de referencia de cada servicio se publican en el catálogo y pueden cambiar sin previo aviso.</p>
+
+        <h2>Cuenta de usuario</h2>
+        <p>Para enviar solicitudes debes registrarte con datos verdaderos y mantener tu contraseña en reserva. Eres responsable de la actividad realizada desde tu cuenta. Puedes actualizar tus datos, descargarlos o eliminar tu cuenta en cualquier momento desde la sección Mis datos.</p>
+
+        <h2>Estimaciones y cotizaciones</h2>
+        <p>Las estimaciones que entrega la plataforma y las respuestas del asistente virtual son referenciales y no constituyen una oferta. El precio, el plazo y el alcance definitivos se establecen únicamente en la cotización formal emitida por el equipo AXZTRA, que tiene la vigencia indicada en el propio documento. Los valores se expresan en pesos chilenos y, salvo que se indique lo contrario, no incluyen IVA.</p>
+
+        <h2>Aceptación y ejecución</h2>
+        <p>La aceptación de una cotización desde la plataforma expresa tu intención de contratar el servicio. El equipo se contactará contigo para coordinar la forma de pago, el calendario de trabajo y los materiales necesarios. La plataforma no procesa pagos en línea.</p>
+
+        <h2>Contenido que envías</h2>
+        <p>Declaras tener derecho a usar los textos, imágenes, logotipos y archivos que compartes para tu proyecto. AXZTRA los utilizará solo para prestar el servicio solicitado.</p>
+
+        <h2>Uso adecuado</h2>
+        <p>No está permitido usar la plataforma para enviar contenido ilícito, intentar acceder a información de otros usuarios o afectar el funcionamiento del sitio. Podemos suspender las cuentas que infrinjan estas reglas.</p>
+
+        <h2>Responsabilidad</h2>
+        <p>Trabajamos para que la plataforma esté disponible de forma continua, pero pueden existir interrupciones por mantenimiento o causas externas. La responsabilidad de AXZTRA respecto de cada proyecto se rige por lo acordado en la cotización aceptada.</p>
+
+        <h2>Contacto</h2>
+        <p>Para consultas sobre estos términos escríbenos a <a href="mailto:{{ sitio.correo_contacto }}">{{ sitio.correo_contacto }}</a>.</p>
+    </article>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'plataforma/base.html' %}
+{# CU14: eliminación de la cuenta (pide la contraseña). #}
+{% block title %}Eliminar cuenta - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja">
+        <h1>Eliminar mi cuenta</h1>
+        <p class="bajada">Borraremos tus datos personales y cerraremos tu sesión. Las solicitudes finalizadas se conservan de forma anónima para fines contables.</p>
+        <div class="tarjeta tarjeta-grande">
+            {% if activas %}
+            <div class="alerta alerta-ambar"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><p>Tienes {{ activas }} solicitud{{ activas|pluralize:"es" }} en curso. Cancélala{{ activas|pluralize }} o espera a que finalice{{ activas|pluralize:"n" }} antes de eliminar tu cuenta.</p></div>
+            <a class="boton boton-secundario ancho-completo" href="{% url 'mis_solicitudes' %}?filtro=activas">Ver solicitudes en curso</a>
+            {% else %}
+            <p class="texto-2">Te recomendamos <a href="{% url 'descargar_datos' %}">descargar una copia de tus datos</a> antes de continuar. Esta acción no se puede deshacer.</p>
+            <form method="post" novalidate data-validar data-confirmar="¿Seguro que quieres eliminar tu cuenta? Esta acción no se puede deshacer.">
+                {% csrf_token %}
+                {% include "plataforma/includes/campo.html" with campo=form.password %}
+                <button type="submit" class="boton boton-peligro ancho-completo">Eliminar mi cuenta definitivamente</button>
+            </form>
+            {% endif %}
+        </div>
+        <p class="acceso-pie"><a href="{% url 'mi_cuenta' %}">Volver a mis datos</a></p>
+    </div>
+</div>
+{% endblock %}

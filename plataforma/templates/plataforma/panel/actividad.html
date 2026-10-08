@@ -1,0 +1,42 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# CU20: registro de actividad (auditoría). #}
+{% block title %}Registro de actividad - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Registro de actividad</h1>
+        <p>Acciones relevantes del equipo y de los clientes, para auditoría y control interno.</p>
+    </div>
+</header>
+<nav class="pestanas" aria-label="Filtrar por acción">
+    <a href="{% url 'panel_actividad' %}"{% if not accion_activa %} aria-current="true"{% endif %}>Todas</a>
+    {% for clave, nombre in acciones %}
+    <a href="?accion={{ clave }}"{% if accion_activa == clave %} aria-current="true"{% endif %}>{{ nombre }}</a>
+    {% endfor %}
+</nav>
+{% if pagina.object_list %}
+<div class="tabla-contenedor">
+    <table class="tabla">
+        <thead><tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Detalle</th><th>IP</th></tr></thead>
+        <tbody>
+            {% for r in pagina %}
+            <tr>
+                <td class="nowrap">{{ r.fecha|date:"d-m-Y H:i:s" }}</td>
+                <td>{% if r.usuario %}{{ r.usuario.email }}{% else %}<span class="texto-3">Sistema</span>{% endif %}</td>
+                <td class="nowrap">{{ r.get_accion_display }}</td>
+                <td>{{ r.descripcion }}{% if r.solicitud %} <a href="{% url 'panel_solicitud' r.solicitud.pk %}">{{ r.solicitud.numero }}</a>{% endif %}</td>
+                <td class="nowrap texto-3">{{ r.ip|default:"-" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "plataforma/includes/paginacion.html" %}
+{% else %}
+<div class="tarjeta vacio">
+    <i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>
+    <h3>Sin registros</h3>
+    <p>Todavía no hay actividad registrada para este filtro.</p>
+</div>
+{% endif %}
+{% endblock %}

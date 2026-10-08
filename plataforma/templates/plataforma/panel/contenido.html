@@ -1,0 +1,58 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# CU19 Gestionar contenido del sitio: contacto, aviso y preguntas frecuentes. #}
+{% block title %}Contenido del sitio - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Contenido del sitio</h1>
+        <p>Preguntas frecuentes, datos de contacto y avisos. El asistente virtual también usa estas respuestas.</p>
+    </div>
+    <a class="boton boton-primario" href="{% url 'panel_pregunta_nueva' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Nueva pregunta</a>
+</header>
+
+<div class="grilla grilla-lateral">
+    <section>
+        <h2>Preguntas frecuentes</h2>
+        <div class="tabla-contenedor">
+            <table class="tabla">
+                <thead><tr><th>Pregunta</th><th class="num">Orden</th><th>Estado</th><th><span class="visualmente-oculto">Acciones</span></th></tr></thead>
+                <tbody>
+                    {% for p in preguntas %}
+                    <tr>
+                        <td><span class="principal">{{ p.pregunta }}</span><div class="muy-pequeno texto-3">{{ p.respuesta|truncatechars:110 }}</div></td>
+                        <td class="num">{{ p.orden }}</td>
+                        <td>{% if p.activa %}<span class="estado estado-verde">Publicada</span>{% else %}<span class="estado estado-gris">Oculta</span>{% endif %}</td>
+                        <td class="acciones-fila">
+                            <a class="boton boton-fantasma boton-chico" href="{% url 'panel_pregunta_editar' p.pk %}">Editar</a>
+                            <form method="post" action="{% url 'panel_pregunta_estado' p.pk %}">{% csrf_token %}<button type="submit" class="boton boton-fantasma boton-chico">{% if p.activa %}Ocultar{% else %}Publicar{% endif %}</button></form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="centrado">Aún no hay preguntas frecuentes.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <aside class="tarjeta">
+        <h2>Datos de contacto y aviso</h2>
+        {% if puede_configurar %}
+        <form method="post" novalidate data-validar>
+            {% csrf_token %}
+            {% for campo in form_configuracion %}
+            {% include "plataforma/includes/campo.html" %}
+            {% endfor %}
+            <button type="submit" class="boton boton-primario ancho-completo">Guardar datos del sitio</button>
+        </form>
+        {% else %}
+        <ul class="lista-simple">
+            <li><span>Correo</span>{{ sitio.correo_contacto }}</li>
+            <li><span>WhatsApp</span>{{ sitio.whatsapp_visible }}</li>
+            <li><span>Ubicación</span>{{ sitio.ubicacion }}</li>
+            <li><span>Horario</span>{{ sitio.horario }}</li>
+        </ul>
+        <p class="pequeno texto-3 mt-s sin-margen">Solo un administrador puede modificar estos datos.</p>
+        {% endif %}
+    </aside>
+</div>
+{% endblock %}

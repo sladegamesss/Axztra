@@ -1,0 +1,34 @@
+{% extends 'plataforma/base.html' %}
+{# CU06 Recuperar contraseña: crear la contraseña nueva desde el enlace. #}
+{% block title %}Nueva contraseña - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja">
+        {% if validlink %}
+        <h1>Crea tu nueva contraseña</h1>
+        <p class="bajada">Usa al menos 8 caracteres, que no sean solo números ni se parezcan a tus datos.</p>
+        <div class="tarjeta tarjeta-grande">
+            <form method="post" novalidate data-validar>
+                {% csrf_token %}
+                <div class="campo{% if form.new_password1.errors %} con-error{% endif %}">
+                    <label class="etiqueta" for="id_new_password1">Contraseña nueva<span class="requerido" aria-hidden="true">*</span></label>
+                    <input class="control" type="password" name="new_password1" id="id_new_password1" required autocomplete="new-password">
+                    {% for error in form.new_password1.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                </div>
+                <div class="campo{% if form.new_password2.errors %} con-error{% endif %}">
+                    <label class="etiqueta" for="id_new_password2">Repite la contraseña<span class="requerido" aria-hidden="true">*</span></label>
+                    <input class="control" type="password" name="new_password2" id="id_new_password2" required autocomplete="new-password">
+                    {% for error in form.new_password2.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                </div>
+                <button type="submit" class="boton boton-primario ancho-completo boton-grande">Guardar contraseña</button>
+            </form>
+        </div>
+        {% else %}
+        <h1>El enlace ya no es válido</h1>
+        <p class="bajada">Puede que ya lo hayas usado o que haya vencido. Solicita uno nuevo para continuar.</p>
+        <a class="boton boton-primario" href="{% url 'recuperar_clave' %}">Solicitar un enlace nuevo</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

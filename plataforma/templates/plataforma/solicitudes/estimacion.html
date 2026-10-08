@@ -1,0 +1,68 @@
+{% extends 'plataforma/base.html' %}
+{# CU02 Obtener estimación referencial: resumen antes de confirmar el envío. #}
+{% load axztra %}
+{% block title %}Tu estimación - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <ol class="migas">
+            <li><a href="{% url 'inicio' %}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a></li>
+            <li><a href="{% url 'nueva_solicitud' %}">Nueva solicitud</a></li>
+            <li><a href="{% url 'crear_web' %}?editar=1">Crear página web</a></li>
+            <li aria-current="page">Estimación</li>
+        </ol>
+        <h1>Tu estimación referencial</h1>
+        <p>Revisa el resumen y confirma para enviar la solicitud al equipo.</p>
+    </header>
+
+    <div class="grilla grilla-lateral mb-l">
+        <div>
+            <section class="tarjeta tarjeta-resaltada tarjeta-grande">
+                <span class="texto-2">Rango referencial</span>
+                <span class="monto-estimado">{{ estimacion.monto_minimo|clp }} a {{ estimacion.monto_maximo|clp }}</span>
+                <p class="texto-2"><i class="fa-regular fa-calendar" aria-hidden="true"></i> Plazo estimado de {{ estimacion.semanas_minimas }} a {{ estimacion.semanas_maximas }} semanas. Valores en pesos chilenos, sin IVA.</p>
+                <ul class="desglose">
+                    {% for linea in estimacion.desglose %}
+                    <li><span>{{ linea.concepto }}</span><strong>{{ linea.monto|clp }}</strong></li>
+                    {% endfor %}
+                    <li class="total"><span>Subtotal calculado</span><strong>{{ estimacion.total|clp }}</strong></li>
+                </ul>
+                {% if estimacion.factor != 1 %}<p class="pequeno texto-3 mt-s sin-margen">Los montos adicionales ya incluyen el ajuste por nivel de diseño {{ complejidad|lower }}.</p>{% endif %}
+            </section>
+
+            <div class="alerta alerta-ambar mt-m">
+                <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                <p>Esta estimación es referencial. El equipo revisará tu solicitud y te enviará la cotización definitiva, normalmente dentro de 1 a 2 días hábiles.</p>
+            </div>
+
+            <form method="post" class="fila" data-validar novalidate>
+                {% csrf_token %}
+                <button type="submit" class="boton boton-primario boton-grande"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i>Enviar solicitud</button>
+                <a class="boton boton-secundario boton-grande" href="{% url 'crear_web' %}?editar=1">Modificar respuestas</a>
+            </form>
+        </div>
+
+        <aside class="tarjeta">
+            <h2>Resumen</h2>
+            <dl class="datos">
+                <dt>Proyecto</dt><dd>{{ datos.titulo }}</dd>
+                <dt>Negocio</dt><dd>{{ datos.nombre_negocio }}</dd>
+                <dt>Tipo de sitio</dt><dd>{{ tipo_sitio }}</dd>
+                <dt>Nivel de diseño</dt><dd>{{ complejidad }}</dd>
+                <dt>Páginas</dt><dd>{{ datos.num_paginas }}</dd>
+                <dt>Objetivos</dt><dd>{{ objetivos|join:", " }}</dd>
+                {% if funcionalidades %}<dt>Funcionalidades</dt><dd>{{ funcionalidades|join:", " }}</dd>{% endif %}
+                {% if integraciones %}<dt>Integraciones</dt><dd>{{ integraciones|join:", " }}</dd>{% endif %}
+                <dt>Estilo visual</dt><dd>{{ estilo }}</dd>
+                {% if secciones %}<dt>Secciones</dt><dd>{{ secciones|join:", " }}</dd>{% endif %}
+                <dt>Logo</dt><dd>{{ logo }}</dd>
+                <dt>Presupuesto</dt><dd>{{ presupuesto }}</dd>
+                <dt>Contacto preferido</dt><dd>{{ medio_contacto }}</dd>
+                {% if datos.fecha_deseada %}<dt>Fecha deseada</dt><dd>{{ datos.fecha_deseada|date:"d-m-Y" }}</dd>{% endif %}
+            </dl>
+        </aside>
+    </div>
+</div>
+{% endblock %}
+{% block asistente %}{% include "plataforma/includes/asistente_solicitud.html" %}{% endblock %}

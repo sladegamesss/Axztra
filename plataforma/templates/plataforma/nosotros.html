@@ -1,0 +1,71 @@
+{% extends 'plataforma/base.html' %}
+{# Página Nosotros: equipo y forma de trabajo de AXZTRA. #}
+{% block title %}Nosotros - AXZTRA{% endblock %}
+{% block descripcion %}AXZTRA es un equipo de desarrollo web de la Región del Biobío que ayuda a emprendedores y pymes a crear, mejorar y mantener sus sitios.{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Nosotros</h1>
+        <p>Somos un equipo de desarrollo web de la Región del Biobío. Ayudamos a emprendedores y pymes a tener presencia digital con un proceso claro, precios transparentes y acompañamiento después de la entrega.</p>
+    </header>
+
+    <div class="grilla grilla-2 mb-l">
+        <section class="tarjeta">
+            <span class="icono-caja mb-m"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></span>
+            <h2>Misión</h2>
+            <p class="texto-2 sin-margen">Facilitar que pequeñas y medianas empresas obtengan sitios web profesionales, con un proceso de cotización simple, información clara en cada etapa y una atención cercana que continúa después de la entrega.</p>
+        </section>
+        <section class="tarjeta">
+            <span class="icono-caja ambar mb-m"><i class="fa-regular fa-eye" aria-hidden="true"></i></span>
+            <h2>Visión</h2>
+            <p class="texto-2 sin-margen">Ser la plataforma de referencia en la región para contratar servicios web, reconocida por su transparencia, su orden y la calidad de cada proyecto entregado.</p>
+        </section>
+    </div>
+
+    <section class="mb-l">
+        <div class="seccion-encabezado">
+            <h2>Qué resolvemos</h2>
+            <p>Contratar un sitio web suele ser un proceso desordenado. Diseñamos AXZTRA para cambiar eso.</p>
+        </div>
+        <div class="ventajas">
+            <div class="ventaja"><span class="icono-caja"><i class="fa-solid fa-list-ul" aria-hidden="true"></i></span><div><h3>Requerimientos claros</h3><p>Un formulario guiado recoge la información necesaria desde el primer contacto, sin idas y vueltas.</p></div></div>
+            <div class="ventaja"><span class="icono-caja ambar"><i class="fa-solid fa-calculator" aria-hidden="true"></i></span><div><h3>Precios comprensibles</h3><p>La estimación referencial muestra cómo influye cada funcionalidad en el valor final.</p></div></div>
+            <div class="ventaja"><span class="icono-caja verde"><i class="fa-solid fa-user-check" aria-hidden="true"></i></span><div><h3>Responsables definidos</h3><p>Cada solicitud tiene una persona a cargo y un plazo de primera respuesta según su prioridad.</p></div></div>
+            <div class="ventaja"><span class="icono-caja violeta"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i></span><div><h3>Historial completo</h3><p>Estados, mensajes, archivos y cotizaciones quedan registrados para dar continuidad a cada cliente.</p></div></div>
+        </div>
+    </section>
+
+    <section class="mb-l">
+        <div class="seccion-encabezado">
+            <h2>Cómo nos organizamos</h2>
+            <p>Cuatro áreas trabajan coordinadas sobre la misma plataforma.</p>
+        </div>
+        <div class="grilla grilla-4">
+            <div class="tarjeta"><h3>Dirección y administración</h3><p class="texto-2 pequeno sin-margen">Gestión comercial, cotizaciones definitivas y relación con clientes.</p></div>
+            <div class="tarjeta"><h3>Desarrollo</h3><p class="texto-2 pequeno sin-margen">Diseño, programación y publicación de sitios web.</p></div>
+            <div class="tarjeta"><h3>Soporte</h3><p class="texto-2 pequeno sin-margen">Atención de incidencias, mejoras y planes de mantenimiento.</p></div>
+            <div class="tarjeta"><h3>IA y automatización</h3><p class="texto-2 pequeno sin-margen">Asistente virtual, estimaciones automáticas y mejora continua de procesos.</p></div>
+        </div>
+    </section>
+
+    <section class="mb-l">
+        <div class="seccion-encabezado">
+            <h2>Equipo</h2>
+        </div>
+        <div class="equipo">
+            <div class="persona"><div class="avatar-grande">BR</div><h3>Benjamín Ruiz</h3><p>Desarrollo y experiencia de usuario</p></div>
+            <div class="persona"><div class="avatar-grande">CB</div><h3>Camilo Barra</h3><p>Dirección de proyecto y arquitectura</p></div>
+            <div class="persona"><div class="avatar-grande">FC</div><h3>Franco Constanzo</h3><p>Soporte, datos y automatización</p></div>
+        </div>
+        <p class="pequeno texto-3 mt-m">AXZTRA nació como proyecto del Taller de Sistemas de Información II de la Universidad Técnica Federico Santa María.</p>
+    </section>
+
+    <div class="llamado mb-l">
+        <div>
+            <h2>¿Tienes un proyecto en mente?</h2>
+            <p>Calcula una estimación referencial en minutos, sin compromiso.</p>
+        </div>
+        <a class="boton boton-oscuro boton-grande" href="{% url 'crear_web' %}">Comenzar mi solicitud</a>
+    </div>
+</div>
+{% endblock %}

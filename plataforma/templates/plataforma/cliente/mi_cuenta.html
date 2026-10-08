@@ -1,0 +1,57 @@
+{% extends 'plataforma/base.html' %}
+{# CU14 Gestionar mi cuenta. #}
+{% block title %}Mis datos - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Mis datos</h1>
+        <p>Mantén tus datos al día para que podamos contactarte y preparar tus cotizaciones.</p>
+    </header>
+    <div class="grilla grilla-lateral mb-l">
+        <form method="post" class="tarjeta tarjeta-grande" novalidate data-validar>
+            {% csrf_token %}
+            <div class="grilla grilla-2">
+                {% include "plataforma/includes/campo.html" with campo=form.first_name %}
+                {% include "plataforma/includes/campo.html" with campo=form.last_name %}
+            </div>
+            <div class="campo">
+                <label class="etiqueta" for="correo-cuenta">Correo electrónico</label>
+                <input class="control" type="email" id="correo-cuenta" value="{{ user.email }}" disabled>
+                <div class="ayuda">Para cambiar el correo de tu cuenta escríbenos a {{ sitio.correo_contacto }}.</div>
+            </div>
+            <div class="grilla grilla-2">
+                {% include "plataforma/includes/campo.html" with campo=form.empresa %}
+                {% include "plataforma/includes/campo.html" with campo=form.rut %}
+                {% include "plataforma/includes/campo.html" with campo=form.telefono %}
+                {% include "plataforma/includes/campo.html" with campo=form.ciudad %}
+            </div>
+            {% include "plataforma/includes/campo.html" with campo=form.recibir_notificaciones %}
+            <div class="acciones">
+                <span class="pequeno texto-3">Cliente desde {{ user.date_joined|date:"d-m-Y" }}</span>
+                <button type="submit" class="boton boton-primario">Guardar cambios</button>
+            </div>
+        </form>
+        <aside>
+            <section class="tarjeta">
+                <h2>Tus solicitudes</h2>
+                <ul class="lista-simple">
+                    <li><span>Total</span>{{ total_solicitudes }}</li>
+                    <li><span>En curso</span>{{ solicitudes_activas }}</li>
+                </ul>
+                <a class="boton boton-secundario ancho-completo mt-s" href="{% url 'mis_solicitudes' %}">Ver mis solicitudes</a>
+            </section>
+            <section class="tarjeta">
+                <h2>Seguridad</h2>
+                <a class="boton boton-secundario ancho-completo" href="{% url 'cambiar_clave' %}"><i class="fa-solid fa-key" aria-hidden="true"></i>Cambiar contraseña</a>
+            </section>
+            <section class="tarjeta">
+                <h2>Privacidad</h2>
+                <p class="pequeno texto-2">Descarga una copia de toda tu información o elimina tu cuenta.</p>
+                <a class="boton boton-secundario ancho-completo" href="{% url 'descargar_datos' %}"><i class="fa-solid fa-download" aria-hidden="true"></i>Descargar mis datos</a>
+                <a class="boton boton-peligro ancho-completo mt-s" href="{% url 'eliminar_cuenta' %}">Eliminar mi cuenta</a>
+            </section>
+        </aside>
+    </div>
+</div>
+{% endblock %}
