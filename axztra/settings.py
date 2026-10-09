@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sitemaps',
+    'anymail',
     'plataforma.apps.PlataformaConfig',
 ]
 
@@ -210,16 +211,11 @@ MESSAGE_TAGS = {
 }
 
 # Correo: si no se define EMAIL_HOST, los correos se muestran en la terminal (útil para ver el código de verificación).
-EMAIL_BACKEND = os.environ.get('DJANGO_EMAIL_BACKEND') or (
-    'django.core.mail.backends.smtp.EmailBackend' if os.environ.get('EMAIL_HOST') else 'django.core.mail.backends.console.EmailBackend'
-)
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'localhost')
-EMAIL_PORT = entorno_int('EMAIL_PORT', 587)
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-EMAIL_USE_TLS = entorno_bool('EMAIL_USE_TLS', True)
-EMAIL_TIMEOUT = 15
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'AXZTRA <notificaciones@axztra.cl>')
+EMAIL_BACKEND = 'anymail.backends.brevo.EmailBackend'
+ANYMAIL = {
+    'BREVO_API_KEY': os.environ.get('BREVO_API_KEY', ''),
+}
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'AXZTRA <benjamrui@gmail.com>')
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 # Dirección de la administración de datos.
