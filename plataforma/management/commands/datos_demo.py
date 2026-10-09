@@ -31,7 +31,7 @@ from plataforma.models import (
 
 User = get_user_model()
 
-ADMIN = {'email': 'admin@axztra.cl', 'password': 'AxztraAdmin2026', 'first_name': 'Camilo', 'last_name': 'Barra'}
+ADMIN = {'email': 'benjamrui@gmail.com', 'password': 'AxztraAdmin2026', 'first_name': 'Camilo', 'last_name': 'Barra'}
 EQUIPO = [
     {
         'email': 'desarrollo@axztra.cl', 'password': 'Equipo2026', 'first_name': 'Benjamín', 'last_name': 'Ruiz',
