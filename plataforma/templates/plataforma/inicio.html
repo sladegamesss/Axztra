@@ -270,45 +270,5 @@
 </section>
 {% endif %}
 
-{# Contacto: el formulario arma un mensaje y lo abre en WhatsApp (static/js/app.js). #}
-<section class="seccion" id="contacto">
-    <div class="contenedor">
-        <div class="bloque-contacto">
-            <div>
-                <h2>Hablemos de tu proyecto</h2>
-                <p class="texto-2">Déjanos tus datos y seguimos la conversación por WhatsApp. Si prefieres que quede registrada con seguimiento, crea una solicitud desde tu cuenta.</p>
-                <ul class="datos-contacto">
-                    <li><i class="fa-regular fa-envelope" aria-hidden="true"></i><a href="mailto:{{ sitio.correo_contacto }}">{{ sitio.correo_contacto }}</a></li>
-                    <li><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>{{ sitio.whatsapp_visible }}</li>
-                    <li><i class="fa-solid fa-location-dot" aria-hidden="true"></i>{{ sitio.ubicacion }}</li>
-                    <li><i class="fa-regular fa-clock" aria-hidden="true"></i>{{ sitio.horario }}</li>
-                </ul>
-            </div>
-            <form id="form-contacto" data-whatsapp="{{ sitio.whatsapp }}" novalidate>
-                <div class="grilla grilla-2">
-                    <div class="campo">
-                        <label class="etiqueta" for="contacto-nombre">Nombre<span class="requerido" aria-hidden="true">*</span></label>
-                        <input class="control" type="text" id="contacto-nombre" name="nombre" required maxlength="80" autocomplete="name">
-                    </div>
-                    <div class="campo">
-                        <label class="etiqueta" for="contacto-servicio">Servicio</label>
-                        <select class="control" id="contacto-servicio" name="servicio">
-                            <option>Creación de página web</option>
-                            <option>Mejora de página existente</option>
-                            <option>Soporte técnico</option>
-                            <option>Mantenimiento</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="campo">
-                    <label class="etiqueta" for="contacto-mensaje">Cuéntanos brevemente</label>
-                    <textarea class="control" id="contacto-mensaje" name="mensaje" rows="4" maxlength="600" placeholder="Qué necesitas y para cuándo"></textarea>
-                </div>
-                <button type="submit" class="boton boton-primario"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>Continuar en WhatsApp</button>
-            </form>
-        </div>
-    </div>
-</section>
-{{ config_estimacion|json_script:"config-estimacion" }}
-{% endblock %}
+
 {% block extra_js %}<script src="{% static 'js/estimador.js' %}" defer></script>{% endblock %}
