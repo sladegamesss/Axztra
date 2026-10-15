@@ -269,6 +269,7 @@
     </div>
 </section>
 {% endif %}
-
+{{ config_estimacion|json_script:"config-estimacion" }}
+{% endblock %}
 
 {% block extra_js %}<script src="{% static 'js/estimador.js' %}" defer></script>{% endblock %}
