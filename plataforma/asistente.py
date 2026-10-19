@@ -396,14 +396,6 @@ class AsistenteVirtual:
             [self._accion('Crear cuenta', 'registro'), self._accion('Iniciar sesión', 'login')],
         )
 
-    def _contacto(self):
-        return self._respuesta(
-            'contacto',
-            'Puedes hablar directamente con el equipo por WhatsApp con el botón verde de la esquina inferior. '
-            'Si ya tienes una solicitud, escríbenos desde su sección de mensajes para que la conversación quede registrada.',
-            ['Quiero crear una página web', 'Mi sitio tiene un problema'],
-        )
-
     def _servicios(self):
         return self._respuesta(
             'servicios',
