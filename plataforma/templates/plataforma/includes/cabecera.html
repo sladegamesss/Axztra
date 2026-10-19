@@ -9,7 +9,6 @@
             <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}>Servicios</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}>Mis solicitudes{% if avisos.total %}<span class="contador" aria-label="{{ avisos.total }} pendientes">{{ avisos.total }}</span>{% endif %}</a>
-                <a href="{% url 'inicio' %}#contacto">Contacto</a>
                 <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
                 <details class="desplegable" data-desplegable>
                     <summary aria-label="Menú de la cuenta"><i class="fa-regular fa-circle-user" aria-hidden="true"></i> {{ user.first_name|default:"Mi cuenta" }} <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i></summary>
@@ -33,7 +32,6 @@
             {% else %}
                 <a href="{% url 'inicio' %}#como-funciona">Cómo funciona</a>
                 <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}>Nosotros</a>
-                <a href="{% url 'inicio' %}#contacto">Contacto</a>
                 <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
                 <a href="{% url 'login' %}"{% if ruta == 'login' %} aria-current="page"{% endif %}>Iniciar sesión</a>
                 <a class="boton boton-primario boton-chico" href="{% url 'registro' %}">Crear cuenta</a>
@@ -52,7 +50,6 @@
                 <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Servicios</a>
                 <a href="{% url 'inicio' %}#como-funciona"><i class="fa-solid fa-route" aria-hidden="true"></i>Cómo funciona</a>
                 <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}><i class="fa-solid fa-users" aria-hidden="true"></i>Nosotros</a>
-                <a href="{% url 'inicio' %}#contacto"><i class="fa-regular fa-envelope" aria-hidden="true"></i>Contacto</a>
                 {% if user.is_authenticated %}
                     <span class="grupo-movil">Mi cuenta</span>
                     <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}><i class="fa-regular fa-folder-open" aria-hidden="true"></i>Mis solicitudes{% if avisos.total %}<span class="contador">{{ avisos.total }}</span>{% endif %}</a>
