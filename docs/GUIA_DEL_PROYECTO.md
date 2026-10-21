@@ -9,7 +9,7 @@ Los nombres de casos de uso (CU), tablas, diagramas y requisitos son los mismos 
 |---|---|
 | `manage.py` | Comandos de Django: `runserver`, `migrate`, `test`, `datos_demo`, etc. |
 | `.env` y `.env.example` | Datos de conexión a PostgreSQL y opciones propias. Se copia `.env.example` como `.env` y se completa la clave. |
-| `axztra/settings.py` | Configuración del proyecto (base de datos, correo, seguridad). |
+| `axztra/settings.py` | Configuración del proyecto (base de datos, correo vía Brevo/Anymail, seguridad). |
 | `axztra/urls.py` | Rutas principales: administración de datos, API y aplicación. |
 | `plataforma/models.py` | Modelo de datos: una clase por tabla (secciones 4.1 a 4.3 del informe). |
 | `plataforma/forms.py` | Formularios y sus validaciones. |
@@ -21,7 +21,7 @@ Los nombres de casos de uso (CU), tablas, diagramas y requisitos son los mismos 
 | `plataforma/seguridad.py`, `verificacion.py`, `auditoria.py` | Seguridad, verificación en dos pasos y registro de actividad. |
 | `plataforma/views/` | Pantallas: `publico.py`, `cuentas.py`, `cliente.py`, `panel.py` y `asistente.py`. |
 | `plataforma/api/` | API REST para sistemas externos (CU22). |
-| `plataforma/templates/plataforma/` | Plantillas HTML de cada pantalla. |
+| `plataforma/templates/plataforma/` | Plantillas HTML de cada pantalla (`base.html`, `inicio.html`, etc.). |
 | `plataforma/templates/plataforma/correos/` | Textos de los correos automáticos. |
 | `plataforma/static/css/` | Estilos: `base.css`, `animaciones.css`, `tema.css` y `adaptable.css`. |
 | `plataforma/static/js/` | JavaScript: `app.js` (general), `estimador.js` (estimación y pasos) y `panel.js` (panel). |
@@ -107,9 +107,10 @@ Los campos de cada paso se definen en `SolicitudWebForm.PASOS` (`forms.py`). El 
 | Precios de la estimación | `plataforma/estimacion.py` (y se actualiza solo en el navegador) |
 | Colores del sitio | `static/css/base.css` (variables `:root`) y `static/css/tema.css` |
 | Textos de los correos | `templates/plataforma/correos/` |
-| La conexión a PostgreSQL | Archivo `.env`; se comprueba con `python manage.py comprobar_base` |
-| El botón de tamaño del texto | `templates/plataforma/includes/cabecera.html`, función `iniciarTamanoTexto` de `static/js/app.js` y las reglas `data-texto` de `static/css/base.css` y `adaptable.css` |
-| Servicios, categorías, preguntas frecuentes, datos de contacto y aviso | Panel del equipo (no requiere tocar código) |
+| Correos y roles del equipo (`axztra.adm@gmail.com`, `axztra.des@gmail.com`, `axztra.sop@gmail.com`) | Tabla `auth_user` en PostgreSQL / Neon y `plataforma/datos_demo.py` |
+| La conexión a PostgreSQL | Archivo `.env` o variable `DATABASE_URL`; se comprueba con `python manage.py comprobar_base` |
+| El botón de tamaño del texto y barra de navegación | `templates/plataforma/base.html`, función `iniciarTamanoTexto` de `static/js/app.js` y las reglas `data-texto` de `static/css/base.css` y `adaptable.css` |
+| Servicios, categorías, preguntas frecuentes y aviso del sitio | Panel del equipo (no requiere tocar código) |
 | Respuestas del asistente | `plataforma/asistente.py` y las preguntas frecuentes del panel |
 | Opciones del paso 4 del formulario | Listas `ESTILOS`, `SECCIONES`, `OPCIONES_LOGO`, `PRESUPUESTOS` y `MEDIOS_CONTACTO` en `RequerimientoWeb` (`models.py`) |
 
