@@ -19,7 +19,6 @@ Requiere Python 3.12 y PostgreSQL. Una sola vez:
 
 Luego, en PowerShell, dentro de la carpeta que contiene `manage.py`:
 
-```
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
@@ -27,7 +26,7 @@ python manage.py comprobar_base
 python manage.py migrate
 python manage.py datos_demo
 python manage.py runserver
-```
+
 
 `comprobar_base` confirma que la conexión funciona y, si no, explica qué revisar.
 
@@ -39,12 +38,9 @@ Si PowerShell bloquea la activación del entorno, ejecutar una vez `Set-Executio
 
 | Rol | Correo | Contraseña | Acceso |
 |-----|--------|------------|--------|
-| Administrador | admin@axztra.cl | AxztraAdmin2026 | Panel completo, configuración y administración de datos |
-| Equipo (desarrollo) | desarrollo@axztra.cl | Equipo2026 | Solicitudes, catálogo y contenido del sitio |
-| Equipo (soporte) | soporte@axztra.cl | Equipo2026 | Solicitudes, tablero y clientes |
-| Cliente | cliente@axztra.cl | Cliente2026 | Solicitudes con cotización pendiente, mensajes y archivos |
-
-Otros clientes de ejemplo usan la misma contraseña `Cliente2026`: carlos.perez@axztra.cl, fundacion.vida@axztra.cl, andrea.rojas@axztra.cl y jorge.soto@axztra.cl.
+| Administrador | axztra.adm@gmail.com | AxztraAdmin2026 | Panel completo, configuración y administración de datos |
+| Equipo (desarrollo) | axztra.des@gmail.com | Equipo2026 | Solicitudes, catálogo y contenido del sitio |
+| Equipo (soporte) | axztra.sop@gmail.com | Equipo2026 | Solicitudes, tablero y clientes |
 
 Todos los usuarios, clientes y equipo, ingresan con su contraseña y un código de 6 dígitos enviado por correo. En desarrollo los correos se muestran en la terminal donde corre el servidor. El comando `datos_demo` se puede ejecutar varias veces sin duplicar información; con `--reiniciar` vuelve a crear las solicitudes de ejemplo.
 
@@ -209,9 +205,8 @@ Los tokens se crean con `python manage.py crear_token_api "Facturación"` y se e
 
 ## Pruebas
 
-```
 python manage.py test plataforma
-```
+
 
 La suite tiene 104 pruebas: estimación, validaciones, páginas públicas, accesos de navegación, cabeceras de seguridad, cuentas, bloqueo de intentos, verificación en dos pasos, formularios de solicitud, envíos duplicados, adjuntos y permisos, mensajes, panel, cotizaciones, tablero, exportaciones, permisos por rol, API, asistente, modelos, integridad de la base de datos y comandos.
 
