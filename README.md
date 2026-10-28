@@ -38,9 +38,9 @@ Si PowerShell bloquea la activación del entorno, ejecutar una vez `Set-Executio
 
 | Rol | Correo | Contraseña | Acceso |
 |-----|--------|------------|--------|
-| Administrador | axztra.adm@gmail.com | AxztraAdmin2026 | Panel completo, configuración y administración de datos |
-| Equipo (desarrollo) | axztra.des@gmail.com | Equipo2026 | Solicitudes, catálogo y contenido del sitio |
-| Equipo (soporte) | axztra.sop@gmail.com | Equipo2026 | Solicitudes, tablero y clientes |
+| Administrador | axztra.adm@gmail.com | axtra.administrador0 | Panel completo, configuración y administración de datos |
+| Desarrollo | axztra.des@gmail.com | axztra.desarrollo0 | Solicitudes, catálogo y contenido del sitio |
+| Soporte | axztra.sop@gmail.com | axztra,soporte0 | Solicitudes, tablero y clientes |
 
 Todos los usuarios, clientes y equipo, ingresan con su contraseña y un código de 6 dígitos enviado por correo. En desarrollo los correos se muestran en la terminal donde corre el servidor. El comando `datos_demo` se puede ejecutar varias veces sin duplicar información; con `--reiniciar` vuelve a crear las solicitudes de ejemplo.
 
