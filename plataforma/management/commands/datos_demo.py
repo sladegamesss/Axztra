@@ -165,12 +165,66 @@ class Command(BaseCommand):
         ]
         return gestion.emitir_cotizacion(solicitud, cotizacion, lineas, admin)
 
+    # Crea un servicio de ejemplo
+    @classmethod
+    def _crear_servicio(cls, categoria, nombre, slug, descripcion, icono, precio):
+        Servicio.objects.update_or_create(
+            slug=slug,
+            defaults={
+                'categoria': categoria,
+                'nombre': nombre,
+                'descripcion': descripcion,
+                'icono': icono,
+                'precio_base': precio,
+                'activo': True,
+            }
+        )
+
     # Solicitudes de ejemplo en distintos estados del flujo.
     def _crear_solicitudes(self, admin, equipo, clientes):
         benjamin, franco = equipo
         maria, carlos, paula, andrea, jorge = clientes
         estado = EstadoSolicitud.obtener
         ahora = timezone.now()
+        
+        # En el bloque original que enviaste falta la parte donde se crean las categorías para los servicios
+        # Así que simularemos un diccionario "categorias" para que no arroje error, asumiendo que ya existen en tu base de datos o se crean antes.
+        # Ajusta esto si en tu código real las categorías se crean de otra forma.
+        from plataforma.models import Categoria
+        categorias = {
+            'Creación': Categoria.objects.get_or_create(nombre='Creación', defaults={'slug': 'creacion'})[0],
+            'Mejoras': Categoria.objects.get_or_create(nombre='Mejoras', defaults={'slug': 'mejoras'})[0],
+            'Soporte': Categoria.objects.get_or_create(nombre='Soporte', defaults={'slug': 'soporte'})[0],
+        }
+
+        # Servicios - Tipos de sitios con ~60% de descuento (Precios base limpios al 40%)
+        self._crear_servicio(categorias['Creación'], 'Landing Page Base', 'landing-page', 
+            'Página de aterrizaje de una sección. Ideal para captar clientes o validar una idea.', 
+            'landing', 90000)
+        self._crear_servicio(categorias['Creación'], 'Sitio Portafolio', 'portafolio', 
+            'Sitio web personal para destacar tus trabajos, proyectos y experiencia.', 
+            'portafolio', 105000)
+        self._crear_servicio(categorias['Creación'], 'Sitio Corporativo', 'corporativo', 
+            'Sitio web institucional para presentar tu empresa, equipo y servicios.', 
+            'corporativo', 120000)
+        self._crear_servicio(categorias['Creación'], 'Sitio de Servicios', 'servicios', 
+            'Sitio web diseñado para promocionar servicios específicos y captar prospectos.', 
+            'servicios', 135000)
+        self._crear_servicio(categorias['Creación'], 'Tienda en Línea Base', 'tienda', 
+            'Sitio web con carrito de compras y pasarela de pago para vender productos.', 
+            'tienda', 190000)
+        
+        # Servicios - Soporte y Mejoras (también reducidos a cifras limpias ~60%)
+        self._crear_servicio(categorias['Mejoras'], 'Agregar sección o página', 'agregar-pagina', 
+            'Diseño y desarrollo de una nueva sección dentro de tu sitio web actual.', 
+            'mejora', 15000)
+        self._crear_servicio(categorias['Soporte'], 'Corrección de errores', 'correccion', 
+            'Diagnóstico y solución de problemas técnicos, visuales o de rendimiento.', 
+            'soporte', 12000)
+        self._crear_servicio(categorias['Soporte'], 'Auditoría de seguridad', 'auditoria', 
+            'Revisión completa de vulnerabilidades y configuración de protecciones básicas.', 
+            'soporte', 25000)
+            
         servicio = lambda slug: Servicio.objects.filter(slug=slug).first()
 
         cancelada = gestion.crear_solicitud(carlos, Servicio.TIPO_MANTENIMIENTO, {
