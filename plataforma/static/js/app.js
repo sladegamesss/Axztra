@@ -128,10 +128,10 @@
     // ... [resto del código original: interpolar, postJSON, avisar, validaciones, etc. Mismo contenido exacto de tu archivo] ...
     
     // Función para manejar las opciones de idioma y moneda
+  // Función para manejar las opciones de idioma y moneda (SIN PAÍS)
     function iniciarOpcionesRegionales() {
         actualizarTasasDeCambio();
 
-        var selectoresPais = document.querySelectorAll('#selector-pais, #selector-pais-pub');
         var selectoresMoneda = document.querySelectorAll('#selector-moneda, #selector-moneda-pub');
         var selectoresIdioma = document.querySelectorAll('#selector-idioma, #selector-idioma-pub');
         var resumenes = document.querySelectorAll('.region-resumen');
@@ -139,21 +139,12 @@
 
         // Banderas SVG
         var BANDERAS = {
-            'cl': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg>',
-            'us': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="512" height="39.38" y="472.61" fill="#B22234"/><rect width="512" height="39.38" y="393.84" fill="#B22234"/><rect width="512" height="39.38" y="315.07" fill="#B22234"/><rect width="512" height="39.38" y="236.3" fill="#B22234"/><rect width="512" height="39.38" y="157.53" fill="#B22234"/><rect width="512" height="39.38" y="78.76" fill="#B22234"/><rect width="512" height="39.38" fill="#B22234"/><rect width="204.8" height="275.69" fill="#3C3B6E"/></svg>',
-            'ar': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#74ACDF"/><rect width="512" height="170.67" y="170.67" fill="#fff"/><circle cx="256" cy="256" r="40" fill="#F6B40E"/></svg>',
-            'es': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#c60b1e"/><rect width="512" height="256" y="128" fill="#ffc400"/></svg>',
-            'br': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#009b3a"/><polygon points="256,40 480,256 256,472 32,256" fill="#fedf00"/><circle cx="256" cy="256" r="100" fill="#002776"/></svg>',
-            'mx': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="170.67" height="512" fill="#006847"/><rect width="170.67" height="512" x="341.33" fill="#ce1126"/><circle cx="256" cy="256" r="40" fill="#8b4513"/></svg>'
-        };
-
-        var configPaises = {
-            'cl': { moneda: 'CLP', idioma: 'es' },
-            'us': { moneda: 'USD', idioma: 'en' },
-            'ar': { moneda: 'ARS', idioma: 'es' },
-            'es': { moneda: 'EUR', idioma: 'es' },
-            'br': { moneda: 'BRL', idioma: 'pt' },
-            'mx': { moneda: 'MXN', idioma: 'es' }
+            'CLP': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg>',
+            'USD': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="512" height="39.38" y="472.61" fill="#B22234"/><rect width="512" height="39.38" y="393.84" fill="#B22234"/><rect width="512" height="39.38" y="315.07" fill="#B22234"/><rect width="512" height="39.38" y="236.3" fill="#B22234"/><rect width="512" height="39.38" y="157.53" fill="#B22234"/><rect width="512" height="39.38" y="78.76" fill="#B22234"/><rect width="512" height="39.38" fill="#B22234"/><rect width="204.8" height="275.69" fill="#3C3B6E"/></svg>',
+            'ARS': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#74ACDF"/><rect width="512" height="170.67" y="170.67" fill="#fff"/><circle cx="256" cy="256" r="40" fill="#F6B40E"/></svg>',
+            'EUR': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#c60b1e"/><rect width="512" height="256" y="128" fill="#ffc400"/></svg>',
+            'BRL': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#009b3a"/><polygon points="256,40 480,256 256,472 32,256" fill="#fedf00"/><circle cx="256" cy="256" r="100" fill="#002776"/></svg>',
+            'MXN': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="170.67" height="512" fill="#006847"/><rect width="170.67" height="512" x="341.33" fill="#ce1126"/><circle cx="256" cy="256" r="40" fill="#8b4513"/></svg>'
         };
 
         function aplicarTraduccion(idioma) {
@@ -161,56 +152,47 @@
             var dict = DICCIONARIO[idioma];
             if (!dict) return;
 
-            document.querySelectorAll('a, button, span, strong, h1, h2, h3, label').forEach(function(el) {
-                if (el.closest('[data-no-traducir]') || el.children.length > 1) return;
-                var original = el.getAttribute('data-es') || el.textContent.trim();
-                if (!el.hasAttribute('data-es')) el.setAttribute('data-es', original);
-                
-                if (dict[original]) {
-                    if (el.childNodes.length > 0 && el.childNodes[0].nodeType === 3) {
-                         el.childNodes[0].nodeValue = dict[original];
-                    } else if (el.childNodes.length > 1 && el.childNodes[1].nodeType === 3) {
-                         el.childNodes[1].nodeValue = dict[original];
-                    } else {
-                         el.textContent = dict[original];
+            try {
+                document.querySelectorAll('a, button, span, strong, h1, h2, h3, label').forEach(function(el) {
+                    if (el.closest('[data-no-traducir]')) return;
+                    if (el.children.length > 1) return; // Evita romper iconos anidados complejos
+                    
+                    var original = el.getAttribute('data-es') || el.textContent.trim();
+                    if (!el.hasAttribute('data-es')) el.setAttribute('data-es', original);
+                    
+                    if (dict[original]) {
+                        if (el.childNodes.length > 0 && el.childNodes[0].nodeType === 3) {
+                             el.childNodes[0].nodeValue = dict[original];
+                        } else if (el.childNodes.length > 1 && el.childNodes[1].nodeType === 3) {
+                             el.childNodes[1].nodeValue = dict[original];
+                        } else {
+                             el.textContent = dict[original];
+                        }
                     }
-                }
-            });
+                });
+            } catch (e) {
+                console.warn('Error menor al traducir la UI', e);
+            }
         }
 
         function refrescarUI() {
-            var paisActivo = 'cl';
-            for (var p in configPaises) {
-                if (configPaises[p].moneda === configRegional.moneda && configPaises[p].idioma === configRegional.idioma) {
-                    paisActivo = p; break;
-                }
-            }
+            var bandera = BANDERAS[configRegional.moneda] || BANDERAS['CLP'];
             
-            resumenes.forEach(function(el) { el.innerHTML = configRegional.moneda.substring(0, 2) + ' ' + BANDERAS[paisActivo]; });
+            resumenes.forEach(function(el) { el.innerHTML = configRegional.moneda.substring(0, 2) + ' ' + bandera; });
             indicadoresMovil.forEach(function(el) { el.textContent = configRegional.moneda + ' / ' + configRegional.idioma.toUpperCase(); });
             
             selectoresMoneda.forEach(function(el) { el.value = configRegional.moneda; });
             selectoresIdioma.forEach(function(el) { el.value = configRegional.idioma; });
-            selectoresPais.forEach(function(el) { el.value = paisActivo; });
 
             actualizarTextoTasa();
             aplicarTraduccion(configRegional.idioma);
             
             // Dispara el evento input en la portada para que el estimador recalcule los montos visualmente
             var estimadorPortada = document.getElementById('estimador-portada');
-            if (estimadorPortada) { estimadorPortada.dispatchEvent(new Event('input')); }
+            if (estimadorPortada) { 
+                try { estimadorPortada.dispatchEvent(new Event('input')); } catch(e){} 
+            }
         }
-
-        selectoresPais.forEach(function(select) {
-            select.addEventListener('change', function(e) {
-                var val = e.target.value;
-                configRegional.moneda = configPaises[val].moneda;
-                configRegional.idioma = configPaises[val].idioma;
-                localStorage.setItem('axztra-moneda', configRegional.moneda);
-                localStorage.setItem('axztra-idioma', configRegional.idioma);
-                refrescarUI();
-            });
-        });
 
         selectoresMoneda.forEach(function(select) {
             select.addEventListener('change', function(e) {
@@ -228,13 +210,11 @@
             });
         });
 
-        if (configRegional.idioma !== 'es') {
-             setTimeout(function() { refrescarUI(); }, 100);
-        } else {
-             refrescarUI();
-        }
+        // Asegurar que la UI se refresca sin romper el hilo de ejecución principal
+        setTimeout(function() { 
+            refrescarUI(); 
+        }, 50);
     }
-
     // ... [resto del código: iniciarFoco, iniciarProgreso, iniciarContadores, etc.]
 
     document.addEventListener('DOMContentLoaded', function () {
