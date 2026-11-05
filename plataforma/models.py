@@ -232,13 +232,14 @@ class RequerimientoWeb(models.Model):
         ('mejorar', 'Tengo logo, pero quiero mejorarlo'),
         ('crear', 'Necesito un logo nuevo'),
     ]
-    PRESUPUESTOS = [
-        ('por_definir', 'Aún no lo defino'),
-        ('menos_300', 'Menos de $300.000'),
-        ('300_600', 'Entre $300.000 y $600.000'),
-        ('600_1000', 'Entre $600.000 y $1.000.000'),
-        ('mas_1000', 'Más de $1.000.000'),
-    ]
+  PRESUPUESTOS = (
+        ('100', 'Menos de $100.000'),
+        ('100_200', 'Entre $100.000 y $200.000'),
+        ('200_400', 'Entre $200.000 y $400.000'),
+        ('400_800', 'Entre $400.000 y $800.000'),
+        ('800_mas', 'Más de $800.000'),
+        ('no_sabe', 'Aún no lo sé / Busco orientación'),
+    )
     MEDIOS_CONTACTO = [
         ('correo', 'Correo electrónico'),
         ('telefono', 'Llamada telefónica'),
