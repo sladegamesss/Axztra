@@ -232,7 +232,8 @@ class RequerimientoWeb(models.Model):
         ('mejorar', 'Tengo logo, pero quiero mejorarlo'),
         ('crear', 'Necesito un logo nuevo'),
     ]
-  PRESUPUESTOS = (
+# (4 espacios desde el borde izquierdo)
+    PRESUPUESTOS = (
         ('100', 'Menos de $100.000'),
         ('100_200', 'Entre $100.000 y $200.000'),
         ('200_400', 'Entre $200.000 y $400.000'),
