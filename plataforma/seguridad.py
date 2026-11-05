@@ -22,7 +22,8 @@ FUENTES_BASE = {
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
     'img-src': ["'self'", 'data:'],
-    'connect-src': ["'self'"],
+    # AQUÍ ESTÁ EL CAMBIO IMPORTANTE PARA LA API DE TASA DE CAMBIO
+    'connect-src': ["'self'", 'https://open.er-api.com'],
     'frame-src': ["'none'"],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
