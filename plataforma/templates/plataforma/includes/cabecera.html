@@ -1,5 +1,5 @@
 {# Cabecera con el logo y el menú principal (escritorio) y el menú desplegable (celular). #}
-{# El botón de tamaño del texto lo maneja static/js/app.js (función iniciarTamanoTexto). #}
+{# El botón de tamaño del texto y el menú regional los maneja static/js/app.js. #}
 {% with ruta=request.resolver_match.url_name %}
 <header class="cabecera" id="cabecera">
     <div class="contenedor cabecera-interior">
@@ -7,9 +7,56 @@
         <nav class="navegacion" aria-label="Navegación principal">
             <a class="enlace-inicio" href="{% url 'inicio' %}"{% if ruta == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-house" aria-hidden="true"></i>Inicio</a>
             <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}>Servicios</a>
+            
             {% if user.is_authenticated %}
                 <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}>Mis solicitudes{% if avisos.total %}<span class="contador" aria-label="{{ avisos.total }} pendientes">{{ avisos.total }}</span>{% endif %}</a>
                 <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
+                
+                {# MENÚ REGIONAL: Engranaje para Idioma y Moneda #}
+                <details class="desplegable menu-regional" data-desplegable>
+                    <summary aria-label="Preferencias regionales">
+                        <i class="fa-solid fa-gear" aria-hidden="true"></i> 
+                        <span id="region-resumen" class="region-resumen">CL <svg viewBox="0 0 512 512" width="16" height="16" style="vertical-align: middle;"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg></span>
+                        <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i>
+                    </summary>
+                    <div class="desplegable-menu" data-no-traducir="1">
+                        <div class="desplegable-titulo">
+                            <strong>Ajustes regionales</strong>
+                            <span id="tasa-cambio-info">Cargando tasa del día...</span>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-pais"><i class="fa-solid fa-globe" aria-hidden="true"></i> País</label>
+                            <select id="selector-pais" class="selector-limpio">
+                                <option value="cl">Chile</option>
+                                <option value="us">Estados Unidos</option>
+                                <option value="ar">Argentina</option>
+                                <option value="es">España (UE)</option>
+                                <option value="br">Brasil</option>
+                                <option value="mx">México</option>
+                            </select>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-moneda"><i class="fa-solid fa-coins" aria-hidden="true"></i> Moneda</label>
+                            <select id="selector-moneda" class="selector-limpio">
+                                <option value="CLP">CLP ($) - Peso Chileno</option>
+                                <option value="USD">USD ($) - Dólar</option>
+                                <option value="ARS">ARS ($) - Peso Arg.</option>
+                                <option value="EUR">EUR (€) - Euro</option>
+                                <option value="BRL">BRL (R$) - Real</option>
+                                <option value="MXN">MXN ($) - Peso Mex.</option>
+                            </select>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-idioma"><i class="fa-solid fa-language" aria-hidden="true"></i> Idioma</label>
+                            <select id="selector-idioma" class="selector-limpio">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                                <option value="pt">Português</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
                 <details class="desplegable" data-desplegable>
                     <summary aria-label="Menú de la cuenta"><i class="fa-regular fa-circle-user" aria-hidden="true"></i> {{ user.first_name|default:"Mi cuenta" }} <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i></summary>
                     <div class="desplegable-menu">
@@ -33,10 +80,57 @@
                 <a href="{% url 'inicio' %}#como-funciona">Cómo funciona</a>
                 <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}>Nosotros</a>
                 <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
+                
+                {# MENÚ REGIONAL: Versión para usuarios no logueados #}
+                <details class="desplegable menu-regional" data-desplegable>
+                    <summary aria-label="Preferencias regionales">
+                        <i class="fa-solid fa-gear" aria-hidden="true"></i> 
+                        <span id="region-resumen-pub" class="region-resumen">CL <svg viewBox="0 0 512 512" width="16" height="16" style="vertical-align: middle;"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg></span>
+                        <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i>
+                    </summary>
+                    <div class="desplegable-menu" data-no-traducir="1">
+                        <div class="desplegable-titulo">
+                            <strong>Ajustes regionales</strong>
+                            <span id="tasa-cambio-info-pub">Cargando tasa del día...</span>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-pais-pub"><i class="fa-solid fa-globe" aria-hidden="true"></i> País</label>
+                            <select id="selector-pais-pub" class="selector-limpio regional-pais">
+                                <option value="cl">Chile</option>
+                                <option value="us">Estados Unidos</option>
+                                <option value="ar">Argentina</option>
+                                <option value="es">España (UE)</option>
+                                <option value="br">Brasil</option>
+                                <option value="mx">México</option>
+                            </select>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-moneda-pub"><i class="fa-solid fa-coins" aria-hidden="true"></i> Moneda</label>
+                            <select id="selector-moneda-pub" class="selector-limpio regional-moneda">
+                                <option value="CLP">CLP ($) - Peso Chileno</option>
+                                <option value="USD">USD ($) - Dólar</option>
+                                <option value="ARS">ARS ($) - Peso Arg.</option>
+                                <option value="EUR">EUR (€) - Euro</option>
+                                <option value="BRL">BRL (R$) - Real</option>
+                                <option value="MXN">MXN ($) - Peso Mex.</option>
+                            </select>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-idioma-pub"><i class="fa-solid fa-language" aria-hidden="true"></i> Idioma</label>
+                            <select id="selector-idioma-pub" class="selector-limpio regional-idioma">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                                <option value="pt">Português</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
                 <a href="{% url 'login' %}"{% if ruta == 'login' %} aria-current="page"{% endif %}>Iniciar sesión</a>
                 <a class="boton boton-primario boton-chico" href="{% url 'registro' %}">Crear cuenta</a>
             {% endif %}
         </nav>
+        
         <a class="inicio-movil" href="{% url 'inicio' %}"{% if ruta == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-house" aria-hidden="true"></i><span>Inicio</span></a>
         <details class="menu-movil" data-desplegable>
             <summary>
@@ -50,6 +144,12 @@
                 <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Servicios</a>
                 <a href="{% url 'inicio' %}#como-funciona"><i class="fa-solid fa-route" aria-hidden="true"></i>Cómo funciona</a>
                 <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}><i class="fa-solid fa-users" aria-hidden="true"></i>Nosotros</a>
+                
+                <span class="grupo-movil">Región e Idioma</span>
+                <div class="selector-texto" role="group" aria-label="Cambiar región">
+                    <button type="button" class="regional-movil" aria-label="Ajustes de moneda e idioma"><i class="fa-solid fa-gear" aria-hidden="true"></i> Preferencias (<span class="regional-indicador">CLP / ES</span>)</button>
+                </div>
+
                 {% if user.is_authenticated %}
                     <span class="grupo-movil">Mi cuenta</span>
                     <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}><i class="fa-regular fa-folder-open" aria-hidden="true"></i>Mis solicitudes{% if avisos.total %}<span class="contador">{{ avisos.total }}</span>{% endif %}</a>
