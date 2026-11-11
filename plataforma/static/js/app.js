@@ -89,6 +89,7 @@
     }
 
     // Función para manejar las opciones de idioma y moneda (SIN PAÍS)
+   // Función para manejar las opciones de idioma y moneda (CON GOOGLE TRANSLATE)
     function iniciarOpcionesRegionales() {
         actualizarTasasDeCambio();
 
@@ -106,6 +107,67 @@
             'BRL': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#009b3a"/><polygon points="256,40 480,256 256,472 32,256" fill="#fedf00"/><circle cx="256" cy="256" r="100" fill="#002776"/></svg>',
             'MXN': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="170.67" height="512" fill="#006847"/><rect width="170.67" height="512" x="341.33" fill="#ce1126"/><circle cx="256" cy="256" r="40" fill="#8b4513"/></svg>'
         };
+
+        function refrescarUI() {
+            var bandera = BANDERAS[configRegional.moneda] || BANDERAS['CLP'];
+            
+            resumenes.forEach(function(el) { el.innerHTML = configRegional.moneda.substring(0, 2) + ' ' + bandera; });
+            indicadoresMovil.forEach(function(el) { el.textContent = configRegional.moneda + ' / ' + configRegional.idioma.toUpperCase(); });
+            
+            selectoresMoneda.forEach(function(el) { el.value = configRegional.moneda; });
+            selectoresIdioma.forEach(function(el) { el.value = configRegional.idioma; });
+
+            actualizarTextoTasa();
+            
+            // Dispara el evento input en la portada para que el estimador recalcule los montos visualmente
+            var estimadorPortada = document.getElementById('estimador-portada');
+            if (estimadorPortada) { 
+                try { estimadorPortada.dispatchEvent(new Event('input')); } catch(e){} 
+            }
+        }
+
+        selectoresMoneda.forEach(function(select) {
+            select.addEventListener('change', function(e) {
+                configRegional.moneda = e.target.value;
+                localStorage.setItem('axztra-moneda', configRegional.moneda);
+                refrescarUI();
+            });
+        });
+
+        // Este selector ahora controla a Google Translate
+        selectoresIdioma.forEach(function(select) {
+            select.addEventListener('change', function(e) {
+                configRegional.idioma = e.target.value;
+                localStorage.setItem('axztra-idioma', configRegional.idioma);
+                
+                // Forzar la cookie de Google Translate
+                if (configRegional.idioma === 'es') { 
+                    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
+                } else { 
+                    var traduccionCode = '/es/' + configRegional.idioma;
+                    document.cookie = "googtrans=" + traduccionCode + "; path=/;";
+                    document.cookie = "googtrans=" + traduccionCode + "; path=/; domain=" + window.location.hostname;
+                }
+                // Recargar para que Google aplique el nuevo idioma en toda la página
+                location.reload(); 
+            });
+        });
+
+        // Asegurar que la UI se refresca sin romper el hilo de ejecución principal
+        setTimeout(function() { 
+            refrescarUI(); 
+            // Si hay un idioma guardado que no es 'es', asegurar que la cookie de Google esté activa en la primera carga
+            if (configRegional.idioma !== 'es') {
+                var traduccionCode = '/es/' + configRegional.idioma;
+                if(document.cookie.indexOf('googtrans=') === -1) {
+                    document.cookie = "googtrans=" + traduccionCode + "; path=/;";
+                    document.cookie = "googtrans=" + traduccionCode + "; path=/; domain=" + window.location.hostname;
+                    location.reload();
+                }
+            }
+        }, 50);
+    }
 
         function aplicarTraduccion(idioma) {
             if (idioma === 'es') return;
