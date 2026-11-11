@@ -1,65 +1,9 @@
 // AXZTRA: funciones generales del sitio.
-//
-// Se carga en todas las páginas. Incluye: validación de formularios en el navegador (RNF05),
-// avisos, menús desplegables, asistente virtual (CU03), animaciones y efectos de la interfaz.
-// Las funciones que empiezan con "iniciar" se ejecutan al cargar la página (ver el final del archivo).
 
 (function () {
     'use strict';
 
     var AXZTRA = window.AXZTRA = window.AXZTRA || {};
-
-    // Diccionario Básico de Traducción 
-    var DICCIONARIO = {
-        'en': {
-            'Inicio': 'Home',
-            'Servicios': 'Services',
-            'Mis solicitudes': 'My Requests',
-            'Cómo funciona': 'How it works',
-            'Nosotros': 'About us',
-            'Iniciar sesión': 'Login',
-            'Crear cuenta': 'Sign up',
-            'Nueva solicitud': 'New request',
-            'Menú': 'Menu',
-            'Cerrar': 'Close',
-            'Ajustes regionales': 'Regional settings',
-            'Moneda': 'Currency',
-            'Idioma': 'Language',
-            'Preferencias': 'Preferences',
-            'Tamaño del texto': 'Text size',
-            'Mi cuenta': 'My account',
-            'Mis datos': 'My profile',
-            'Cambiar contraseña': 'Change password',
-            'Cerrar sesión': 'Logout',
-            'Panel de administración': 'Admin panel',
-            'Navegación': 'Navigation',
-            'Región e Idioma': 'Region & Language'
-        },
-        'pt': {
-            'Inicio': 'Início',
-            'Servicios': 'Serviços',
-            'Mis solicitudes': 'Meus pedidos',
-            'Cómo funciona': 'Como funciona',
-            'Nosotros': 'Sobre nós',
-            'Iniciar sesión': 'Entrar',
-            'Crear cuenta': 'Cadastrar',
-            'Nueva solicitud': 'Novo pedido',
-            'Menú': 'Menu',
-            'Cerrar': 'Fechar',
-            'Ajustes regionales': 'Configurações regionais',
-            'Moneda': 'Moeda',
-            'Idioma': 'Idioma',
-            'Preferencias': 'Preferências',
-            'Tamaño del texto': 'Tamanho do texto',
-            'Mi cuenta': 'Minha conta',
-            'Mis datos': 'Meus dados',
-            'Cambiar contraseña': 'Mudar senha',
-            'Cerrar sesión': 'Sair',
-            'Panel de administración': 'Painel administrativo',
-            'Navegación': 'Navegação',
-            'Región e Idioma': 'Região e Idioma'
-        }
-    };
 
     // Configuraciones Regionales
     var configRegional = {
@@ -68,7 +12,6 @@
         tasaCambio: JSON.parse(localStorage.getItem('axztra-tasas') || '{"USD": 0.0010, "ARS": 1.0, "EUR": 0.00095, "BRL": 0.0055, "MXN": 0.020, "CLP": 1}')
     };
 
-    // Actualiza la tasa de cambio en segundo plano sin bloquear el navegador
     function actualizarTasasDeCambio() {
         var ultimaActualizacion = parseInt(localStorage.getItem('axztra-tasas-fecha') || '0', 10);
         var ahora = Date.now();
@@ -111,7 +54,7 @@
         });
     }
 
-    // Función para manejar las opciones de idioma y moneda (SEGURA)
+    // Función para manejar opciones regionales y Google Translate
     function iniciarOpcionesRegionales() {
         actualizarTasasDeCambio();
 
@@ -120,7 +63,6 @@
         var resumenes = document.querySelectorAll('.region-resumen');
         var indicadoresMovil = document.querySelectorAll('.regional-indicador');
 
-        // Banderas SVG
         var BANDERAS = {
             'CLP': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg>',
             'USD': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="512" height="39.38" y="472.61" fill="#B22234"/><rect width="512" height="39.38" y="393.84" fill="#B22234"/><rect width="512" height="39.38" y="315.07" fill="#B22234"/><rect width="512" height="39.38" y="236.3" fill="#B22234"/><rect width="512" height="39.38" y="157.53" fill="#B22234"/><rect width="512" height="39.38" y="78.76" fill="#B22234"/><rect width="512" height="39.38" fill="#B22234"/><rect width="204.8" height="275.69" fill="#3C3B6E"/></svg>',
@@ -130,48 +72,12 @@
             'MXN': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="170.67" height="512" fill="#006847"/><rect width="170.67" height="512" x="341.33" fill="#ce1126"/><circle cx="256" cy="256" r="40" fill="#8b4513"/></svg>'
         };
 
-        function aplicarTraduccion(idioma) {
-            if (idioma === 'es') {
-                document.querySelectorAll('[data-es]').forEach(function(el) {
-                    var original = el.getAttribute('data-es');
-                    if(el.children.length === 0) { el.textContent = original; }
-                    else {
-                        for (var i = 0; i < el.childNodes.length; i++) {
-                            if (el.childNodes[i].nodeType === 3 && el.childNodes[i].nodeValue.trim() !== '') {
-                                el.childNodes[i].nodeValue = " " + original;
-                                break;
-                            }
-                        }
-                    }
-                });
-                return;
-            }
-            
-            var dict = DICCIONARIO[idioma];
-            if (!dict) return;
-
-            try {
-                document.querySelectorAll('a, button, span, strong, h1, h2, h3, label').forEach(function(el) {
-                    if (el.closest('[data-no-traducir]')) return;
-                    
-                    var original = el.getAttribute('data-es') || (el.textContent ? el.textContent.trim() : '');
-                    if (!original || !dict[original]) return;
-                    if (!el.hasAttribute('data-es')) el.setAttribute('data-es', original);
-                    
-                    var tieneIconos = el.querySelector('i, svg');
-                    if (tieneIconos) {
-                        for (var i = 0; i < el.childNodes.length; i++) {
-                            if (el.childNodes[i].nodeType === 3 && el.childNodes[i].nodeValue.trim() === original) {
-                                el.childNodes[i].nodeValue = " " + dict[original];
-                                break;
-                            }
-                        }
-                    } else {
-                        if (el.children.length === 0) el.textContent = dict[original];
-                    }
-                });
-            } catch (e) {
-                console.warn('Error menor al traducir la UI', e);
+        // Dispara la traducción nativa en vivo de Google
+        function forzarTraduccionGoogle(idioma) {
+            var comboGoogle = document.querySelector('.goog-te-combo');
+            if (comboGoogle) {
+                comboGoogle.value = idioma;
+                comboGoogle.dispatchEvent(new Event('change'));
             }
         }
 
@@ -185,7 +91,6 @@
             selectoresIdioma.forEach(function(el) { el.value = configRegional.idioma; });
 
             actualizarTextoTasa();
-            aplicarTraduccion(configRegional.idioma);
             
             var estimadorPortada = document.getElementById('estimador-portada');
             if (estimadorPortada) { 
@@ -206,13 +111,27 @@
                 configRegional.idioma = e.target.value;
                 localStorage.setItem('axztra-idioma', configRegional.idioma);
                 refrescarUI();
+                forzarTraduccionGoogle(configRegional.idioma);
             });
         });
 
-        setTimeout(function() { refrescarUI(); }, 50);
+        setTimeout(function() { 
+            refrescarUI(); 
+            // Si hay un idioma guardado al abrir la página, dispara el traductor cuando cargue
+            if (configRegional.idioma !== 'es') {
+                var intentos = 0;
+                var intervalo = setInterval(function() {
+                    var comboGoogle = document.querySelector('.goog-te-combo');
+                    if (comboGoogle && comboGoogle.options.length > 0) {
+                        forzarTraduccionGoogle(configRegional.idioma);
+                        clearInterval(intervalo);
+                    }
+                    if (intentos++ > 30) clearInterval(intervalo);
+                }, 500);
+            }
+        }, 50);
     }
 
-    // Lee una cookie (se usa para el token CSRF).
     function cookie(nombre) {
         var partes = document.cookie ? document.cookie.split(';') : [];
         for (var i = 0; i < partes.length; i++) {
@@ -224,7 +143,6 @@
         return '';
     }
 
-    // Token CSRF que Django exige en los envíos POST.
     AXZTRA.csrf = function () {
         var campos = document.querySelectorAll('input[name="csrfmiddlewaretoken"]');
         for (var i = 0; i < campos.length; i++) {
@@ -233,7 +151,6 @@
         return cookie('csrftoken');
     };
 
-    // Formatea un monto en pesos chilenos y lo convierte a la moneda seleccionada.
     AXZTRA.clp = function (valorCLP) {
         var moneda = configRegional.moneda;
         var tasa = configRegional.tasaCambio[moneda] || 1;
@@ -252,7 +169,6 @@
     var reducirMovimiento = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     AXZTRA.reducirMovimiento = reducirMovimiento;
 
-    // Ejecuta una animación numérica (contadores y montos).
     AXZTRA.interpolar = function (duracion, alAvanzar) {
         if (reducirMovimiento || !window.requestAnimationFrame) {
             alAvanzar(1);
@@ -271,7 +187,6 @@
         return function () { activo = false; };
     };
 
-    // Envía datos en JSON al servidor (lo usa el asistente).
     AXZTRA.postJSON = function (url, datos) {
         return fetch(url, {
             method: 'POST',
@@ -285,7 +200,6 @@
         });
     };
 
-    // Muestra un aviso flotante.
     AXZTRA.avisar = function (texto, tipo) {
         var contenedor = document.querySelector('.avisos-flotantes');
         if (!contenedor) {
@@ -313,7 +227,6 @@
         prepararAviso(aviso);
     };
 
-    // Cierra los avisos solos después de unos segundos.
     function prepararAviso(aviso) {
         var quitar = function () {
             aviso.classList.add('saliendo');
@@ -330,7 +243,6 @@
         }
     }
 
-    // Mensaje de error en español según el problema del campo.
     function mensajeValidacion(campo) {
         var v = campo.validity;
         if (v.valueMissing) {
@@ -348,7 +260,6 @@
         return campo.validationMessage;
     }
 
-    // Quita el error de un campo.
     function limpiarError(campo) {
         var contenedor = campo.closest('.campo') || campo.parentElement;
         if (contenedor) {
@@ -358,7 +269,6 @@
         campo.removeAttribute('aria-invalid');
     }
 
-    // Marca un campo con error y muestra el mensaje.
     function marcarError(campo, texto) {
         var contenedor = campo.closest('.campo') || campo.parentElement;
         limpiarError(campo);
@@ -373,7 +283,6 @@
         campo.setAttribute('aria-invalid', 'true');
     }
 
-    // Valida todos los campos de un formulario o de un paso (RNF05).
     AXZTRA.validar = function (raiz) {
         var primero = null;
         raiz.querySelectorAll('[data-error-grupo]').forEach(function (e) { e.remove(); });
@@ -413,7 +322,6 @@
         return true;
     };
 
-    // Formularios con data-validar: validan antes de enviar y evitan doble envío.
     function iniciarFormularios() {
         document.querySelectorAll('form[data-validar]').forEach(function (form) {
             form.addEventListener('submit', function (e) {
@@ -459,7 +367,6 @@
         });
     }
 
-    // Menús desplegables (usuario, menú del celular).
     function iniciarDesplegables() {
         document.addEventListener('click', function (e) {
             document.querySelectorAll('details[data-desplegable][open]').forEach(function (d) {
@@ -477,7 +384,6 @@
         });
     }
 
-    // Campos que aparecen según otra respuesta (ej: dirección del sitio actual).
     function iniciarAlternables() {
         document.querySelectorAll('[data-muestra-si]').forEach(function (bloque) {
             var regla = bloque.getAttribute('data-muestra-si');
@@ -493,7 +399,6 @@
         });
     }
 
-    // Formulario de contacto de la portada: arma el mensaje y lo abre en WhatsApp.
     function iniciarContactoWhatsapp() {
         var form = document.getElementById('form-contacto');
         if (!form) { return; }
@@ -509,7 +414,6 @@
         });
     }
 
-    // Asistente virtual (CU03). Solo existe en las pantallas de solicitud, por eso revisa si la ventana está.
     function iniciarAsistente() {
         var boton = document.getElementById('asistente-boton');
         var ventana = document.getElementById('asistente-ventana');
@@ -668,12 +572,10 @@
         }
     }
 
-    // Baja la conversación hasta el último mensaje.
     function iniciarConversacion() {
         document.querySelectorAll('.conversacion').forEach(function (c) { c.scrollTop = c.scrollHeight; });
     }
 
-    // Botón para imprimir o guardar la cotización como PDF.
     function iniciarImpresion() {
         document.querySelectorAll('[data-imprimir]').forEach(function (b) {
             b.addEventListener('click', function () { window.print(); });
@@ -695,7 +597,6 @@
         '.texto-legal > h2', '.texto-legal > p', '.lista-solicitudes', '.pestanas', '.equipo', '.planes'
     ].join(', ');
 
-    // Hace aparecer las secciones al bajar por la página.
     function iniciarRevelado() {
         var candidatos = Array.prototype.filter.call(document.querySelectorAll(SELECTORES_REVELADO), function (el) {
             return !el.closest('.panel, .documento') && !(el.parentElement && el.parentElement.closest(SELECTORES_REVELADO));
@@ -744,7 +645,6 @@
         ocultos.forEach(function (el) { observador.observe(el); });
     }
 
-    // Contadores que suben hasta su valor (panel y planes).
     function iniciarContadores() {
         var elementos = document.querySelectorAll('[data-contar]');
         if (!elementos.length || reducirMovimiento) { return; }
@@ -776,7 +676,6 @@
         pendientes.forEach(function (el) { observador.observe(el); });
     }
 
-    // Sombra de la cabecera al bajar por la página.
     function iniciarCabecera() {
         var cabecera = document.getElementById('cabecera');
         if (!cabecera) { return; }
@@ -794,16 +693,13 @@
         revisar();
     }
 
-    // Tamaños de texto disponibles y el nombre que se muestra en el aviso.
     var TAMANOS_TEXTO = ['normal', 'grande', 'muy-grande'];
     var NOMBRES_TEXTO = { 'normal': 'normal', 'grande': 'grande', 'muy-grande': 'muy grande' };
 
-    // Tamaño de texto que está aplicado en la página.
     function tamanoTextoActual() {
         return document.documentElement.getAttribute('data-texto') || 'normal';
     }
 
-    // Aplica un tamaño, lo guarda en el navegador (clave axztra-texto) y actualiza los botones.
     function aplicarTamanoTexto(tamano, anunciar) {
         var raiz = document.documentElement;
         if (tamano === 'normal') {
@@ -826,7 +722,6 @@
         if (anunciar) { AXZTRA.avisar('Tamaño del texto: ' + NOMBRES_TEXTO[tamano] + '.', 'success'); }
     }
 
-    // Botón de la cabecera (cambia al siguiente tamaño) y selector A, A+ y A++ del menú del celular.
     function iniciarTamanoTexto() {
         aplicarTamanoTexto(tamanoTextoActual(), false);
         document.querySelectorAll('[data-tamano-texto]').forEach(function (boton) {
@@ -842,7 +737,6 @@
         });
     }
 
-    // Botón de ojo para mostrar u ocultar la contraseña.
     function iniciarClaves() {
         if (!document.getElementById('ocultar-ojo-nativo')) {
             var estilo = document.createElement('style');
@@ -881,7 +775,6 @@
         });
     }
 
-    // Título de la portada que aparece palabra por palabra.
     function iniciarPalabras() {
         document.querySelectorAll('[data-palabras]').forEach(function (titulo) {
             if (reducirMovimiento) {
@@ -915,7 +808,6 @@
         });
     }
 
-    // Brillo que sigue al mouse sobre las tarjetas.
     function iniciarFoco() {
         if (reducirMovimiento || !window.matchMedia || !window.matchMedia('(pointer: fine)').matches) { return; }
         var selector = '.ficha-servicio, .opcion-servicio, .plan, .persona, .metrica, .tarjeta';
@@ -931,7 +823,6 @@
         }, { passive: true });
     }
 
-    // Barra superior que muestra cuánto se ha leído de la página.
     function iniciarProgreso() {
         var barra = document.getElementById('progreso-lectura');
         if (!barra) { return; }
@@ -952,7 +843,6 @@
         actualizar();
     }
 
-    // Preguntas frecuentes que se abren con suavidad.
     function iniciarAcordeon() {
         if (reducirMovimiento || !Element.prototype.animate) { return; }
         document.querySelectorAll('.preguntas details').forEach(function (detalle) {
