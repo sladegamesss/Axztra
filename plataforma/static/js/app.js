@@ -21,7 +21,19 @@
             'Crear cuenta': 'Sign up',
             'Nueva solicitud': 'New request',
             'Menú': 'Menu',
-            'Cerrar': 'Close'
+            'Cerrar': 'Close',
+            'Ajustes regionales': 'Regional settings',
+            'Moneda': 'Currency',
+            'Idioma': 'Language',
+            'Preferencias': 'Preferences',
+            'Tamaño del texto': 'Text size',
+            'Mi cuenta': 'My account',
+            'Mis datos': 'My profile',
+            'Cambiar contraseña': 'Change password',
+            'Cerrar sesión': 'Logout',
+            'Panel de administración': 'Admin panel',
+            'Navegación': 'Navigation',
+            'Región e Idioma': 'Region & Language'
         },
         'pt': {
             'Inicio': 'Início',
@@ -33,7 +45,19 @@
             'Crear cuenta': 'Cadastrar',
             'Nueva solicitud': 'Novo pedido',
             'Menú': 'Menu',
-            'Cerrar': 'Fechar'
+            'Cerrar': 'Fechar',
+            'Ajustes regionales': 'Configurações regionais',
+            'Moneda': 'Moeda',
+            'Idioma': 'Idioma',
+            'Preferencias': 'Preferências',
+            'Tamaño del texto': 'Tamanho do texto',
+            'Mi cuenta': 'Minha conta',
+            'Mis datos': 'Meus dados',
+            'Cambiar contraseña': 'Mudar senha',
+            'Cerrar sesión': 'Sair',
+            'Panel de administración': 'Painel administrativo',
+            'Navegación': 'Navegação',
+            'Región e Idioma': 'Região e Idioma'
         }
     };
 
@@ -48,7 +72,6 @@
     function actualizarTasasDeCambio() {
         var ultimaActualizacion = parseInt(localStorage.getItem('axztra-tasas-fecha') || '0', 10);
         var ahora = Date.now();
-        // Actualizar cada 12 horas
         if (ahora - ultimaActualizacion < 12 * 60 * 60 * 1000) {
             actualizarTextoTasa();
             return; 
@@ -88,8 +111,7 @@
         });
     }
 
-    // Función para manejar las opciones de idioma y moneda (SIN PAÍS)
-   // Función para manejar las opciones de idioma y moneda (CON GOOGLE TRANSLATE)
+    // Función para manejar las opciones de idioma y moneda (SEGURA)
     function iniciarOpcionesRegionales() {
         actualizarTasasDeCambio();
 
@@ -108,69 +130,23 @@
             'MXN': '<svg viewBox="0 0 512 512" width="16" height="16"><rect width="512" height="512" fill="#fff"/><rect width="170.67" height="512" fill="#006847"/><rect width="170.67" height="512" x="341.33" fill="#ce1126"/><circle cx="256" cy="256" r="40" fill="#8b4513"/></svg>'
         };
 
-        function refrescarUI() {
-            var bandera = BANDERAS[configRegional.moneda] || BANDERAS['CLP'];
-            
-            resumenes.forEach(function(el) { el.innerHTML = configRegional.moneda.substring(0, 2) + ' ' + bandera; });
-            indicadoresMovil.forEach(function(el) { el.textContent = configRegional.moneda + ' / ' + configRegional.idioma.toUpperCase(); });
-            
-            selectoresMoneda.forEach(function(el) { el.value = configRegional.moneda; });
-            selectoresIdioma.forEach(function(el) { el.value = configRegional.idioma; });
-
-            actualizarTextoTasa();
-            
-            // Dispara el evento input en la portada para que el estimador recalcule los montos visualmente
-            var estimadorPortada = document.getElementById('estimador-portada');
-            if (estimadorPortada) { 
-                try { estimadorPortada.dispatchEvent(new Event('input')); } catch(e){} 
-            }
-        }
-
-        selectoresMoneda.forEach(function(select) {
-            select.addEventListener('change', function(e) {
-                configRegional.moneda = e.target.value;
-                localStorage.setItem('axztra-moneda', configRegional.moneda);
-                refrescarUI();
-            });
-        });
-
-        // Este selector ahora controla a Google Translate
-        selectoresIdioma.forEach(function(select) {
-            select.addEventListener('change', function(e) {
-                configRegional.idioma = e.target.value;
-                localStorage.setItem('axztra-idioma', configRegional.idioma);
-                
-                // Forzar la cookie de Google Translate
-                if (configRegional.idioma === 'es') { 
-                    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=" + window.location.hostname;
-                } else { 
-                    var traduccionCode = '/es/' + configRegional.idioma;
-                    document.cookie = "googtrans=" + traduccionCode + "; path=/;";
-                    document.cookie = "googtrans=" + traduccionCode + "; path=/; domain=" + window.location.hostname;
-                }
-                // Recargar para que Google aplique el nuevo idioma en toda la página
-                location.reload(); 
-            });
-        });
-
-        // Asegurar que la UI se refresca sin romper el hilo de ejecución principal
-        setTimeout(function() { 
-            refrescarUI(); 
-            // Si hay un idioma guardado que no es 'es', asegurar que la cookie de Google esté activa en la primera carga
-            if (configRegional.idioma !== 'es') {
-                var traduccionCode = '/es/' + configRegional.idioma;
-                if(document.cookie.indexOf('googtrans=') === -1) {
-                    document.cookie = "googtrans=" + traduccionCode + "; path=/;";
-                    document.cookie = "googtrans=" + traduccionCode + "; path=/; domain=" + window.location.hostname;
-                    location.reload();
-                }
-            }
-        }, 50);
-    }
-
         function aplicarTraduccion(idioma) {
-            if (idioma === 'es') return;
+            if (idioma === 'es') {
+                document.querySelectorAll('[data-es]').forEach(function(el) {
+                    var original = el.getAttribute('data-es');
+                    if(el.children.length === 0) { el.textContent = original; }
+                    else {
+                        for (var i = 0; i < el.childNodes.length; i++) {
+                            if (el.childNodes[i].nodeType === 3 && el.childNodes[i].nodeValue.trim() !== '') {
+                                el.childNodes[i].nodeValue = " " + original;
+                                break;
+                            }
+                        }
+                    }
+                });
+                return;
+            }
+            
             var dict = DICCIONARIO[idioma];
             if (!dict) return;
 
@@ -179,12 +155,8 @@
                     if (el.closest('[data-no-traducir]')) return;
                     
                     var original = el.getAttribute('data-es') || (el.textContent ? el.textContent.trim() : '');
-                    
                     if (!original || !dict[original]) return;
-
-                    if (!el.hasAttribute('data-es')) {
-                        el.setAttribute('data-es', original);
-                    }
+                    if (!el.hasAttribute('data-es')) el.setAttribute('data-es', original);
                     
                     var tieneIconos = el.querySelector('i, svg');
                     if (tieneIconos) {
@@ -195,7 +167,7 @@
                             }
                         }
                     } else {
-                        el.textContent = dict[original];
+                        if (el.children.length === 0) el.textContent = dict[original];
                     }
                 });
             } catch (e) {
@@ -215,7 +187,6 @@
             actualizarTextoTasa();
             aplicarTraduccion(configRegional.idioma);
             
-            // Dispara el evento input en la portada para que el estimador recalcule los montos visualmente
             var estimadorPortada = document.getElementById('estimador-portada');
             if (estimadorPortada) { 
                 try { estimadorPortada.dispatchEvent(new Event('input')); } catch(e){} 
@@ -234,14 +205,11 @@
             select.addEventListener('change', function(e) {
                 configRegional.idioma = e.target.value;
                 localStorage.setItem('axztra-idioma', configRegional.idioma);
-                if (configRegional.idioma === 'es') { location.reload(); } else { refrescarUI(); }
+                refrescarUI();
             });
         });
 
-        // Asegurar que la UI se refresca sin romper el hilo de ejecución principal
-        setTimeout(function() { 
-            refrescarUI(); 
-        }, 50);
+        setTimeout(function() { refrescarUI(); }, 50);
     }
 
     // Lee una cookie (se usa para el token CSRF).
@@ -875,9 +843,7 @@
     }
 
     // Botón de ojo para mostrar u ocultar la contraseña.
-    // Botón de ojo para mostrar u ocultar la contraseña.
     function iniciarClaves() {
-        // Ocultar el ojo nativo de navegadores como Edge para que no se duplique
         if (!document.getElementById('ocultar-ojo-nativo')) {
             var estilo = document.createElement('style');
             estilo.id = 'ocultar-ojo-nativo';
@@ -914,6 +880,7 @@
             }
         });
     }
+
     // Título de la portada que aparece palabra por palabra.
     function iniciarPalabras() {
         document.querySelectorAll('[data-palabras]').forEach(function (titulo) {
