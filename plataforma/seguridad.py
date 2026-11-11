@@ -18,12 +18,11 @@ logger = logging.getLogger('plataforma.seguridad')
 
 FUENTES_BASE = {
     'default-src': ["'self'"],
-    'script-src': ["'self'"],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'script-src': ["'self'", "'unsafe-eval'", "https://translate.google.com", "https://translate.googleapis.com"],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', "https://translate.googleapis.com"],
     'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
-    'img-src': ["'self'", 'data:'],
-    # AQUÍ ESTÁ EL CAMBIO IMPORTANTE PARA LA API DE TASA DE CAMBIO
-    'connect-src': ["'self'", 'https://open.er-api.com'],
+    'img-src': ["'self'", 'data:', "https://translate.google.com", "https://translate.googleapis.com", "https://www.google.com"],
+    'connect-src': ["'self'", 'https://open.er-api.com', "https://translate.googleapis.com"],
     'frame-src': ["'none'"],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
