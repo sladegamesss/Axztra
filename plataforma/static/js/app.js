@@ -813,7 +813,16 @@
     }
 
     // Botón de ojo para mostrar u ocultar la contraseña.
+    // Botón de ojo para mostrar u ocultar la contraseña.
     function iniciarClaves() {
+        // Ocultar el ojo nativo de navegadores como Edge para que no se duplique
+        if (!document.getElementById('ocultar-ojo-nativo')) {
+            var estilo = document.createElement('style');
+            estilo.id = 'ocultar-ojo-nativo';
+            estilo.textContent = 'input::-ms-reveal, input::-ms-clear { display: none !important; }';
+            document.head.appendChild(estilo);
+        }
+
         document.querySelectorAll('input[type="password"].control').forEach(function (campo) {
             if (campo.parentElement.classList.contains('control-clave')) { return; }
             var envoltura = document.createElement('span');
@@ -843,7 +852,6 @@
             }
         });
     }
-
     // Título de la portada que aparece palabra por palabra.
     function iniciarPalabras() {
         document.querySelectorAll('[data-palabras]').forEach(function (titulo) {
