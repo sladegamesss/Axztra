@@ -77,7 +77,7 @@ def validar_telefono(valor):
         return ''
     digitos = re.sub(r'\D', '', valor)
     if len(digitos) < 8 or len(digitos) > 12:
-        raise forms.ValidationError('Ingresa un teléfono válido)
+        raise forms.ValidationError('Ingresa un teléfono válido')
     return valor
 
 
