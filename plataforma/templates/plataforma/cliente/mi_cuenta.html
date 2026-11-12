@@ -4,83 +4,90 @@
 {% block clase_body %}fondo-oscuro{% endblock %}
 
 {% block content %}
-<section class="panel contenedor" style="max-width: 900px; margin: 0 auto;">
-    <div class="panel-cabecera">
-        <h1 class="panel-titulo"><i class="fa-regular fa-id-card" aria-hidden="true"></i> Mis datos</h1>
-        <p class="panel-bajada">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes actualizar tu información de contacto.</p>
+<!-- Bloque principal forzado a organizarse en columna vertical y centrado -->
+<section class="panel contenedor" style="max-width: 950px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding-top: 3rem; padding-bottom: 5rem;">
+    
+    <!-- Cabecera alineada al centro -->
+    <div class="panel-cabecera" style="text-align: center; width: 100%; margin-bottom: 3.5rem; position: static; height: auto;">
+        <h1 class="panel-titulo" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><i class="fa-regular fa-id-card" aria-hidden="true"></i> Mis datos</h1>
+        <p class="panel-bajada" style="margin: 0; color: #aaa;">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes actualizar tu información de contacto.</p>
     </div>
 
-    <!-- Forzar el grid para que ambas columnas tengan el mismo espacio y estén centradas -->
-    <form method="post" class="panel-cuerpo" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;" data-validar>
+    <!-- Contenedor de 2 columnas para el formulario y las tarjetas -->
+    <form method="post" class="panel-cuerpo" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin: 0;" data-validar>
         {% csrf_token %}
         
         <!-- COLUMNA IZQUIERDA: Formulario de datos -->
-        <div class="columna-principal">
+        <div class="columna-principal" style="width: 100%;">
             
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_correo">Correo electrónico</label>
-                <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly>
-                <div class="ayuda">Para cambiar el correo de tu cuenta escríbenos a contacto@axztra.cl.</div>
+                <label for="id_correo" style="display: block; margin-bottom: 0.5rem;">Correo electrónico</label>
+                <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly style="width: 100%;">
+                <div class="ayuda" style="margin-top: 0.5rem;">Para cambiar el correo de tu cuenta escríbenos a contacto@axztra.cl.</div>
             </div>
 
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_empresa">Empresa o emprendimiento</label>
-                <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150">
+                <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa o emprendimiento</label>
+                <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150" style="width: 100%;">
             </div>
 
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_telefono">Teléfono (opcional)</label>
-                <input type="tel" id="id_telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" class="control" placeholder="+56 9 1234 5678" maxlength="20">
+                <label for="id_telefono" style="display: block; margin-bottom: 0.5rem;">Teléfono (opcional)</label>
+                <input type="tel" id="id_telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" class="control" placeholder="+56 9 1234 5678" maxlength="20" style="width: 100%;">
             </div>
             
             <div class="campo campo-completo" style="margin-top: 2rem;">
-                <label class="opcion" for="id_notificaciones">
-                    <input type="checkbox" id="id_notificaciones" name="notificaciones" value="1"{% if cliente.recibir_notificaciones %} checked{% endif %}>
+                <label class="opcion" for="id_notificaciones" style="display: flex; gap: 0.75rem; align-items: flex-start; cursor: pointer;">
+                    <input type="checkbox" id="id_notificaciones" name="notificaciones" value="1"{% if cliente.recibir_notificaciones %} checked{% endif %} style="margin-top: 0.25rem;">
                     <span>Recibir avisos por correo cuando cambie el estado de mis solicitudes</span>
                 </label>
             </div>
 
-            <hr style="margin: 2rem 0; border-color: rgba(255,255,255,0.1);">
+            <hr style="margin: 2.5rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
 
             <div class="acciones" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <span class="texto-menor" style="color: #888;">Cliente desde el {{ user.date_joined|date:"d-m-Y" }}</span>
                 <button type="submit" class="boton boton-primario">Guardar cambios</button>
             </div>
 
-        </div> <!-- Cierre de columna-principal -->
+        </div>
 
         <!-- COLUMNA DERECHA: Métricas y Seguridad -->
-        <aside class="columna-lateral">
-            <div class="tarjeta-resumen" style="margin-bottom: 2rem;">
-                <h3 style="margin-bottom: 1rem;">Tus solicitudes</h3>
-                <div class="metricas-mini">
-                    <div class="metrica" style="margin-bottom: 0.5rem;">
-                        <span>Total</span>
-                        <strong>{{ total_solicitudes }}</strong>
+        <aside class="columna-lateral" style="width: 100%;">
+            
+            <div class="tarjeta-resumen" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Tus solicitudes</h3>
+                <div class="metricas-mini" style="display: grid; gap: 1rem;">
+                    <div class="metrica" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                        <span style="color: #aaa;">Total</span>
+                        <strong style="font-size: 1.1rem;">{{ total_solicitudes }}</strong>
                     </div>
-                    <div class="metrica">
-                        <span>En curso</span>
-                        <strong>{{ en_curso }}</strong>
+                    <div class="metrica" style="display: flex; justify-content: space-between;">
+                        <span style="color: #aaa;">En curso</span>
+                        <strong style="font-size: 1.1rem;">{{ en_curso }}</strong>
                     </div>
                 </div>
-                <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo" style="margin-top: 1.5rem; width: 100%;">Ver mis solicitudes</a>
+                <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo" style="margin-top: 1.5rem; width: 100%; justify-content: center;">Ver mis solicitudes</a>
             </div>
 
-            <div class="tarjeta-resumen">
-                <h3 style="margin-bottom: 1rem;">Seguridad</h3>
-                <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo" style="width: 100%;"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
+            <div class="tarjeta-resumen" style="padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Seguridad</h3>
+                <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo" style="width: 100%; justify-content: center;"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
             </div>
-        </aside> <!-- Cierre de columna-lateral -->
 
-    </form> <!-- Cierre del panel-cuerpo -->
+        </aside>
+    </form>
 </section>
 
-<!-- Hacemos que se vea bien en celulares -->
+<!-- Hacemos que se apile verticalmente en celulares -->
 <style>
     @media (max-width: 768px) {
         .panel-cuerpo {
             grid-template-columns: 1fr !important;
-            gap: 2rem !important;
+            gap: 2.5rem !important;
+        }
+        .panel-cabecera {
+            margin-bottom: 2rem !important;
         }
     }
 </style>
