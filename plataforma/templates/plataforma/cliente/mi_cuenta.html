@@ -22,7 +22,6 @@
             </div>
             <div class="grilla grilla-2">
                 {% include "plataforma/includes/campo.html" with campo=form.empresa %}
-
             {% include "plataforma/includes/campo.html" with campo=form.recibir_notificaciones %}
             <div class="acciones">
                 <span class="pequeno texto-3">Cliente desde {{ user.date_joined|date:"d-m-Y" }}</span>
@@ -43,12 +42,4 @@
                 <a class="boton boton-secundario ancho-completo" href="{% url 'cambiar_clave' %}"><i class="fa-solid fa-key" aria-hidden="true"></i>Cambiar contraseña</a>
             </section>
             <section class="tarjeta">
-                <h2>Privacidad</h2>
-                <p class="pequeno texto-2">Descarga una copia de toda tu información o elimina tu cuenta.</p>
-                <a class="boton boton-secundario ancho-completo" href="{% url 'descargar_datos' %}"><i class="fa-solid fa-download" aria-hidden="true"></i>Descargar mis datos</a>
-                <a class="boton boton-peligro ancho-completo mt-s" href="{% url 'eliminar_cuenta' %}">Eliminar mi cuenta</a>
-            </section>
-        </aside>
-    </div>
-</div>
 {% endblock %}
