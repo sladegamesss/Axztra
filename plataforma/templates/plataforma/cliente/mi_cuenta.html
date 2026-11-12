@@ -17,52 +17,61 @@
     
     <div class="panel-cabecera" style="text-align: center; width: 100%; margin-bottom: 3.5rem; position: static; height: auto;">
         <h1 class="panel-titulo" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><i class="fa-regular fa-id-card" aria-hidden="true"></i> Mis datos</h1>
-        <p class="panel-bajada" style="margin: 0; color: #aaa;">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes actualizar tu información de contacto.</p>
+        <p class="panel-bajada" style="margin: 0; color: #aaa;">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes revisar tu información de contacto.</p>
     </div>
 
-    <form method="post" class="panel-cuerpo" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin: 0;" data-validar>
-        {% csrf_token %}
+    <!-- Como todo es de solo lectura, cambiamos el <form> por un <div> y eliminamos el botón de guardar -->
+    <div class="panel-cuerpo" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin: 0;">
         
+        <!-- COLUMNA IZQUIERDA: Datos Bloqueados -->
         <div class="columna-principal" style="width: 100%;">
             
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
                 <label for="id_correo" style="display: block; margin-bottom: 0.5rem;">Correo electrónico</label>
-                <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly style="width: 100%;">
-                <div class="ayuda" style="margin-top: 0.5rem;">Para cambiar el correo de tu cuenta escríbenos a contacto@axztra.cl.</div>
+                <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
 
-            <!-- 🔥 NUEVO CAMPO: Nombre y Apellido 🔥 -->
+            <!-- El campo ahora se llama "Nombre" y es readonly -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_nombre" style="display: block; margin-bottom: 0.5rem;">Nombre y apellido</label>
-                <input type="text" id="id_nombre" name="nombre" value="{{ user.get_full_name|default:user.first_name }}" class="control" placeholder="Ej: Juan Pérez" maxlength="150" style="width: 100%;">
+                <label for="id_nombre" style="display: block; margin-bottom: 0.5rem;">Nombre</label>
+                <input type="text" id="id_nombre" value="{{ user.first_name }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
 
+            <!-- Empresa en modo readonly -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa o emprendimiento (opcional)</label>
-                <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150" style="width: 100%;">
+                <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa o emprendimiento</label>
+                <input type="text" id="id_empresa" value="{{ cliente.empresa|default:'' }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
 
+            <!-- Teléfono en modo readonly -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_telefono" style="display: block; margin-bottom: 0.5rem;">Teléfono (opcional)</label>
-                <input type="tel" id="id_telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" class="control" placeholder="+56 9 1234 5678" maxlength="20" style="width: 100%;">
+                <label for="id_telefono" style="display: block; margin-bottom: 0.5rem;">Teléfono</label>
+                <input type="tel" id="id_telefono" value="{{ cliente.telefono|default:'' }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
             
+            <!-- Checkbox desactivado (disabled) -->
             <div class="campo campo-completo" style="margin-top: 2rem;">
-                <label class="opcion" for="id_notificaciones" style="display: flex; gap: 0.75rem; align-items: flex-start; cursor: pointer;">
-                    <input type="checkbox" id="id_notificaciones" name="notificaciones" value="1"{% if cliente.recibir_notificaciones %} checked{% endif %} style="margin-top: 0.25rem;">
+                <label class="opcion" for="id_notificaciones" style="display: flex; gap: 0.75rem; align-items: flex-start; opacity: 0.6; cursor: not-allowed;">
+                    <input type="checkbox" id="id_notificaciones" disabled {% if cliente.recibir_notificaciones %} checked{% endif %} style="margin-top: 0.25rem;">
                     <span>Recibir avisos por correo cuando cambie el estado de mis solicitudes</span>
                 </label>
             </div>
 
+            <!-- Mensaje global de contacto debajo de los datos -->
+            <div class="ayuda" style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #aaa;">
+                <i class="fa-solid fa-circle-info" style="margin-right: 0.5rem;"></i> Para cambiar los datos de tu cuenta escríbenos a <strong>contacto@axztra.cl</strong>.
+            </div>
+
             <hr style="margin: 2.5rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
 
-            <div class="acciones" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <!-- Como no se puede guardar, solo dejamos la fecha del cliente aquí -->
+            <div class="acciones" style="display: flex; justify-content: flex-start; align-items: center;">
                 <span class="texto-menor" style="color: #888;">Cliente desde el {{ user.date_joined|date:"d-m-Y" }}</span>
-                <button type="submit" class="boton boton-primario">Guardar cambios</button>
             </div>
 
         </div>
 
+        <!-- COLUMNA DERECHA: Métricas y Seguridad intactas -->
         <aside class="columna-lateral" style="width: 100%;">
             
             <div class="tarjeta-resumen" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
@@ -86,7 +95,7 @@
             </div>
 
         </aside>
-    </form>
+    </div>
 </section>
 
 <style>
