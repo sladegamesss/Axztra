@@ -46,7 +46,7 @@
     function actualizarTextoTasa() {
         document.querySelectorAll('#tasa-cambio-info, #tasa-cambio-info-pub').forEach(function(el) {
             if (configRegional.moneda === 'CLP') {
-                el.textContent = 'Cargando tasa del día...';
+                el.textContent = ;
             } else {
                 var tasaInversa = (1 / configRegional.tasaCambio[configRegional.moneda]).toFixed(2);
                 el.textContent = '1 ' + configRegional.moneda + ' = $' + tasaInversa + ' CLP';
