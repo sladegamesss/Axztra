@@ -117,12 +117,66 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
     first_name = forms.CharField(label='Nombre', max_length=80)
     last_name = forms.CharField(label='Apellido', max_length=80)
     email = forms.EmailField(label='Correo electrónico')
-    empresa = forms.CharField(label='Empresa o emprendimiento', max_length=200, required=False)
+    
+    # Definimos las 3 opciones que aparecerán al desplegar
+    OPCIONES_TIPO = [
+        ('', 'Selecciona una opción'),
+        ('Empresa', 'Empresa'),
+        ('Emprendimiento', 'Emprendimiento'),
+        ('Otra', 'Otra'),
+    ]
+    # Cambiamos CharField por ChoiceField para que sea un selector múltiple
+    empresa = forms.ChoiceField(label='Empresa, emprendimiento u otra', choices=OPCIONES_TIPO, required=False)
+    
     telefono = forms.CharField(label='Teléfono', max_length=20, required=False)
     acepta_terminos = forms.BooleanField(
         label='Acepto los términos de uso y la política de privacidad',
         error_messages={'required': 'Debes aceptar los términos y la política de privacidad para crear la cuenta.'},
     )
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password1'].label = 'Contraseña'
+        self.fields['password2'].label = 'Repite la contraseña'
+        self.fields['password1'].help_text = 'Mínimo 8 caracteres, que no sean solo números ni se parezcan a tus datos.'
+        self.fields['password2'].help_text = ''
+        self.aplicar_estilos()
+        self.fields['first_name'].widget.attrs.update({'autocomplete': 'given-name'})
+        self.fields['last_name'].widget.attrs.update({'autocomplete': 'family-name'})
+        self.fields['email'].widget.attrs.update({'autocomplete': 'email', 'placeholder': 'nombre@empresa.cl'})
+        self.fields['telefono'].widget.attrs.update({'placeholder': '+56 9 1234 5678', 'autocomplete': 'tel', 'inputmode': 'tel'})
+        # Ojo: se eliminó el autocomplete="organization" de empresa porque ahora es un menú desplegable, no de texto.
+
+    # Evita dos cuentas con el mismo correo (sin distinguir mayúsculas).
+    def clean_email(self):
+        email = self.cleaned_data['email'].strip().lower()
+        if User.objects.annotate(correo_normalizado=Lower('email')).filter(correo_normalizado=email).exists():
+            raise forms.ValidationError('Ya existe una cuenta con este correo. Inicia sesión o recupera tu contraseña.')
+        return email
+
+    def clean_telefono(self):
+        return validar_telefono(self.cleaned_data.get('telefono'))
+
+    # Guarda el usuario (el correo es también su nombre de usuario) y crea su PerfilCliente.
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        usuario.username = self.cleaned_data['email'][:150]
+        usuario.email = self.cleaned_data['email']
+        if commit:
+            usuario.save()
+            PerfilCliente.objects.update_or_create(
+                usuario=usuario,
+                defaults={
+                    'empresa': self.cleaned_data.get('empresa', ''),
+                    'telefono': self.cleaned_data.get('telefono', ''),
+                    'fecha_aceptacion_terminos': timezone.now(),
+                },
+            )
+        return usuario
 
     class Meta:
         model = User
