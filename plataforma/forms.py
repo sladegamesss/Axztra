@@ -118,28 +118,26 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
     last_name = forms.CharField(label='Apellido', max_length=80)
     email = forms.EmailField(label='Correo electrónico')
     
-    # Opciones de empresa actualizadas
     OPCIONES_TIPO = [
         ('', 'Selecciona una opción'),
         ('Empresa', 'Empresa'),
         ('Emprendimiento', 'Emprendimiento'),
-        ('Otro', 'Otro'),
+        ('Otra', 'Otra'),
     ]
-    empresa = forms.ChoiceField(label='Empresa, emprendimiento u otro', choices=OPCIONES_TIPO, required=False)
+    empresa = forms.ChoiceField(label='Empresa, emprendimiento u otra', choices=OPCIONES_TIPO, required=False)
     
-    # NUEVO: Selector de código de país
+    # Opciones de país simplificadas: solo muestran el código numérico
     OPCIONES_PAIS = [
-        ('+56', '🇨🇱 Chile (+56)'),
-        ('+54', '🇦🇷 Argentina (+54)'),
-        ('+51', '🇵🇪 Perú (+51)'),
-        ('+52', '🇲🇽 México (+52)'),
-        ('+57', '🇨🇴 Colombia (+57)'),
-        ('+34', '🇪🇸 España (+34)'),
-        ('+1', '🇺🇸 USA/Canadá (+1)'),
+        ('+56', '+56'),
+        ('+54', '+54'),
+        ('+51', '+51'),
+        ('+52', '+52'),
+        ('+57', '+57'),
+        ('+34', '+34'),
+        ('+1', '+1'),
     ]
     codigo_pais = forms.ChoiceField(label='Código de país', choices=OPCIONES_PAIS, required=False, initial='+56')
     
-    # Teléfono cambia de label para ser solo el número
     telefono = forms.CharField(label='Número de teléfono', max_length=15, required=False)
     
     acepta_terminos = forms.BooleanField(
@@ -158,7 +156,6 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
         self.fields['password1'].help_text = 'Mínimo 8 caracteres, que no sean solo números ni se parezcan a tus datos.'
         self.fields['password2'].help_text = ''
         
-        # Opcional: Reordenar los campos si quieres que el código de país esté antes del teléfono
         orden = ['first_name', 'last_name', 'email', 'empresa', 'codigo_pais', 'telefono', 'password1', 'password2', 'acepta_terminos']
         self.fields = {nom: self.fields[nom] for nom in orden if nom in self.fields}
 
@@ -167,6 +164,8 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
         self.fields['first_name'].widget.attrs.update({'autocomplete': 'given-name'})
         self.fields['last_name'].widget.attrs.update({'autocomplete': 'family-name'})
         self.fields['email'].widget.attrs.update({'autocomplete': 'email', 'placeholder': 'nombre@empresa.cl'})
+        
+        # Placeholder actualizado: se eliminó el "+56" para que solo pida los números
         self.fields['telefono'].widget.attrs.update({'placeholder': '9 1234 5678', 'autocomplete': 'tel-national', 'inputmode': 'tel'})
 
     def clean_email(self):
@@ -180,14 +179,11 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
         codigo = cleaned_data.get('codigo_pais')
         numero = cleaned_data.get('telefono')
         
-        # Combinar el código de país con el número si el usuario ingresó un teléfono
         if numero:
-            # Limpiar caracteres raros del número (mantener solo dígitos)
             solo_digitos = re.sub(r'\D', '', numero)
             if len(solo_digitos) < 8:
                 self.add_error('telefono', 'Ingresa un teléfono válido de al menos 8 dígitos.')
             else:
-                # Guardar el teléfono combinado en cleaned_data
                 cleaned_data['telefono'] = f"{codigo} {solo_digitos}"
                 
         return cleaned_data
@@ -207,7 +203,7 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
                 },
             )
         return usuario
-
+        
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'email')
