@@ -20,7 +20,6 @@
         <p class="panel-bajada" style="margin: 0; color: #aaa;">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes revisar tu información de contacto.</p>
     </div>
 
-    <!-- Como todo es de solo lectura, cambiamos el <form> por un <div> y eliminamos el botón de guardar -->
     <div class="panel-cuerpo" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin: 0;">
         
         <!-- COLUMNA IZQUIERDA: Datos Bloqueados -->
@@ -31,25 +30,21 @@
                 <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
 
-            <!-- El campo ahora se llama "Nombre" y es readonly -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
                 <label for="id_nombre" style="display: block; margin-bottom: 0.5rem;">Nombre</label>
                 <input type="text" id="id_nombre" value="{{ user.first_name }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
 
-            <!-- Empresa en modo readonly -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
                 <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa o emprendimiento</label>
                 <input type="text" id="id_empresa" value="{{ cliente.empresa|default:'' }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
 
-            <!-- Teléfono en modo readonly -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
                 <label for="id_telefono" style="display: block; margin-bottom: 0.5rem;">Teléfono</label>
                 <input type="tel" id="id_telefono" value="{{ cliente.telefono|default:'' }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
             </div>
             
-            <!-- Checkbox desactivado (disabled) -->
             <div class="campo campo-completo" style="margin-top: 2rem;">
                 <label class="opcion" for="id_notificaciones" style="display: flex; gap: 0.75rem; align-items: flex-start; opacity: 0.6; cursor: not-allowed;">
                     <input type="checkbox" id="id_notificaciones" disabled {% if cliente.recibir_notificaciones %} checked{% endif %} style="margin-top: 0.25rem;">
@@ -57,21 +52,14 @@
                 </label>
             </div>
 
-            <!-- Mensaje global de contacto debajo de los datos -->
+            <!-- Mensaje global de contacto -->
             <div class="ayuda" style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #aaa;">
                 <i class="fa-solid fa-circle-info" style="margin-right: 0.5rem;"></i> Para cambiar los datos de tu cuenta escríbenos a <strong>contacto@axztra.cl</strong>.
             </div>
 
-            <hr style="margin: 2.5rem 0; border: none; border-top: 1px solid rgba(255,255,255,0.1);">
-
-            <!-- Como no se puede guardar, solo dejamos la fecha del cliente aquí -->
-            <div class="acciones" style="display: flex; justify-content: flex-start; align-items: center;">
-                <span class="texto-menor" style="color: #888;">Cliente desde el {{ user.date_joined|date:"d-m-Y" }}</span>
-            </div>
-
         </div>
 
-        <!-- COLUMNA DERECHA: Métricas y Seguridad intactas -->
+        <!-- COLUMNA DERECHA: Métricas y Seguridad -->
         <aside class="columna-lateral" style="width: 100%;">
             
             <div class="tarjeta-resumen" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
@@ -89,9 +77,14 @@
                 <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo" style="margin-top: 1.5rem; width: 100%; justify-content: center;">Ver mis solicitudes</a>
             </div>
 
-            <div class="tarjeta-resumen" style="padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+            <div class="tarjeta-resumen" style="margin-bottom: 1.5rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
                 <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Seguridad</h3>
                 <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo" style="width: 100%; justify-content: center;"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
+            </div>
+
+            <!-- Cliente desde: Movido bajo Seguridad -->
+            <div class="texto-menor" style="color: #888; text-align: left; padding-left: 0.25rem;">
+                Cliente desde el {{ user.date_joined|date:"d-m-Y" }}
             </div>
 
         </aside>
