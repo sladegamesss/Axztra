@@ -218,7 +218,7 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
         self.fields['first_name'].widget.attrs.update({'autocomplete': 'given-name'})
         self.fields['last_name'].widget.attrs.update({'autocomplete': 'family-name'})
         self.fields['email'].widget.attrs.update({'autocomplete': 'email'})
-        self.fields['telefono'].widget.attrs.update({'placeholder': '+56 9 1234 5678', 'autocomplete': 'tel', 'inputmode': 'tel'})
+        self.fields['telefono'].widget.attrs.update({'autocomplete': 'tel', 'inputmode': 'tel'})
         self.fields['empresa'].widget.attrs.update({'autocomplete': 'organization'})
 
     # Evita dos cuentas con el mismo correo (sin distinguir mayúsculas).
