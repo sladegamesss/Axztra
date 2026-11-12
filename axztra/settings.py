@@ -58,7 +58,7 @@ SECRET_KEY = os.environ.get(
     'axztra-desarrollo-local-reemplazar-en-produccion-7f3c9a1e5b',
 )
 
-DEBUG = entorno_bool('DJANGO_DEBUG', True)
+DEBUG = True
 
 if not DEBUG and SECRET_KEY.startswith('axztra-desarrollo-local'):
     raise ImproperlyConfigured('Define la variable de entorno DJANGO_SECRET_KEY antes de ejecutar con DJANGO_DEBUG=0.')
