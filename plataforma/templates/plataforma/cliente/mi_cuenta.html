@@ -4,12 +4,34 @@
 {% block clase_body %}fondo-oscuro{% endblock %}
 
 {% block content %}
-<!-- Quitamos bordes naranjas de las tarjetas de la derecha inyectando CSS directo -->
+<!-- CSS infalible para matar los bordes y cajas naranjas en la derecha -->
 <style>
-    .tarjeta-resumen, .columna-lateral .metrica, .metricas-mini {
-        border-top: none !important;
+    /* Destruye cualquier borde, sombra o pseudo-elemento decorativo de Axztra en esta columna */
+    .columna-lateral .tarjeta-resumen, 
+    .columna-lateral .metrica {
         border-image: none !important;
-        border-color: rgba(255, 255, 255, 0.1) !important;
+        box-shadow: none !important;
+    }
+    .columna-lateral .tarjeta-resumen::before, 
+    .columna-lateral .tarjeta-resumen::after,
+    .columna-lateral .metrica::before, 
+    .columna-lateral .metrica::after {
+        display: none !important;
+        background: none !important;
+    }
+    
+    /* Limpiamos las cajas de métricas para que sean solo texto y no parezcan botones */
+    .columna-lateral .metrica {
+        border: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        padding: 0 0 0.75rem 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .columna-lateral .metrica:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
     }
 </style>
 
@@ -52,7 +74,6 @@
                 </label>
             </div>
 
-            <!-- Mensaje global de contacto -->
             <div class="ayuda" style="margin-top: 2.5rem; padding: 1.25rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #aaa;">
                 <i class="fa-solid fa-circle-info" style="margin-right: 0.5rem;"></i> Para cambiar los datos de tu cuenta escríbenos a <strong>contacto@axztra.cl</strong>.
             </div>
@@ -64,20 +85,21 @@
             
             <div class="tarjeta-resumen" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
                 <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Tus solicitudes</h3>
-                <div class="metricas-mini" style="display: grid; gap: 1rem;">
-                    <div class="metrica" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; background: transparent; padding-left: 0; padding-right: 0;">
+                
+                <div class="metricas-mini" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="metrica" style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: #aaa;">Total</span>
                         <strong style="font-size: 1.1rem;">{{ total_solicitudes }}</strong>
                     </div>
-                    <div class="metrica" style="display: flex; justify-content: space-between; background: transparent; padding-left: 0; padding-right: 0;">
+                    <div class="metrica" style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: #aaa;">En curso</span>
                         <strong style="font-size: 1.1rem;">{{ en_curso }}</strong>
                     </div>
                 </div>
+                
                 <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo" style="margin-top: 1.5rem; width: 100%; justify-content: center;">Ver mis solicitudes</a>
             </div>
 
-            <!-- Seguridad con "Cliente desde..." perfectamente ajustado debajo -->
             <div style="display: flex; flex-direction: column; gap: 1rem;">
                 <div class="tarjeta-resumen" style="padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
                     <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Seguridad</h3>
