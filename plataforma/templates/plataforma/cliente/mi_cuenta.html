@@ -10,8 +10,11 @@
         <p class="panel-bajada">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes actualizar tu información de contacto.</p>
     </div>
 
+    <!-- El formulario envuelve ambas columnas para enviar los datos -->
     <form method="post" class="panel-cuerpo panel-dos-columnas" data-validar>
         {% csrf_token %}
+        
+        <!-- COLUMNA IZQUIERDA: Formulario de datos -->
         <div class="columna-principal">
             
             <div class="campo campo-completo">
@@ -20,34 +23,35 @@
                 <div class="ayuda">Para cambiar el correo de tu cuenta escríbenos a contacto@axztra.cl.</div>
             </div>
 
-            <div class="campo-grupo">
-                <div class="campo">
-                    <label for="id_empresa">Empresa o emprendimiento</label>
-                    <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150">
-                </div>
-                <div class="campo">
-                    <label for="id_telefono">Teléfono (opcional)</label>
-                    <input type="tel" id="id_telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" class="control" placeholder="+56 9 1234 5678" maxlength="20">
-                </div>
+            <div class="campo campo-completo">
+                <label for="id_empresa">Empresa o emprendimiento</label>
+                <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150">
+            </div>
+
+            <div class="campo campo-completo">
+                <label for="id_telefono">Teléfono (opcional)</label>
+                <input type="tel" id="id_telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" class="control" placeholder="+56 9 1234 5678" maxlength="20">
             </div>
             
-            <div class="campo campo-completo mt-2">
+            <div class="campo campo-completo" style="margin-top: 2rem;">
                 <label class="opcion" for="id_notificaciones">
                     <input type="checkbox" id="id_notificaciones" name="notificaciones" value="1"{% if cliente.recibir_notificaciones %} checked{% endif %}>
                     <span>Recibir avisos por correo cuando cambie el estado de mis solicitudes</span>
                 </label>
             </div>
 
-            <div class="acciones mt-4">
+            <hr style="margin: 2rem 0; border-color: rgba(255,255,255,0.1);">
+
+            <div class="acciones" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <span class="texto-menor" style="color: #888;">Cliente desde el {{ user.date_joined|date:"d-m-Y" }}</span>
                 <button type="submit" class="boton boton-primario">Guardar cambios</button>
             </div>
-            
-            <p class="texto-menor mt-2 text-muted">Cliente desde el {{ user.date_joined|date:"d-m-Y" }}</p>
 
-        </div>
+        </div> <!-- Cierre de columna-principal -->
 
+        <!-- COLUMNA DERECHA: Métricas y Seguridad -->
         <aside class="columna-lateral">
-            <div class="tarjeta-resumen mb-3">
+            <div class="tarjeta-resumen" style="margin-bottom: 2rem;">
                 <h3>Tus solicitudes</h3>
                 <div class="metricas-mini">
                     <div class="metrica">
@@ -59,14 +63,15 @@
                         <strong>{{ en_curso }}</strong>
                     </div>
                 </div>
-                <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo mt-2">Ver mis solicitudes</a>
+                <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo" style="margin-top: 1rem;">Ver mis solicitudes</a>
             </div>
 
             <div class="tarjeta-resumen">
                 <h3>Seguridad</h3>
-                <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo mt-2"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
+                <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo" style="margin-top: 1rem;"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
             </div>
-        </aside>
-    </form>
+        </aside> <!-- Cierre de columna-lateral -->
+
+    </form> <!-- Cierre del panel-cuerpo -->
 </section>
 {% endblock %}
