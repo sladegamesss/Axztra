@@ -22,7 +22,8 @@
                 
                 {% include "plataforma/includes/campo.html" with campo=form.email %}
                 
-                <div class="grilla grilla-2">
+                <!-- 🔥 AQUI ESTÁ LA MAGIA: style="align-items: end;" alinea las cajas por debajo 🔥 -->
+                <div class="grilla grilla-2" style="align-items: end;">
                     <div class="campo{% if form.empresa.errors %} con-error{% endif %}">
                         <label for="{{ form.empresa.id_for_label }}">Empresa, emprendimiento u otra</label>
                         {{ form.empresa }}
@@ -31,7 +32,7 @@
                     
                     <div class="campo{% if form.telefono.errors or form.codigo_pais.errors %} con-error{% endif %}">
                         <label for="{{ form.telefono.id_for_label }}">Teléfono</label>
-                        <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                        <div style="display: flex; gap: 0.5rem;">
                             <div style="width: 100px; flex-shrink: 0;">
                                 {{ form.codigo_pais }}
                             </div>
