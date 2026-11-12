@@ -1,45 +1,72 @@
-{% extends 'plataforma/base.html' %}
-{# CU14 Gestionar mi cuenta. #}
+{% extends "plataforma/base.html" %}
+{% load static %}
 {% block title %}Mis datos - AXZTRA{% endblock %}
-{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block clase_body %}fondo-oscuro{% endblock %}
+
 {% block content %}
-<div class="contenedor">
-    <header class="cabecera-pagina">
-        <h1>Mis datos</h1>
-        <p>Mantén tus datos al día para que podamos contactarte y preparar tus cotizaciones.</p>
-    </header>
-    <div class="grilla grilla-lateral mb-l">
-        <form method="post" class="tarjeta tarjeta-grande" novalidate data-validar>
-            {% csrf_token %}
-            <div class="grilla grilla-2">
-                {% include "plataforma/includes/campo.html" with campo=form.first_name %}
-                {% include "plataforma/includes/campo.html" with campo=form.last_name %}
+<section class="panel contenedor">
+    <div class="panel-cabecera">
+        <h1 class="panel-titulo"><i class="fa-regular fa-id-card" aria-hidden="true"></i> Mis datos</h1>
+        <p class="panel-bajada">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes actualizar tu información de contacto.</p>
+    </div>
+
+    <form method="post" class="panel-cuerpo panel-dos-columnas" data-validar>
+        {% csrf_token %}
+        <div class="columna-principal">
+            
+            <div class="campo campo-completo">
+                <label for="id_correo">Correo electrónico</label>
+                <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly>
+                <div class="ayuda">Para cambiar el correo de tu cuenta escríbenos a contacto@axztra.cl.</div>
             </div>
-            <div class="campo">
-                <label class="etiqueta" for="correo-cuenta">Correo electrónico</label>
-                <input class="control" type="email" id="correo-cuenta" value="{{ user.email }}" disabled>
-                <div class="ayuda">Para cambiar el correo de tu cuenta escríbenos a {{ sitio.correo_contacto }}.</div>
+
+            <div class="campo-grupo">
+                <div class="campo">
+                    <label for="id_empresa">Empresa o emprendimiento</label>
+                    <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150">
+                </div>
+                <div class="campo">
+                    <label for="id_telefono">Teléfono (opcional)</label>
+                    <input type="tel" id="id_telefono" name="telefono" value="{{ cliente.telefono|default:'' }}" class="control" placeholder="+56 9 1234 5678" maxlength="20">
+                </div>
             </div>
-            <div class="grilla grilla-2">
-                {% include "plataforma/includes/campo.html" with campo=form.empresa %}
-            {% include "plataforma/includes/campo.html" with campo=form.recibir_notificaciones %}
-            <div class="acciones">
-                <span class="pequeno texto-3">Cliente desde {{ user.date_joined|date:"d-m-Y" }}</span>
+            
+            <div class="campo campo-completo mt-2">
+                <label class="opcion" for="id_notificaciones">
+                    <input type="checkbox" id="id_notificaciones" name="notificaciones" value="1"{% if cliente.recibir_notificaciones %} checked{% endif %}>
+                    <span>Recibir avisos por correo cuando cambie el estado de mis solicitudes</span>
+                </label>
+            </div>
+
+            <div class="acciones mt-4">
                 <button type="submit" class="boton boton-primario">Guardar cambios</button>
             </div>
-        </form>
-        <aside>
-            <section class="tarjeta">
-                <h2>Tus solicitudes</h2>
-                <ul class="lista-simple">
-                    <li><span>Total</span>{{ total_solicitudes }}</li>
-                    <li><span>En curso</span>{{ solicitudes_activas }}</li>
-                </ul>
-                <a class="boton boton-secundario ancho-completo mt-s" href="{% url 'mis_solicitudes' %}">Ver mis solicitudes</a>
-            </section>
-            <section class="tarjeta">
-                <h2>Seguridad</h2>
-                <a class="boton boton-secundario ancho-completo" href="{% url 'cambiar_clave' %}"><i class="fa-solid fa-key" aria-hidden="true"></i>Cambiar contraseña</a>
-            </section>
-            <section class="tarjeta">
+            
+            <p class="texto-menor mt-2 text-muted">Cliente desde el {{ user.date_joined|date:"d-m-Y" }}</p>
+
+        </div>
+
+        <aside class="columna-lateral">
+            <div class="tarjeta-resumen mb-3">
+                <h3>Tus solicitudes</h3>
+                <div class="metricas-mini">
+                    <div class="metrica">
+                        <span>Total</span>
+                        <strong>{{ total_solicitudes }}</strong>
+                    </div>
+                    <div class="metrica">
+                        <span>En curso</span>
+                        <strong>{{ en_curso }}</strong>
+                    </div>
+                </div>
+                <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo mt-2">Ver mis solicitudes</a>
+            </div>
+
+            <div class="tarjeta-resumen">
+                <h3>Seguridad</h3>
+                <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo mt-2"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
+            </div>
+        </aside>
+    </form>
+</section>
 {% endblock %}
