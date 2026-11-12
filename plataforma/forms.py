@@ -77,7 +77,7 @@ def validar_telefono(valor):
         return ''
     digitos = re.sub(r'\D', '', valor)
     if len(digitos) < 8 or len(digitos) > 12:
-        raise forms.ValidationError('Ingresa un teléfono válido')
+        raise forms.ValidationError('Ingresa un teléfono válido.')
     return valor
 
 
@@ -217,7 +217,7 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
         self.aplicar_estilos()
         self.fields['first_name'].widget.attrs.update({'autocomplete': 'given-name'})
         self.fields['last_name'].widget.attrs.update({'autocomplete': 'family-name'})
-        self.fields['email'].widget.attrs.update({'autocomplete': 'email', 'placeholder':})
+        self.fields['email'].widget.attrs.update({'autocomplete': 'email'})
         self.fields['telefono'].widget.attrs.update({'placeholder': '+56 9 1234 5678', 'autocomplete': 'tel', 'inputmode': 'tel'})
         self.fields['empresa'].widget.attrs.update({'autocomplete': 'organization'})
 
