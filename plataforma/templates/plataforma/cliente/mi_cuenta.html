@@ -22,13 +22,7 @@
             </div>
             <div class="grilla grilla-2">
                 {% include "plataforma/includes/campo.html" with campo=form.empresa %}
-<<<<<<< HEAD
-                {% include "plataforma/includes/campo.html" with campo=form.rut %}
-=======
->>>>>>> 730d783 (Se elimina el apartado de ingresar rut en la cuenta del cliente)
-                {% include "plataforma/includes/campo.html" with campo=form.telefono %}
-                {% include "plataforma/includes/campo.html" with campo=form.ciudad %}
-            </div>
+
             {% include "plataforma/includes/campo.html" with campo=form.recibir_notificaciones %}
             <div class="acciones">
                 <span class="pequeno texto-3">Cliente desde {{ user.date_joined|date:"d-m-Y" }}</span>
