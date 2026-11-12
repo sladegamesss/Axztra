@@ -207,9 +207,43 @@ class CodigoVerificacionForm(EstiloFormularioMixin, forms.Form):
 
 # CU14 Gestionar mi cuenta: datos personales del cliente.
 class CuentaForm(EstiloFormularioMixin, forms.ModelForm):
-    first_name = forms.CharField(label='Nombre', max_length=80)
-    last_name = forms.CharField(label='Apellido', max_length=80)
+    # Campo unificado para Nombre y Apellido
+    nombre = forms.CharField(label='Nombre y apellido', max_length=150)
 
+    class Meta:
+        model = PerfilCliente
+        # Quitamos 'rut' y 'ciudad' para que coincida con tu nuevo diseño HTML
+        fields = ['empresa', 'telefono', 'recibir_notificaciones']
+        labels = {'recibir_notificaciones': 'Recibir avisos por correo cuando cambie el estado de mis solicitudes'}
+
+    def __init__(self, *args, usuario=None, **kwargs):
+        self.usuario = usuario
+        super().__init__(*args, **kwargs)
+        if usuario is not None:
+            # Unir el nombre y apellido para mostrarlo en el único campo
+            nombre_completo = f"{usuario.first_name} {usuario.last_name}".strip()
+            self.fields['nombre'].initial = nombre_completo or usuario.first_name
+            
+        orden = ['nombre', 'empresa', 'telefono', 'recibir_notificaciones']
+        self.fields = {nom: self.fields[nom] for nom in orden if nom in self.fields}
+        self.aplicar_estilos()
+        self.fields['telefono'].widget.attrs.update({'inputmode': 'tel', 'autocomplete': 'tel'})
+
+    def clean_telefono(self):
+        return validar_telefono(self.cleaned_data.get('telefono'))
+
+    def save(self, commit=True):
+        perfil = super().save(commit=False)
+        if self.usuario is not None:
+            # Al guardar, separamos el nombre completo de nuevo en first_name y last_name
+            partes = self.cleaned_data['nombre'].strip().split(' ', 1)
+            self.usuario.first_name = partes[0][:150]
+            self.usuario.last_name = partes[1][:150] if len(partes) > 1 else ''
+            if commit:
+                self.usuario.save(update_fields=['first_name', 'last_name'])
+        if commit:
+            perfil.save()
+        return perfil
     class Meta:
         model = PerfilCliente
         fields = ['empresa', 'rut', 'telefono', 'ciudad', 'recibir_notificaciones']
