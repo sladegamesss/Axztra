@@ -244,39 +244,6 @@ class CuentaForm(EstiloFormularioMixin, forms.ModelForm):
         if commit:
             perfil.save()
         return perfil
-    class Meta:
-        model = PerfilCliente
-        fields = ['empresa', 'rut', 'telefono', 'ciudad', 'recibir_notificaciones']
-        labels = {'recibir_notificaciones': 'Recibir avisos por correo cuando cambie el estado de mis solicitudes'}
-
-    def __init__(self, *args, usuario=None, **kwargs):
-        self.usuario = usuario
-        super().__init__(*args, **kwargs)
-        if usuario is not None:
-            self.fields['first_name'].initial = usuario.first_name
-            self.fields['last_name'].initial = usuario.last_name
-        orden = ['first_name', 'last_name', 'empresa', 'rut', 'telefono', 'ciudad', 'recibir_notificaciones']
-        self.fields = {nombre: self.fields[nombre] for nombre in orden}
-        self.aplicar_estilos()
-        self.fields['rut'].widget.attrs['placeholder'] = '12.345.678-9'
-        self.fields['telefono'].widget.attrs.update({'inputmode': 'tel', 'autocomplete': 'tel'})
-
-    def clean_rut(self):
-        return validar_rut(self.cleaned_data.get('rut'))
-
-    def clean_telefono(self):
-        return validar_telefono(self.cleaned_data.get('telefono'))
-
-    def save(self, commit=True):
-        perfil = super().save(commit=False)
-        if self.usuario is not None:
-            self.usuario.first_name = self.cleaned_data['first_name']
-            self.usuario.last_name = self.cleaned_data['last_name']
-            if commit:
-                self.usuario.save(update_fields=['first_name', 'last_name'])
-        if commit:
-            perfil.save()
-        return perfil
 
 
 # Cambio de contraseña desde Mi cuenta.
