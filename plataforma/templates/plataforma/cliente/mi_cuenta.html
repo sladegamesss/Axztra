@@ -4,20 +4,25 @@
 {% block clase_body %}fondo-oscuro{% endblock %}
 
 {% block content %}
-<!-- Bloque principal forzado a organizarse en columna vertical y centrado -->
+<!-- Quitamos bordes naranjas de las tarjetas de la derecha inyectando CSS directo -->
+<style>
+    .tarjeta-resumen, .columna-lateral .metrica, .metricas-mini {
+        border-top: none !important;
+        border-image: none !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+</style>
+
 <section class="panel contenedor" style="max-width: 950px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding-top: 3rem; padding-bottom: 5rem;">
     
-    <!-- Cabecera alineada al centro -->
     <div class="panel-cabecera" style="text-align: center; width: 100%; margin-bottom: 3.5rem; position: static; height: auto;">
         <h1 class="panel-titulo" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><i class="fa-regular fa-id-card" aria-hidden="true"></i> Mis datos</h1>
         <p class="panel-bajada" style="margin: 0; color: #aaa;">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes actualizar tu información de contacto.</p>
     </div>
 
-    <!-- Contenedor de 2 columnas para el formulario y las tarjetas -->
     <form method="post" class="panel-cuerpo" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin: 0;" data-validar>
         {% csrf_token %}
         
-        <!-- COLUMNA IZQUIERDA: Formulario de datos -->
         <div class="columna-principal" style="width: 100%;">
             
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
@@ -26,8 +31,14 @@
                 <div class="ayuda" style="margin-top: 0.5rem;">Para cambiar el correo de tu cuenta escríbenos a contacto@axztra.cl.</div>
             </div>
 
+            <!-- 🔥 NUEVO CAMPO: Nombre y Apellido 🔥 -->
             <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
-                <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa o emprendimiento</label>
+                <label for="id_nombre" style="display: block; margin-bottom: 0.5rem;">Nombre y apellido</label>
+                <input type="text" id="id_nombre" name="nombre" value="{{ user.get_full_name|default:user.first_name }}" class="control" placeholder="Ej: Juan Pérez" maxlength="150" style="width: 100%;">
+            </div>
+
+            <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
+                <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa o emprendimiento (opcional)</label>
                 <input type="text" id="id_empresa" name="empresa" value="{{ cliente.empresa|default:'' }}" class="control" placeholder="Ej: Cafetería Aroma" maxlength="150" style="width: 100%;">
             </div>
 
@@ -52,17 +63,16 @@
 
         </div>
 
-        <!-- COLUMNA DERECHA: Métricas y Seguridad -->
         <aside class="columna-lateral" style="width: 100%;">
             
             <div class="tarjeta-resumen" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
                 <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Tus solicitudes</h3>
                 <div class="metricas-mini" style="display: grid; gap: 1rem;">
-                    <div class="metrica" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem;">
+                    <div class="metrica" style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; background: transparent; padding-left: 0; padding-right: 0;">
                         <span style="color: #aaa;">Total</span>
                         <strong style="font-size: 1.1rem;">{{ total_solicitudes }}</strong>
                     </div>
-                    <div class="metrica" style="display: flex; justify-content: space-between;">
+                    <div class="metrica" style="display: flex; justify-content: space-between; background: transparent; padding-left: 0; padding-right: 0;">
                         <span style="color: #aaa;">En curso</span>
                         <strong style="font-size: 1.1rem;">{{ en_curso }}</strong>
                     </div>
@@ -79,7 +89,6 @@
     </form>
 </section>
 
-<!-- Hacemos que se apile verticalmente en celulares -->
 <style>
     @media (max-width: 768px) {
         .panel-cuerpo {
