@@ -123,10 +123,10 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
         ('', 'Selecciona una opción'),
         ('Empresa', 'Empresa'),
         ('Emprendimiento', 'Emprendimiento'),
-        ('Otra', 'Otra'),
+        ('Otro', 'Otro'),
     ]
     # Cambiamos CharField por ChoiceField para que sea un selector múltiple
-    empresa = forms.ChoiceField(label='Empresa, emprendimiento u otra', choices=OPCIONES_TIPO, required=False)
+    empresa = forms.ChoiceField(label='Empresa, emprendimiento u otro', choices=OPCIONES_TIPO, required=False)
     
     telefono = forms.CharField(label='Teléfono', max_length=20, required=False)
     acepta_terminos = forms.BooleanField(
