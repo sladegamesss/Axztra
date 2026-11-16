@@ -533,7 +533,7 @@ class SolicitudSoporteForm(SolicitudSimpleForm):
     titulo = forms.CharField(label='Resumen del problema', max_length=200)
     url_sitio = forms.URLField(label='Dirección del sitio afectado', assume_scheme='https', widget=CAMPO_URL)
     tipo_problema = forms.ChoiceField(label='Tipo de problema', choices=TIPOS_PROBLEMA)
-    desde_cuando = forms.CharField(label='¿Desde cuándo ocurre?', maxlength=100, required=False)
+    desde_cuando = forms.CharField(label='¿Desde cuándo ocurre?', max_length=100, required=False)
     prioridad = forms.ChoiceField(label='Prioridad', choices=Solicitud.PRIORIDADES, initial='media')
     descripcion = forms.CharField(label='Describe lo que ocurre', max_length=3000, widget=forms.Textarea(attrs={'rows': 5}))
 
