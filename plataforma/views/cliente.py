@@ -161,17 +161,14 @@ def estimacion_web(request):
         messages.warning(request, 'Revisa los datos del formulario antes de continuar.')
         return redirect(f"{reverse('crear_web')}?editar=1")
 
-    datos = form.cleaned_data
+ datos = form.cleaned_data
     
-    # --- SOLUCIÓN AL INTEGRITY ERROR ---
-    # Si el cliente marcó 'sin_preferencia', limpiamos a la fuerza cualquier
-    # monto numérico (como el "100") para no romper la regla de la base de datos.
-    if datos.get('presupuesto') == 'sin_preferencia':
-        # Borramos las variables de monto comunes por seguridad
-        for clave in ['monto', 'monto_presupuesto', 'presupuesto_personalizado', 'presupuesto_min', 'presupuesto_max']:
-            if clave in datos:
-                datos[clave] = None
-    # -----------------------------------
+    # --- NUEVA SOLUCIÓN ---
+    # Forzamos a que el presupuesto sea sí o sí una de las palabras permitidas
+    opciones_validas = ['por_definir', 'menos_300', '300_600', '600_1000', 'mas_1000']
+    if str(datos.get('presupuesto')) not in opciones_validas:
+        datos['presupuesto'] = 'por_definir'
+    # ----------------------
 
     if request.method == 'POST':
         try:
