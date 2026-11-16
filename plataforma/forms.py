@@ -359,7 +359,11 @@ class SolicitudWebForm(EstiloFormularioMixin, ServicioOpcionalMixin, TokenEnvioM
     sitios_referencia = forms.CharField(label='Sitios web que te gustan como referencia', max_length=1000, required=False, widget=forms.Textarea(attrs={'rows': 3}))
     dominio = forms.CharField(label='Dominio que tienes o quieres usar', max_length=120, required=False)
     presupuesto = forms.ChoiceField(label='Presupuesto aproximado', choices=RequerimientoWeb.PRESUPUESTOS, required=False, initial='por_definir')
-   fecha_deseada = forms.DateField(required=False, widget=forms.HiddenInput())
+    
+    # --- CAMBIO REALIZADO AQUÍ PARA OCULTAR LA FECHA ---
+    fecha_deseada = forms.DateField(required=False, widget=forms.HiddenInput())
+    # ---------------------------------------------------
+
     medio_contacto = forms.ChoiceField(label='¿Cómo prefieres que te contactemos?', choices=RequerimientoWeb.MEDIOS_CONTACTO, widget=forms.RadioSelect, required=False, initial='correo')
     observaciones = forms.CharField(label='Comentarios adicionales', max_length=2000, required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
@@ -368,7 +372,7 @@ class SolicitudWebForm(EstiloFormularioMixin, ServicioOpcionalMixin, TokenEnvioM
         2: ['nombre_negocio', 'rubro', 'descripcion_negocio', 'publico_objetivo', 'objetivos'],
         3: ['funcionalidades', 'integraciones', 'num_paginas', 'complejidad'],
         4: ['estilo_visual', 'colores', 'secciones', 'situacion_logo', 'tiene_contenido', 'sitios_referencia', 'dominio',
-            'presupuesto', 'medio_contacto', 'observaciones'],
+            'presupuesto', 'fecha_deseada', 'medio_contacto', 'observaciones'],
     }
     VALORES_POR_DEFECTO = {
         'estilo_visual': 'sin_preferencia',
@@ -529,7 +533,7 @@ class SolicitudSoporteForm(SolicitudSimpleForm):
     titulo = forms.CharField(label='Resumen del problema', max_length=200)
     url_sitio = forms.URLField(label='Dirección del sitio afectado', assume_scheme='https', widget=CAMPO_URL)
     tipo_problema = forms.ChoiceField(label='Tipo de problema', choices=TIPOS_PROBLEMA)
-    desde_cuando = forms.CharField(label='¿Desde cuándo ocurre?', max_length=100, required=False)
+    desde_cuando = forms.CharField(label='¿Desde cuándo ocurre?', maxlength=100, required=False)
     prioridad = forms.ChoiceField(label='Prioridad', choices=Solicitud.PRIORIDADES, initial='media')
     descripcion = forms.CharField(label='Describe lo que ocurre', max_length=3000, widget=forms.Textarea(attrs={'rows': 5}))
 
