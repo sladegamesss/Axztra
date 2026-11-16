@@ -147,6 +147,9 @@ def crear_web(request):
 # CU02 Obtener estimación: muestra el rango referencial y el resumen.
 # Al confirmar (POST) se registra la solicitud en estado Recibida.
 @login_required
+# CU02 Obtener estimación: muestra el rango referencial y el resumen.
+# Al confirmar (POST) se registra la solicitud en estado Recibida.
+@login_required
 def estimacion_web(request):
     borrador = request.session.get(CLAVE_BORRADOR)
     if not borrador:
@@ -159,6 +162,17 @@ def estimacion_web(request):
         return redirect(f"{reverse('crear_web')}?editar=1")
 
     datos = form.cleaned_data
+    
+    # --- SOLUCIÓN AL INTEGRITY ERROR ---
+    # Si el cliente marcó 'sin_preferencia', limpiamos a la fuerza cualquier
+    # monto numérico (como el "100") para no romper la regla de la base de datos.
+    if datos.get('presupuesto') == 'sin_preferencia':
+        # Borramos las variables de monto comunes por seguridad
+        for clave in ['monto', 'monto_presupuesto', 'presupuesto_personalizado', 'presupuesto_min', 'presupuesto_max']:
+            if clave in datos:
+                datos[clave] = None
+    # -----------------------------------
+
     if request.method == 'POST':
         try:
             solicitud = gestion.crear_solicitud_web(request.user, datos, request, token=datos.get('token_envio'))
