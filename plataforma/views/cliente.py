@@ -147,9 +147,6 @@ def crear_web(request):
 # CU02 Obtener estimación: muestra el rango referencial y el resumen.
 # Al confirmar (POST) se registra la solicitud en estado Recibida.
 @login_required
-# CU02 Obtener estimación: muestra el rango referencial y el resumen.
-# Al confirmar (POST) se registra la solicitud en estado Recibida.
-@login_required
 def estimacion_web(request):
     borrador = request.session.get(CLAVE_BORRADOR)
     if not borrador:
@@ -161,7 +158,7 @@ def estimacion_web(request):
         messages.warning(request, 'Revisa los datos del formulario antes de continuar.')
         return redirect(f"{reverse('crear_web')}?editar=1")
 
- datos = form.cleaned_data
+    datos = form.cleaned_data
     
     # --- NUEVA SOLUCIÓN ---
     # Forzamos a que el presupuesto sea sí o sí una de las palabras permitidas
