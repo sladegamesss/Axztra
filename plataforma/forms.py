@@ -4,7 +4,6 @@ Formularios de AXZTRA.
 Aquí se definen los campos que ve el usuario y las validaciones del lado del servidor.
 Las mismas reglas se repiten en el navegador (static/js/app.js) para avisar antes de enviar (RNF05).
 """
-
 import os
 import re
 import uuid
@@ -203,50 +202,6 @@ class RegistroForm(EstiloFormularioMixin, UserCreationForm):
                 },
             )
         return usuario
-        
-    class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'email')
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['password1'].label = 'Contraseña'
-        self.fields['password2'].label = 'Repite la contraseña'
-        self.fields['password1'].help_text = 'Mínimo 8 caracteres, que no sean solo números ni se parezcan a tus datos.'
-        self.fields['password2'].help_text = ''
-        self.aplicar_estilos()
-        self.fields['first_name'].widget.attrs.update({'autocomplete': 'given-name'})
-        self.fields['last_name'].widget.attrs.update({'autocomplete': 'family-name'})
-        self.fields['email'].widget.attrs.update({'autocomplete': 'email'})
-        self.fields['telefono'].widget.attrs.update({'autocomplete': 'tel', 'inputmode': 'tel'})
-        self.fields['empresa'].widget.attrs.update({'autocomplete': 'organization'})
-
-    # Evita dos cuentas con el mismo correo (sin distinguir mayúsculas).
-    def clean_email(self):
-        email = self.cleaned_data['email'].strip().lower()
-        if User.objects.annotate(correo_normalizado=Lower('email')).filter(correo_normalizado=email).exists():
-            raise forms.ValidationError('Ya existe una cuenta con este correo. Inicia sesión o recupera tu contraseña.')
-        return email
-
-    def clean_telefono(self):
-        return validar_telefono(self.cleaned_data.get('telefono'))
-
-    # Guarda el usuario (el correo es también su nombre de usuario) y crea su PerfilCliente.
-    def save(self, commit=True):
-        usuario = super().save(commit=False)
-        usuario.username = self.cleaned_data['email'][:150]
-        usuario.email = self.cleaned_data['email']
-        if commit:
-            usuario.save()
-            PerfilCliente.objects.update_or_create(
-                usuario=usuario,
-                defaults={
-                    'empresa': self.cleaned_data.get('empresa', ''),
-                    'telefono': self.cleaned_data.get('telefono', ''),
-                    'fecha_aceptacion_terminos': timezone.now(),
-                },
-            )
-        return usuario
 
 
 # CU05 Iniciar sesión con correo y contraseña.
@@ -390,7 +345,11 @@ class SolicitudWebForm(EstiloFormularioMixin, ServicioOpcionalMixin, TokenEnvioM
 
     funcionalidades = forms.MultipleChoiceField(label='Funcionalidades', choices=[(k, v['nombre']) for k, v in FUNCIONALIDADES.items()], widget=forms.CheckboxSelectMultiple, required=False)
     integraciones = forms.MultipleChoiceField(label='Integraciones', choices=[(k, v['nombre']) for k, v in INTEGRACIONES.items()], widget=forms.CheckboxSelectMultiple, required=False)
-    num_paginas = forms.IntegerField(label='Cantidad aproximada de páginas', min_value=1, max_value=MAXIMO_PAGINAS, initial=5)
+    
+    # --- CAMBIO REALIZADO AQUÍ PARA OCULTAR EL CAMPO ---
+    num_paginas = forms.IntegerField(label='Cantidad aproximada de páginas', widget=forms.HiddenInput(attrs={'value': 5}), initial=5)
+    # ---------------------------------------------------
+    
     complejidad = forms.ChoiceField(label='Nivel de diseño', choices=RequerimientoWeb.COMPLEJIDADES, widget=forms.RadioSelect, initial='media')
     estilo_visual = forms.ChoiceField(label='Estilo visual que prefieres', choices=RequerimientoWeb.ESTILOS, widget=forms.RadioSelect, required=False, initial='sin_preferencia')
     colores = forms.CharField(label='Colores de tu marca o que te gustan', max_length=120, required=False)
