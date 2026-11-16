@@ -141,7 +141,19 @@
                     {% include "plataforma/includes/campo.html" with campo=form.dominio %}
                     {% include "plataforma/includes/campo.html" with campo=form.presupuesto %}
                 </div>
-                {% include "plataforma/includes/campo.html" with campo=form.fecha_deseada %}
+                h3 class="subtitulo-paso">Plazos y contacto</h3>
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.dominio %}
+                    {% include "plataforma/includes/campo.html" with campo=form.presupuesto %}
+                </div>
+                
+                <!-- NUEVO MENSAJE DE REVISIÓN (reemplaza a fecha_deseada) -->
+                <div style="text-align: center; margin-bottom: 20px; padding: 15px; border-radius: 8px; background-color: rgba(255, 255, 255, 0.05); color: #e0e0e0; font-size: 0.95rem;">
+                    <i class="fa-regular fa-clock" style="margin-right: 8px; color: #ff8c42;"></i>
+                    Tu solicitud entrará en revisión en <strong>24 horas hábiles</strong>.
+                </div>
+                
+                <div class="grupo">
                 <div class="grupo">
                     <div class="grupo-titulo">{{ form.medio_contacto.label }}</div>
                     {% include "plataforma/includes/opciones.html" with campo=form.medio_contacto icono="fa-regular fa-comment-dots" %}
