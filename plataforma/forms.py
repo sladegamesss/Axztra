@@ -359,7 +359,7 @@ class SolicitudWebForm(EstiloFormularioMixin, ServicioOpcionalMixin, TokenEnvioM
     sitios_referencia = forms.CharField(label='Sitios web que te gustan como referencia', max_length=1000, required=False, widget=forms.Textarea(attrs={'rows': 3}))
     dominio = forms.CharField(label='Dominio que tienes o quieres usar', max_length=120, required=False)
     presupuesto = forms.ChoiceField(label='Presupuesto aproximado', choices=RequerimientoWeb.PRESUPUESTOS, required=False, initial='por_definir')
-    fecha_deseada = forms.DateField(label='Fecha deseada de entrega', required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+   fecha_deseada = forms.DateField(required=False, widget=forms.HiddenInput())
     medio_contacto = forms.ChoiceField(label='¿Cómo prefieres que te contactemos?', choices=RequerimientoWeb.MEDIOS_CONTACTO, widget=forms.RadioSelect, required=False, initial='correo')
     observaciones = forms.CharField(label='Comentarios adicionales', max_length=2000, required=False, widget=forms.Textarea(attrs={'rows': 3}))
 
@@ -368,7 +368,7 @@ class SolicitudWebForm(EstiloFormularioMixin, ServicioOpcionalMixin, TokenEnvioM
         2: ['nombre_negocio', 'rubro', 'descripcion_negocio', 'publico_objetivo', 'objetivos'],
         3: ['funcionalidades', 'integraciones', 'num_paginas', 'complejidad'],
         4: ['estilo_visual', 'colores', 'secciones', 'situacion_logo', 'tiene_contenido', 'sitios_referencia', 'dominio',
-            'presupuesto', 'fecha_deseada', 'medio_contacto', 'observaciones'],
+            'presupuesto', 'medio_contacto', 'observaciones'],
     }
     VALORES_POR_DEFECTO = {
         'estilo_visual': 'sin_preferencia',
