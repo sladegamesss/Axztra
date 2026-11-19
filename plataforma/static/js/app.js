@@ -1,5 +1,3 @@
-// AXZTRA: funciones generales del sitio.
-
 (function () {
     'use strict';
 
@@ -12,18 +10,68 @@
         tasaCambio: JSON.parse(localStorage.getItem('axztra-tasas') || '{"USD": 0.0010, "ARS": 1.0, "EUR": 0.00095, "BRL": 0.0055, "MXN": 0.020, "CLP": 1}')
     };
 
+    var REGEX_PRECIO_CLP = /(?<![A-Za-z€])\$\s?(\d{1,3}(?:\.\d{3})+)(?!\d)/g;
+
+    function debeOmitirNodoPrecio(nodo) {
+        var el = nodo.parentElement;
+        if (!el) { return true; }
+        if (el.closest('script, style, noscript, textarea, input, select, option, code, pre, .goog-te-combo, [data-no-moneda], [data-contar], [data-monto]')) {
+            return true;
+        }
+        return false;
+    }
+
+    function convertirTextoCLP(texto) {
+        if (configRegional.moneda === 'CLP') {
+            return texto;
+        }
+        return texto.replace(REGEX_PRECIO_CLP, function (coincidencia, cifra) {
+            var valorCLP = parseInt(cifra.replace(/\./g, ''), 10);
+            if (!isFinite(valorCLP)) { return coincidencia; }
+            return AXZTRA.clp(valorCLP);
+        });
+    }
+
+    function convertirPreciosEnPagina(raiz) {
+        var contenedor = raiz || document.body;
+        if (!contenedor) { return; }
+
+        contenedor.querySelectorAll('[data-clp], [data-precio-clp]').forEach(function (el) {
+            var raw = parseFloat(el.getAttribute('data-clp') || el.getAttribute('data-precio-clp'));
+            if (isFinite(raw)) {
+                el.textContent = AXZTRA.clp(raw);
+            }
+        });
+
+        var walker = document.createTreeWalker(contenedor, NodeFilter.SHOW_TEXT, null);
+        var nodo;
+        while ((nodo = walker.nextNode())) {
+            if (debeOmitirNodoPrecio(nodo)) { continue; }
+            var textoActual = nodo.nodeValue || '';
+            if (nodo._axztraTextoOriginal === undefined) {
+                REGEX_PRECIO_CLP.lastIndex = 0;
+                if (!REGEX_PRECIO_CLP.test(textoActual)) { continue; }
+                nodo._axztraTextoOriginal = textoActual;
+            }
+            var nuevoTexto = convertirTextoCLP(nodo._axztraTextoOriginal);
+            if (nodo.nodeValue !== nuevoTexto) {
+                nodo.nodeValue = nuevoTexto;
+            }
+        }
+    }
+
     function actualizarTasasDeCambio() {
         var ultimaActualizacion = parseInt(localStorage.getItem('axztra-tasas-fecha') || '0', 10);
         var ahora = Date.now();
         if (ahora - ultimaActualizacion < 12 * 60 * 60 * 1000) {
             actualizarTextoTasa();
-            return; 
+            return;
         }
 
         fetch('https://open.er-api.com/v6/latest/CLP')
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                if(data.rates) {
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (data.rates) {
                     configRegional.tasaCambio = {
                         USD: data.rates.USD,
                         ARS: data.rates.ARS,
@@ -35,18 +83,19 @@
                     localStorage.setItem('axztra-tasas', JSON.stringify(configRegional.tasaCambio));
                     localStorage.setItem('axztra-tasas-fecha', ahora.toString());
                     actualizarTextoTasa();
+                    convertirPreciosEnPagina(document.body);
                 }
             })
-            .catch(function(e) {
+            .catch(function (e) {
                 console.warn('No se pudo actualizar la tasa de cambio en vivo.', e);
                 actualizarTextoTasa();
             });
     }
 
     function actualizarTextoTasa() {
-        document.querySelectorAll('#tasa-cambio-info, #tasa-cambio-info-pub').forEach(function(el) {
+        document.querySelectorAll('#tasa-cambio-info, #tasa-cambio-info-pub').forEach(function (el) {
             if (configRegional.moneda === 'CLP') {
-                el.textContent = 'Selecciona tu idioma y moneda' ;
+                el.textContent = 'Selecciona tu idioma y moneda';
             } else {
                 var tasaInversa = (1 / configRegional.tasaCambio[configRegional.moneda]).toFixed(2);
                 el.textContent = '1 ' + configRegional.moneda + ' = $' + tasaInversa + ' CLP';
@@ -58,8 +107,8 @@
     function iniciarOpcionesRegionales() {
         actualizarTasasDeCambio();
 
-        var selectoresMoneda = document.querySelectorAll('#selector-moneda, #selector-moneda-pub');
-        var selectoresIdioma = document.querySelectorAll('#selector-idioma, #selector-idioma-pub');
+        var selectoresMoneda = document.querySelectorAll('#selector-moneda, #selector-moneda-pub, #selector-moneda-movil');
+        var selectoresIdioma = document.querySelectorAll('#selector-idioma, #selector-idioma-pub, #selector-idioma-movil');
         var resumenes = document.querySelectorAll('.region-resumen');
         var indicadoresMovil = document.querySelectorAll('.regional-indicador');
 
@@ -83,31 +132,45 @@
 
         function refrescarUI() {
             var bandera = BANDERAS[configRegional.moneda] || BANDERAS['CLP'];
-            
-            resumenes.forEach(function(el) { el.innerHTML = configRegional.moneda.substring(0, 2) + ' ' + bandera; });
-            indicadoresMovil.forEach(function(el) { el.textContent = configRegional.moneda + ' / ' + configRegional.idioma.toUpperCase(); });
-            
-            selectoresMoneda.forEach(function(el) { el.value = configRegional.moneda; });
-            selectoresIdioma.forEach(function(el) { el.value = configRegional.idioma; });
+
+            resumenes.forEach(function (el) { el.innerHTML = configRegional.moneda.substring(0, 2) + ' ' + bandera; });
+            indicadoresMovil.forEach(function (el) { el.textContent = configRegional.moneda + ' / ' + configRegional.idioma.toUpperCase(); });
+
+            selectoresMoneda.forEach(function (el) { el.value = configRegional.moneda; });
+            selectoresIdioma.forEach(function (el) { el.value = configRegional.idioma; });
 
             actualizarTextoTasa();
-            
+
             var estimadorPortada = document.getElementById('estimador-portada');
-            if (estimadorPortada) { 
-                try { estimadorPortada.dispatchEvent(new Event('input')); } catch(e){} 
+            if (estimadorPortada) {
+                try { estimadorPortada.dispatchEvent(new Event('input')); } catch (e) {}
             }
+
+            var formPasos = document.getElementById('form-pasos');
+            if (formPasos) {
+                try { formPasos.dispatchEvent(new Event('change')); } catch (e) {}
+            }
+
+            document.querySelectorAll('[data-contar][data-formato="clp"]').forEach(function (el) {
+                var destino = parseFloat(el.getAttribute('data-contar'));
+                if (isFinite(destino)) {
+                    el.textContent = AXZTRA.clp(destino);
+                }
+            });
+
+            convertirPreciosEnPagina(document.body);
         }
 
-        selectoresMoneda.forEach(function(select) {
-            select.addEventListener('change', function(e) {
+        selectoresMoneda.forEach(function (select) {
+            select.addEventListener('change', function (e) {
                 configRegional.moneda = e.target.value;
                 localStorage.setItem('axztra-moneda', configRegional.moneda);
                 refrescarUI();
             });
         });
 
-        selectoresIdioma.forEach(function(select) {
-            select.addEventListener('change', function(e) {
+        selectoresIdioma.forEach(function (select) {
+            select.addEventListener('change', function (e) {
                 configRegional.idioma = e.target.value;
                 localStorage.setItem('axztra-idioma', configRegional.idioma);
                 refrescarUI();
@@ -115,12 +178,25 @@
             });
         });
 
-        setTimeout(function() { 
-            refrescarUI(); 
+        // Observa cambios en el DOM (por ejemplo al traducir con Google Translate) para mantener la moneda activa
+        if ('MutationObserver' in window && document.body) {
+            var temporizadorObservador = null;
+            var observadorPrecios = new MutationObserver(function () {
+                if (configRegional.moneda === 'CLP') { return; }
+                clearTimeout(temporizadorObservador);
+                temporizadorObservador = setTimeout(function () {
+                    convertirPreciosEnPagina(document.body);
+                }, 150);
+            });
+            observadorPrecios.observe(document.body, { childList: true, subtree: true });
+        }
+
+        setTimeout(function () {
+            refrescarUI();
             // Si hay un idioma guardado al abrir la página, dispara el traductor cuando cargue
             if (configRegional.idioma !== 'es') {
                 var intentos = 0;
-                var intervalo = setInterval(function() {
+                var intervalo = setInterval(function () {
                     var comboGoogle = document.querySelector('.goog-te-combo');
                     if (comboGoogle && comboGoogle.options.length > 0) {
                         forzarTraduccionGoogle(configRegional.idioma);
