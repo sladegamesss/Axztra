@@ -124,8 +124,26 @@
                 <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}><i class="fa-solid fa-users" aria-hidden="true"></i>Nosotros</a>
                 
                 <span class="grupo-movil">Región e Idioma</span>
-                <div class="selector-texto" role="group" aria-label="Cambiar región">
-                    <button type="button" class="regional-movil" aria-label="Ajustes de moneda e idioma"><i class="fa-solid fa-gear" aria-hidden="true"></i> Preferencias (<span class="regional-indicador">CLP / ES</span>)</button>
+                <div class="ajustes-regionales-movil" data-no-traducir="1" style="display: grid; gap: 0.65rem; padding: 0.35rem 0.75rem 0.75rem;">
+                    <div class="grupo-ajustes" style="display: flex; flex-direction: column; gap: 0.3rem;">
+                        <label for="selector-moneda-movil" style="font-size: 0.85rem; opacity: 0.85;"><i class="fa-solid fa-coins" aria-hidden="true"></i> Moneda</label>
+                        <select id="selector-moneda-movil" class="selector-limpio regional-moneda" style="width: 100%; min-height: 40px;">
+                            <option value="CLP">CLP ($) - Peso Chileno</option>
+                            <option value="USD">USD ($) - Dólar</option>
+                            <option value="ARS">ARS ($) - Peso Arg.</option>
+                            <option value="EUR">EUR (€) - Euro</option>
+                            <option value="BRL">BRL (R$) - Real</option>
+                            <option value="MXN">MXN ($) - Peso Mex.</option>
+                        </select>
+                    </div>
+                    <div class="grupo-ajustes" style="display: flex; flex-direction: column; gap: 0.3rem;">
+                        <label for="selector-idioma-movil" style="font-size: 0.85rem; opacity: 0.85;"><i class="fa-solid fa-language" aria-hidden="true"></i> Idioma</label>
+                        <select id="selector-idioma-movil" class="selector-limpio regional-idioma" style="width: 100%; min-height: 40px;">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                            <option value="pt">Português</option>
+                        </select>
+                    </div>
                 </div>
 
                 {% if user.is_authenticated %}
@@ -153,3 +171,49 @@
     </div>
 </header>
 {% endwith %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const monedaMovil = document.getElementById('selector-moneda-movil');
+    const idiomaMovil = document.getElementById('selector-idioma-movil');
+    const menuMovil = document.querySelector('.menu-movil');
+
+    const obtenerSelectDesktop = (idAuth, idPub) =>
+        document.getElementById(idAuth) || document.getElementById(idPub);
+
+    const sincronizarDesdeDesktop = () => {
+        const monedaDesk = obtenerSelectDesktop('selector-moneda', 'selector-moneda-pub');
+        const idiomaDesk = obtenerSelectDesktop('selector-idioma', 'selector-idioma-pub');
+        if (monedaDesk && monedaMovil) monedaMovil.value = monedaDesk.value;
+        if (idiomaDesk && idiomaMovil) idiomaMovil.value = idiomaDesk.value;
+    };
+
+    if (menuMovil) {
+        menuMovil.addEventListener('toggle', () => {
+            if (menuMovil.open) sincronizarDesdeDesktop();
+        });
+    }
+
+    if (monedaMovil) {
+        monedaMovil.addEventListener('change', function () {
+            const monedaDesk = obtenerSelectDesktop('selector-moneda', 'selector-moneda-pub');
+            if (monedaDesk && monedaDesk.value !== this.value) {
+                monedaDesk.value = this.value;
+                monedaDesk.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
+
+    if (idiomaMovil) {
+        idiomaMovil.addEventListener('change', function () {
+            const idiomaDesk = obtenerSelectDesktop('selector-idioma', 'selector-idioma-pub');
+            if (idiomaDesk && idiomaDesk.value !== this.value) {
+                idiomaDesk.value = this.value;
+                idiomaDesk.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
+
+    sincronizarDesdeDesktop();
+});
+</script>
