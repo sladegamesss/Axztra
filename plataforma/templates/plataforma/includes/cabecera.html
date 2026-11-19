@@ -66,8 +66,6 @@
                 </details>
                 <a class="boton boton-primario boton-chico" href="{% url 'nueva_solicitud' %}">Nueva solicitud</a>
             {% else %}
-                <a href="{% url 'inicio' %}#como-funciona">Cómo funciona</a>
-                <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}>Nosotros</a>
                 <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
                 
                 {# MENÚ REGIONAL: Versión para usuarios no logueados #}
