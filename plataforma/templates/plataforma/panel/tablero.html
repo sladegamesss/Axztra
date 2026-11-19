@@ -1,0 +1,53 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# Tablero por etapas: arrastrar una tarjeta cambia el estado (CU17, static/js/panel.js). #}
+{% load axztra %}
+{% block title %}Tablero - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Tablero</h1>
+        <p>Arrastra una tarjeta a otra columna para cambiar su estado. El cliente recibe un aviso por correo.</p>
+    </div>
+    <form method="get" class="filtros sin-margen" aria-label="Filtrar tablero">
+        <label class="visualmente-oculto" for="t-responsable">Responsable</label>
+        <select class="control" id="t-responsable" name="responsable">
+            <option value="">Todo el equipo</option>
+            <option value="mias"{% if filtros.responsable == 'mias' %} selected{% endif %}>Asignadas a mí</option>
+            <option value="sin"{% if filtros.responsable == 'sin' %} selected{% endif %}>Sin responsable</option>
+            {% for persona in equipo %}<option value="{{ persona.pk }}"{% if filtros.responsable == persona.pk|stringformat:'s' %} selected{% endif %}>{{ persona.get_full_name|default:persona.email }}</option>{% endfor %}
+        </select>
+        <label class="visualmente-oculto" for="t-tipo">Tipo</label>
+        <select class="control" id="t-tipo" name="tipo">
+            <option value="">Todos los tipos</option>
+            {% for clave, nombre in tipos %}<option value="{{ clave }}"{% if filtros.tipo == clave %} selected{% endif %}>{{ nombre }}</option>{% endfor %}
+        </select>
+        <button type="submit" class="boton boton-secundario">Filtrar</button>
+    </form>
+</header>
+
+<div class="tablero" id="tablero">
+    {% for columna in columnas %}
+    <section class="columna-tablero" data-estado="{{ columna.estado.codigo }}" aria-label="{{ columna.estado.nombre }}">
+        <header>
+            {% include "plataforma/includes/estado.html" with estado=columna.estado %}
+            <span class="pequeno texto-3" data-cantidad data-total="{{ columna.total }}">{{ columna.total }}</span>
+        </header>
+        <div class="lista">
+            {% for s in columna.tarjetas %}
+            <a class="tarjeta-tablero" href="{% url 'panel_solicitud' s.pk %}" draggable="true" data-id="{{ s.pk }}" data-numero="{{ s.numero }}" data-url="{% url 'panel_mover_solicitud' s.pk %}">
+                <span class="numero">{{ s.numero }}</span>
+                <strong>{{ s.titulo|truncatechars:70 }}</strong>
+                <span class="meta">
+                    <span>{{ s.cliente.first_name|default:s.cliente.email }}{% if s.atrasada %} <span class="atrasada">Fuera de plazo</span>{% endif %}</span>
+                    {% if s.responsable %}<span class="avatar-mini" title="{{ s.responsable.get_full_name|default:s.responsable.email }}">{{ s.responsable|iniciales }}</span>{% endif %}
+                </span>
+            </a>
+            {% endfor %}
+            {% if columna.total > columna.tarjetas|length %}
+            <a class="pequeno centrado" href="{% url 'panel_solicitudes' %}?estado={{ columna.estado.codigo }}">Ver las {{ columna.total }} solicitudes</a>
+            {% endif %}
+        </div>
+    </section>
+    {% endfor %}
+</div>
+{% endblock %}

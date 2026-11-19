@@ -1,0 +1,11 @@
+{% autoescape off %}Hola:
+
+Recibimos una solicitud para restablecer la contraseña de tu cuenta AXZTRA ({{ email }}).
+
+Para crear una contraseña nueva, abre este enlace:
+{{ protocol }}://{{ domain }}{% url 'restablecer_clave_confirmar' uidb64=uid token=token %}
+
+Si no hiciste esta solicitud, puedes ignorar este mensaje. Tu contraseña actual seguirá funcionando.
+
+Equipo AXZTRA
+{% endautoescape %}

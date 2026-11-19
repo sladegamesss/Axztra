@@ -1,0 +1,17 @@
+{# Menú lateral del panel (ver Tabla 31 del informe). #}
+<nav class="panel-menu">
+    <a href="{% url 'panel_inicio' %}"{% if seccion == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-chart-line" aria-hidden="true"></i>Resumen</a>
+    <a href="{% url 'panel_solicitudes' %}"{% if seccion == 'solicitudes' %} aria-current="page"{% endif %}><i class="fa-solid fa-inbox" aria-hidden="true"></i>Solicitudes</a>
+    <a href="{% url 'panel_tablero' %}"{% if seccion == 'tablero' %} aria-current="page"{% endif %}><i class="fa-solid fa-table-columns" aria-hidden="true"></i>Tablero</a>
+    <a href="{% url 'panel_clientes' %}"{% if seccion == 'clientes' %} aria-current="page"{% endif %}><i class="fa-solid fa-users" aria-hidden="true"></i>Clientes</a>
+    <a href="{% url 'panel_consultas' %}"{% if seccion == 'consultas' %} aria-current="page"{% endif %}><i class="fa-regular fa-comments" aria-hidden="true"></i>Consultas al asistente</a>
+    {% if perms.plataforma.change_servicio or perms.plataforma.change_preguntafrecuente or perms.plataforma.view_registroactividad %}
+    <div class="grupo-menu">Configuración</div>
+    {% if perms.plataforma.change_servicio %}<a href="{% url 'panel_servicios' %}"{% if seccion == 'servicios' %} aria-current="page"{% endif %}><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Servicios</a>{% endif %}
+    {% if perms.plataforma.change_preguntafrecuente %}<a href="{% url 'panel_contenido' %}"{% if seccion == 'contenido' %} aria-current="page"{% endif %}><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>Contenido del sitio</a>{% endif %}
+    {% if perms.plataforma.view_registroactividad %}<a href="{% url 'panel_actividad' %}"{% if seccion == 'actividad' %} aria-current="page"{% endif %}><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i>Registro de actividad</a>{% endif %}
+    {% endif %}
+    <div class="grupo-menu">Accesos</div>
+    <a href="{% url 'inicio' %}"><i class="fa-solid fa-house" aria-hidden="true"></i>Ir al sitio web</a>
+    {% if user.is_superuser %}<a href="{% url 'admin:index' %}"><i class="fa-solid fa-database" aria-hidden="true"></i>Administración de datos</a>{% endif %}
+</nav>

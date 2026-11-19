@@ -1,0 +1,32 @@
+{% extends 'plataforma/base.html' %}
+{# Base del panel del equipo: menú lateral y contenido. Todas las páginas del panel la extienden. #}
+{% load static axztra %}
+{% block robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block cuerpo %}
+{% include "plataforma/includes/mensajes.html" %}
+<div class="panel">
+    <aside class="panel-lateral" aria-label="Menú del panel">
+        {% include "plataforma/includes/marca.html" with destino="panel_inicio" %}
+        {% include "plataforma/panel/menu.html" %}
+        <div class="panel-usuario">
+            <span class="avatar">{{ user|iniciales }}</span>
+            <div>
+                <strong>{{ user.first_name|default:user.email }}</strong>
+                <span>{% if user.is_superuser %}Administrador{% else %}Equipo{% endif %}</span>
+            </div>
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="boton boton-fantasma boton-icono" aria-label="Cerrar sesión" title="Cerrar sesión"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i></button>
+            </form>
+        </div>
+    </aside>
+    <details class="panel-movil">
+        <summary>{% include "plataforma/includes/marca.html" with destino="panel_inicio" %}<span><i class="fa-solid fa-bars" aria-hidden="true"></i> Menú</span></summary>
+        {% include "plataforma/panel/menu.html" %}
+    </details>
+    <main class="panel-principal" id="contenido" tabindex="-1">
+        {% block panel %}{% endblock %}
+    </main>
+</div>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'js/panel.js' %}" defer></script>{% endblock %}

@@ -1,0 +1,16 @@
+{# Dibuja un campo de formulario con su etiqueta, ayuda y errores. #}
+{% if campo.is_hidden %}{{ campo }}{% else %}
+<div class="campo{% if campo.errors %} con-error{% endif %}">
+    {% if campo.field.widget.input_type == 'checkbox' %}
+    <div class="campo-casilla">
+        {{ campo }}
+        <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+    </div>
+    {% else %}
+    <label class="etiqueta" for="{{ campo.id_for_label }}">{{ campo.label }}{% if campo.field.required %}<span class="requerido" aria-hidden="true">*</span>{% endif %}</label>
+    {{ campo }}
+    {% endif %}
+    {% if campo.help_text %}<div class="ayuda">{{ campo.help_text|safe }}</div>{% endif %}
+    {% for error in campo.errors %}<div class="error">{{ error }}</div>{% endfor %}
+</div>
+{% endif %}

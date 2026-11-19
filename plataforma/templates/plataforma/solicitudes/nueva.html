@@ -1,0 +1,40 @@
+{% extends 'plataforma/base.html' %}
+{# CU08 Solicitar servicio: elegir el tipo de solicitud. Desde aquí aparece el asistente virtual. #}
+{% block title %}Nueva solicitud - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor contenedor-estrecho">
+    <header class="cabecera-pagina">
+        <ol class="migas">
+            <li><a href="{% url 'inicio' %}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a></li>
+            <li aria-current="page">Nueva solicitud</li>
+        </ol>
+        <h1>¿Qué necesitas?</h1>
+        <p>Elige el tipo de solicitud. Cada formulario pide solo la información necesaria para tu caso.</p>
+    </header>
+    <div class="pila mb-l">
+        <a class="opcion-servicio" href="{% url 'crear_web' %}">
+            <span class="icono-caja"><i class="fa-solid fa-laptop-code" aria-hidden="true"></i></span>
+            <span><h3>Crear una página web</h3><p>Formulario guiado en tres pasos con estimación de precio y plazo en tiempo real.</p></span>
+            <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+        </a>
+        <a class="opcion-servicio" href="{% url 'solicitar_mejora' %}">
+            <span class="icono-caja violeta"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i></span>
+            <span><h3>Mejorar un sitio existente</h3><p>Rediseño, adaptación a celulares, velocidad, posicionamiento o nuevas secciones.</p></span>
+            <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+        </a>
+        <a class="opcion-servicio" href="{% url 'solicitar_soporte' %}">
+            <span class="icono-caja rojo"><i class="fa-solid fa-headset" aria-hidden="true"></i></span>
+            <span><h3>Soporte técnico</h3><p>Tu sitio tiene errores, está caído o fue vulnerado. Atendemos según la prioridad que indiques.</p></span>
+            <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+        </a>
+        <a class="opcion-servicio" href="{% url 'solicitar_mantenimiento' %}">
+            <span class="icono-caja verde"><i class="fa-solid fa-gear" aria-hidden="true"></i></span>
+            <span><h3>Plan de mantenimiento</h3><p>Respaldos, actualizaciones y monitoreo mensual o trimestral.</p></span>
+            <i class="fa-solid fa-arrow-right flecha" aria-hidden="true"></i>
+        </a>
+    </div>
+    <p class="centrado texto-2 mb-l">¿No sabes cuál elegir? <a href="#" data-abrir-asistente>Pregúntale al asistente</a>.</p>
+</div>
+{% endblock %}
+{% block asistente %}{% include "plataforma/includes/asistente_solicitud.html" with asistente_saludo="Hola, soy el asistente de AXZTRA. Cuéntame qué necesitas y te ayudo a elegir el tipo de solicitud." %}{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# Formulario genérico del panel (servicio, categoría o pregunta frecuente). #}
+{% block title %}{{ titulo }} - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <ol class="migas">
+            <li><a href="{% url volver %}">{{ volver_texto }}</a></li>
+            <li aria-current="page">{{ titulo }}</li>
+        </ol>
+        <h1>{{ titulo }}</h1>
+    </div>
+</header>
+<form method="post" class="tarjeta tarjeta-grande contenedor-estrecho sin-margen" novalidate data-validar>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+    <div class="alerta alerta-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><div>{% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}</div></div>
+    {% endif %}
+    {% for campo in form %}
+    {% include "plataforma/includes/campo.html" %}
+    {% endfor %}
+    <div class="acciones">
+        <a class="boton boton-fantasma" href="{% url volver %}">Cancelar</a>
+        <button type="submit" class="boton boton-primario">Guardar</button>
+    </div>
+</form>
+{% endblock %}

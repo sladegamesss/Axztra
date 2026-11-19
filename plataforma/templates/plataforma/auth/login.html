@@ -1,0 +1,26 @@
+{% extends 'plataforma/base.html' %}
+{# CU05 Iniciar sesión (diagrama DA-01). #}
+{% block title %}Iniciar sesión - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja">
+        <h1>Iniciar sesión</h1>
+        <p class="bajada">Ingresa para revisar tus solicitudes y cotizaciones.</p>
+        <div class="tarjeta tarjeta-grande">
+            {% for error in form.non_field_errors %}
+            <div class="alerta alerta-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><p>{{ error }}</p></div>
+            {% endfor %}
+            <form method="post" novalidate data-validar>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% include "plataforma/includes/campo.html" with campo=form.email %}
+                {% include "plataforma/includes/campo.html" with campo=form.password %}
+                <p class="derecha pequeno"><a href="{% url 'recuperar_clave' %}">¿Olvidaste tu contraseña?</a></p>
+                <button type="submit" class="boton boton-primario ancho-completo boton-grande">Ingresar</button>
+            </form>
+        </div>
+        <p class="acceso-pie">¿No tienes cuenta? <a href="{% url 'registro' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Regístrate gratis</a></p>
+    </div>
+</div>
+{% endblock %}

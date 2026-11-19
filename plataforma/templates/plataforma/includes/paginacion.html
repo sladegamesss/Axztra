@@ -1,0 +1,9 @@
+{% load axztra %}
+{# Botones para cambiar de página en los listados. #}
+{% if pagina.paginator.num_pages > 1 %}
+<nav class="paginacion" aria-label="Paginación">
+    {% if pagina.has_previous %}<a href="{% url_con_parametros pagina=pagina.previous_page_number %}" rel="prev"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i> Anterior</a>{% endif %}
+    <span>Página {{ pagina.number }} de {{ pagina.paginator.num_pages }}</span>
+    {% if pagina.has_next %}<a href="{% url_con_parametros pagina=pagina.next_page_number %}" rel="next">Siguiente <i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a>{% endif %}
+</nav>
+{% endif %}

@@ -1,0 +1,5 @@
+-r requirements.txt
+gunicorn>=22.0
+waitress>=3.0
+redis>=5.0
+whitenoise>=6.6

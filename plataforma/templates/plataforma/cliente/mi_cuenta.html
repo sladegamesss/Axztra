@@ -1,0 +1,130 @@
+{% extends "plataforma/base.html" %}
+{% load static %}
+{% block title %}Mis datos - AXZTRA{% endblock %}
+{% block clase_body %}fondo-oscuro{% endblock %}
+
+{% block content %}
+<!-- CSS infalible para matar los bordes y cajas naranjas en la derecha -->
+<style>
+    /* Destruye cualquier borde, sombra o pseudo-elemento decorativo de Axztra en esta columna */
+    .columna-lateral .tarjeta-resumen, 
+    .columna-lateral .metrica {
+        border-image: none !important;
+        box-shadow: none !important;
+    }
+    .columna-lateral .tarjeta-resumen::before, 
+    .columna-lateral .tarjeta-resumen::after,
+    .columna-lateral .metrica::before, 
+    .columna-lateral .metrica::after {
+        display: none !important;
+        background: none !important;
+    }
+    
+    /* Limpiamos las cajas de métricas para que sean solo texto y no parezcan botones */
+    .columna-lateral .metrica {
+        border: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        padding: 0 0 0.75rem 0 !important;
+        margin-bottom: 0 !important;
+    }
+    .columna-lateral .metrica:last-child {
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+    }
+</style>
+
+<section class="panel contenedor" style="max-width: 950px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; padding-top: 3rem; padding-bottom: 5rem;">
+    
+    <div class="panel-cabecera" style="text-align: center; width: 100%; margin-bottom: 3.5rem; position: static; height: auto;">
+        <h1 class="panel-titulo" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;"><i class="fa-regular fa-id-card" aria-hidden="true"></i> Mis datos</h1>
+        <p class="panel-bajada" style="margin: 0; color: #aaa;">Hola, {{ user.first_name|default:"cliente" }}. Aquí puedes revisar tu información de contacto.</p>
+    </div>
+
+    <div class="panel-cuerpo" style="width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; margin: 0;">
+        
+        <!-- COLUMNA IZQUIERDA: Datos Bloqueados -->
+        <div class="columna-principal" style="width: 100%;">
+            
+            <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
+                <label for="id_correo" style="display: block; margin-bottom: 0.5rem;">Correo electrónico</label>
+                <input type="email" id="id_correo" value="{{ user.email }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
+            </div>
+
+            <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
+                <label for="id_nombre" style="display: block; margin-bottom: 0.5rem;">Nombre y apellido</label>
+                <input type="text" id="id_nombre" value="{{ user.first_name }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
+            </div>
+
+            <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
+                <label for="id_empresa" style="display: block; margin-bottom: 0.5rem;">Empresa, emprendimiento u otro</label>
+                <input type="text" id="id_empresa" value="{{ cliente.empresa|default:'' }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
+            </div>
+
+            <div class="campo campo-completo" style="margin-bottom: 1.5rem;">
+                <label for="id_telefono" style="display: block; margin-bottom: 0.5rem;">Teléfono</label>
+                <input type="tel" id="id_telefono" value="{{ cliente.telefono|default:'' }}" class="control" readonly style="width: 100%; cursor: not-allowed; opacity: 0.8;">
+            </div>
+            
+            <div class="campo campo-completo" style="margin-top: 2rem;">
+                <label class="opcion" for="id_notificaciones" style="display: flex; gap: 0.75rem; align-items: flex-start; opacity: 0.6; cursor: not-allowed;">
+                    <input type="checkbox" id="id_notificaciones" disabled {% if cliente.recibir_notificaciones %} checked{% endif %} style="margin-top: 0.25rem;">
+                    <span>Recibiras avisos por correo ante cualquier cambio</span>
+                
+                </label>
+            </div>
+
+            <div class="ayuda" style="margin-top: 2.5rem; padding: 1.25rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); color: #aaa;">
+                <i class="fa-solid fa-circle-info" style="margin-right: 0.5rem;"></i> Para cambiar los datos de tu cuenta escríbenos a <strong>contacto@axztra.cl</strong>.
+            </div>
+
+        </div>
+
+        <!-- COLUMNA DERECHA: Métricas y Seguridad -->
+        <aside class="columna-lateral" style="width: 100%;">
+            
+            <div class="tarjeta-resumen" style="margin-bottom: 2rem; padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Tus solicitudes</h3>
+                
+                <div class="metricas-mini" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div class="metrica" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #aaa;">Total</span>
+                        <strong style="font-size: 1.1rem;">{{ total_solicitudes }}</strong>
+                    </div>
+                    <div class="metrica" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #aaa;">En curso</span>
+                        <strong style="font-size: 1.1rem;">{{ en_curso }}</strong>
+                    </div>
+                </div>
+                
+                <a href="{% url 'mis_solicitudes' %}" class="boton boton-secundario boton-completo" style="margin-top: 1.5rem; width: 100%; justify-content: center;">Ver mis solicitudes</a>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="tarjeta-resumen" style="padding: 1.5rem; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);">
+                    <h3 style="margin-top: 0; margin-bottom: 1.5rem; font-size: 1.1rem;">Seguridad</h3>
+                    <a href="{% url 'cambiar_clave' %}" class="boton boton-secundario boton-completo" style="width: 100%; justify-content: center;"><i class="fa-solid fa-key" aria-hidden="true"></i> Cambiar contraseña</a>
+                </div>
+
+                <div class="texto-menor" style="color: #888; padding-left: 0.25rem;">
+                    Cliente desde el {{ user.date_joined|date:"d-m-Y" }}
+                </div>
+            </div>
+
+        </aside>
+    </div>
+</section>
+
+<style>
+    @media (max-width: 768px) {
+        .panel-cuerpo {
+            grid-template-columns: 1fr !important;
+            gap: 2.5rem !important;
+        }
+        .panel-cabecera {
+            margin-bottom: 2rem !important;
+        }
+    }
+</style>
+{% endblock %}

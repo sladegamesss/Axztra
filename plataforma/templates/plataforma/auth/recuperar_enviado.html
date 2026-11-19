@@ -1,0 +1,14 @@
+{% extends 'plataforma/base.html' %}
+{# CU06 Recuperar contraseña: aviso de correo enviado. #}
+{% block title %}Revisa tu correo - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja centrado">
+        <span class="icono-caja mb-m"><i class="fa-regular fa-envelope" aria-hidden="true"></i></span>
+        <h1>Revisa tu correo</h1>
+        <p class="bajada">Si el correo corresponde a una cuenta registrada, recibirás un enlace para crear una contraseña nueva. Revisa también la carpeta de spam.</p>
+        <a class="boton boton-secundario" href="{% url 'login' %}">Volver a iniciar sesión</a>
+    </div>
+</div>
+{% endblock %}

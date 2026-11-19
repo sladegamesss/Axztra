@@ -1,0 +1,13 @@
+{% load axztra %}{% autoescape off %}Hola {{ solicitud.cliente.first_name|default:solicitud.cliente.email }}:
+
+Registramos tu solicitud {{ solicitud.numero }} ({{ solicitud.get_tipo_display }}).
+
+Proyecto: {{ solicitud.titulo }}
+Estado: {{ solicitud.estado.nombre }}{% if solicitud.estimacion %}
+Estimación referencial: {{ solicitud.estimacion.monto_minimo|clp }} a {{ solicitud.estimacion.monto_maximo|clp }}
+
+La estimación es orientativa. Nuestro equipo revisará tus requerimientos y te enviará una cotización formal.{% endif %}
+
+Puedes revisar el avance en cualquier momento:
+{{ url }}
+{% include "plataforma/correos/base_firma.txt" %}{% endautoescape %}

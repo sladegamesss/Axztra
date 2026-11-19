@@ -1,0 +1,177 @@
+/*
+ * AXZTRA: diseño adaptable (RNF02).
+ *
+ * Ajustes para pantallas grandes, tablet y celular, además de impresión y movimiento reducido.
+ */
+
+
+/* ---------- Pantallas grandes y 4K ---------- */
+@media (min-width: 1920px) {
+    :root { --base-texto: 112.5%; --ancho-base: 1320px; }
+}
+
+@media (min-width: 2560px) {
+    :root { --base-texto: 131.25%; --ancho-base: 1480px; }
+}
+
+
+/* ---------- Tablet y celular ---------- */
+@media (max-width: 1100px) {
+    .grilla-formulario { grid-template-columns: 190px minmax(0, 1fr); }
+    .grilla-formulario .resumen-vivo { grid-column: 2; }
+    .metricas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grilla-lateral { grid-template-columns: minmax(0, 1fr); }
+    .resumen-vivo { position: static; }
+}
+
+@media (max-width: 1080px) {
+    .cabecera-interior { gap: 0.6rem; }
+    .navegacion { display: none; }
+    .inicio-movil { display: inline-flex; }
+    .menu-movil { display: block; }
+}
+
+@media (max-width: 960px) {
+    .portada-grilla { grid-template-columns: minmax(0, 1fr); }
+    .portada h1 { max-width: none; }
+    .grilla-3, .grilla-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .planes { grid-template-columns: minmax(0, 1fr); }
+    .plan + .plan { border-left: 0; border-top: 1px solid var(--linea); }
+    .pasos-proceso { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bloque-contacto { grid-template-columns: minmax(0, 1fr); }
+    .pie-grilla { grid-template-columns: 1fr 1fr; }
+    .grilla-lateral-izq, .grilla-seccion, .grilla-formulario { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .grilla-formulario .resumen-vivo { grid-column: auto; }
+    .pasos { position: static; display: flex; gap: 0.5rem; overflow-x: auto; }
+    .pasos li { flex-direction: column; align-items: center; text-align: center; min-width: 80px; padding-bottom: 0; gap: 0.35rem; }
+    .pasos li::after { display: none; }
+    .pasos small { display: none; }
+    .pasos strong { font-size: 0.78rem; }
+    .panel { grid-template-columns: minmax(0, 1fr); }
+    .panel-lateral { display: none; }
+    .panel-movil { display: block; position: sticky; top: 0; z-index: 1000; background: var(--plano); border-bottom: 1px solid var(--linea); }
+    .panel-movil summary { list-style: none; display: flex; align-items: center; justify-content: space-between; padding: 0.9rem var(--margen); cursor: pointer; }
+    .panel-movil summary::-webkit-details-marker { display: none; }
+    .panel-movil .panel-menu { padding: 0 var(--margen) 1rem; }
+    .equipo { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (max-width: 360px) {
+    .cabecera .marca span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+}
+
+@media (max-width: 640px) {
+    .grilla-2, .grilla-3, .grilla-4, .ventajas, .pasos-proceso { grid-template-columns: minmax(0, 1fr); }
+    .metricas { grid-template-columns: minmax(0, 1fr); }
+    .datos { grid-template-columns: minmax(0, 1fr); gap: 0.1rem; }
+    .datos dd { margin-bottom: 0.7rem; }
+    .pie-grilla { grid-template-columns: minmax(0, 1fr); }
+    .barras li { grid-template-columns: 110px 1fr 2rem; }
+    .asistente-boton span { display: none; }
+    .asistente-invitacion { display: none; }
+    .asistente-boton { padding: 0.9rem; }
+    .documento { padding: 1.5rem; margin: 1rem; }
+    .documento .partes, .documento .firma { grid-template-columns: 1fr; gap: 1rem; }
+    .documento th, .documento td { padding: 0.5rem 0.3rem; font-size: 0.82rem; }
+    .documento-cabecera { flex-direction: column; gap: 1rem; }
+    .documento-cabecera .folio { text-align: left; }
+    .mensaje { max-width: 100%; }
+    .fila-solicitud { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+    .fila-solicitud .lado { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+    .estimador { padding: 1.2rem; }
+    .estimador-resultado { margin: 1.1rem -1.2rem -1.2rem; padding: 1.1rem 1.2rem 1.2rem; }
+    .estimador-resultado .boton, .portada .fila .boton { width: 100%; }
+}
+
+
+/* ---------- Celular: barra inferior y asistente sobre la barra ---------- */
+/* Con el texto más grande el menú de escritorio ya no cabe: se usa antes el menú del celular */
+@media (max-width: 1240px) {
+    html[data-texto="grande"] .navegacion { display: none; }
+    html[data-texto="grande"] .inicio-movil { display: inline-flex; }
+    html[data-texto="grande"] .menu-movil { display: block; }
+}
+
+@media (max-width: 1380px) {
+    html[data-texto="muy-grande"] .navegacion { display: none; }
+    html[data-texto="muy-grande"] .inicio-movil { display: inline-flex; }
+    html[data-texto="muy-grande"] .menu-movil { display: block; }
+}
+
+@media (max-width: 760px) {
+    .inicio-movil, html[data-texto] .inicio-movil { display: none; }
+    .llamado { grid-template-columns: minmax(0, 1fr); }
+    .llamado .boton { width: 100%; }
+    .aurora span { filter: blur(56px); }
+    .asistente-sugerencias { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .asistente-sugerencias button { flex-shrink: 0; }
+    .barra-movil {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 990;
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+        background: rgba(14, 14, 18, 0.97);
+        border-top: 1px solid var(--linea);
+        box-shadow: 0 -12px 30px rgba(0, 0, 0, 0.4);
+        backdrop-filter: saturate(140%) blur(12px);
+        -webkit-backdrop-filter: saturate(140%) blur(12px);
+        animation: aparecer-suave 0.4s ease backwards;
+    }
+    .barra-movil a, .barra-movil button {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        min-height: 4.1rem;
+        padding: 0.45rem 0.15rem;
+        border: 0;
+        background: none;
+        color: var(--texto-2);
+        font: inherit;
+        font-size: min(0.74rem, 12.5px);
+        font-weight: 600;
+        line-height: 1.1;
+        text-align: center;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    .barra-movil a:hover, .barra-movil button:hover { color: var(--texto); text-decoration: none; }
+    .barra-movil i { font-size: 1.25rem; transition: transform 0.2s ease; }
+    .barra-movil a:active i, .barra-movil button:active i { transform: scale(0.88); }
+    .barra-movil [aria-current="page"] { color: var(--primario-2); }
+    .barra-movil [aria-current="page"]::before { content: ""; position: absolute; top: 0; left: 28%; right: 28%; height: 3px; border-radius: 0 0 3px 3px; background: var(--primario-2); }
+    .barra-movil .contador { position: absolute; top: 0.3rem; left: calc(50% + 0.3rem); margin: 0; }
+    .asistente-invitacion { display: none; }
+    .asistente-boton { right: 0.9rem; bottom: calc(4.9rem + env(safe-area-inset-bottom, 0px)); }
+    .asistente-ventana { left: 0.6rem; right: 0.6rem; bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px)); width: auto; max-width: none; height: min(560px, calc(100vh - 9rem)); }
+    .avisos-flotantes { top: 76px; }
+    .pie { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+
+/* ---------- Impresión ---------- */
+@media print {
+    body { background: #fff; }
+    body::before, .aurora, .cinta, .progreso-lectura { display: none !important; }
+    .revelar { opacity: 1 !important; transform: none !important; }
+    .barra-movil, .cabecera, .pie, .asistente-boton, .asistente-ventana, .asistente-invitacion, .avisos-flotantes, .barra-documento, .aviso-sitio, .saltar { display: none !important; }
+    .documento { margin: 0; padding: 0; max-width: none; border-radius: 0; }
+}
+
+
+/* ---------- Movimiento reducido: apaga las animaciones ---------- */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .con-js [data-palabras] { opacity: 1 !important; }
+    .revelar { filter: none !important; }
+    .estimador::before { display: none; }
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    .revelar { opacity: 1 !important; transform: none !important; }
+    .pasos-proceso li::after { transform: scaleX(1); }
+}

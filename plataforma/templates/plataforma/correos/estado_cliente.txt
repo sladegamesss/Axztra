@@ -1,0 +1,11 @@
+{% autoescape off %}Hola {{ solicitud.cliente.first_name|default:solicitud.cliente.email }}:
+
+Tu solicitud {{ solicitud.numero }} cambió al estado "{{ solicitud.estado.nombre }}".
+{% if solicitud.estado.descripcion %}{{ solicitud.estado.descripcion }}
+{% endif %}{% if comentario %}
+Comentario del equipo:
+{{ comentario }}
+{% endif %}
+Detalle de la solicitud:
+{{ url }}
+{% include "plataforma/correos/base_firma.txt" %}{% endautoescape %}

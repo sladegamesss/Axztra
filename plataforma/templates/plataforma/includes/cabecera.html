@@ -1,0 +1,219 @@
+{# Cabecera con el logo y el menú principal (escritorio) y el menú desplegable (celular). #}
+{# El botón de tamaño del texto y el menú regional los maneja static/js/app.js. #}
+{% with ruta=request.resolver_match.url_name %}
+<header class="cabecera" id="cabecera">
+    <div class="contenedor cabecera-interior">
+        {% include "plataforma/includes/marca.html" %}
+        <nav class="navegacion" aria-label="Navegación principal">
+            <a class="enlace-inicio" href="{% url 'inicio' %}"{% if ruta == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-house" aria-hidden="true"></i>Inicio</a>
+            <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}>Servicios</a>
+            
+            {% if user.is_authenticated %}
+                <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}>Mis solicitudes{% if avisos.total %}<span class="contador" aria-label="{{ avisos.total }} pendientes">{{ avisos.total }}</span>{% endif %}</a>
+                <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
+                
+                {# MENÚ REGIONAL: Engranaje para Idioma y Moneda #}
+                <details class="desplegable menu-regional" data-desplegable>
+                    <summary aria-label="Preferencias regionales">
+                        <i class="fa-solid fa-gear" aria-hidden="true"></i> 
+                        <span id="region-resumen" class="region-resumen">CL <svg viewBox="0 0 512 512" width="16" height="16" style="vertical-align: middle;"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg></span>
+                        <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i>
+                    </summary>
+                    <div class="desplegable-menu" data-no-traducir="1">
+                        <div class="desplegable-titulo">
+                            <strong>Ajustes regionales</strong>
+                            <span id="tasa-cambio-info">Selecciona tu idioma y moneda</span>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-moneda"><i class="fa-solid fa-coins" aria-hidden="true"></i> Moneda</label>
+                            <select id="selector-moneda" class="selector-limpio">
+                                <option value="CLP">CLP ($) - Peso Chileno</option>
+                                <option value="USD">USD ($) - Dólar</option>
+                                <option value="ARS">ARS ($) - Peso Arg.</option>
+                                <option value="EUR">EUR (€) - Euro</option>
+                                <option value="BRL">BRL (R$) - Real</option>
+                                <option value="MXN">MXN ($) - Peso Mex.</option>
+                            </select>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-idioma"><i class="fa-solid fa-language" aria-hidden="true"></i> Idioma</label>
+                            <select id="selector-idioma" class="selector-limpio">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                                <option value="pt">Português</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
+                <details class="desplegable" data-desplegable>
+                    <summary aria-label="Menú de la cuenta"><i class="fa-regular fa-circle-user" aria-hidden="true"></i> {{ user.first_name|default:"Mi cuenta" }} <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i></summary>
+                    <div class="desplegable-menu">
+                        <div class="desplegable-titulo">
+                            <strong>{{ user.get_full_name|default:user.email }}</strong>
+                            <span>{{ user.email }}</span>
+                        </div>
+                        <a href="{% url 'mi_cuenta' %}"><i class="fa-regular fa-id-card" aria-hidden="true"></i>Mis datos</a>
+                        <a href="{% url 'mis_solicitudes' %}"><i class="fa-regular fa-folder-open" aria-hidden="true"></i>Mis solicitudes</a>
+                        <a href="{% url 'cambiar_clave' %}"><i class="fa-solid fa-key" aria-hidden="true"></i>Cambiar contraseña</a>
+                        {% if user.is_staff %}<a href="{% url 'panel_inicio' %}"><i class="fa-solid fa-gauge" aria-hidden="true"></i>Panel de administración</a>{% endif %}
+                        <hr>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Cerrar sesión</button>
+                        </form>
+                    </div>
+                </details>
+                <a class="boton boton-primario boton-chico" href="{% url 'nueva_solicitud' %}">Nueva solicitud</a>
+            {% else %}
+                <a href="{% url 'inicio' %}#como-funciona">Cómo funciona</a>
+                <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}>Nosotros</a>
+                <button type="button" class="boton-texto" data-tamano-texto aria-label="Cambiar el tamaño del texto" title="Cambiar el tamaño del texto"><i class="fa-solid fa-text-height" aria-hidden="true"></i></button>
+                
+                {# MENÚ REGIONAL: Versión para usuarios no logueados #}
+                <details class="desplegable menu-regional" data-desplegable>
+                    <summary aria-label="Preferencias regionales">
+                        <i class="fa-solid fa-gear" aria-hidden="true"></i> 
+                        <span id="region-resumen-pub" class="region-resumen">CL <svg viewBox="0 0 512 512" width="16" height="16" style="vertical-align: middle;"><rect width="512" height="512" fill="#D52B1E"/><rect width="512" height="256" fill="#fff"/><rect width="170.67" height="256" fill="#0039A6"/><polygon points="85.33,40 102.73,93.55 159.04,93.55 113.48,126.65 130.88,180.2 85.33,147.1 39.79,180.2 57.19,126.65 11.63,93.55 67.94,93.55" fill="#fff"/></svg></span>
+                        <i class="fa-solid fa-chevron-down flecha-desplegable" aria-hidden="true"></i>
+                    </summary>
+                    <div class="desplegable-menu" data-no-traducir="1">
+                        <div class="desplegable-titulo">
+                            <strong>Ajustes regionales</strong>
+                            <span id="tasa-cambio-info-pub">Cargando tasa del día...</span>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-moneda-pub"><i class="fa-solid fa-coins" aria-hidden="true"></i> Moneda</label>
+                            <select id="selector-moneda-pub" class="selector-limpio regional-moneda">
+                                <option value="CLP">CLP ($) - Peso Chileno</option>
+                                <option value="USD">USD ($) - Dólar</option>
+                                <option value="ARS">ARS ($) - Peso Arg.</option>
+                                <option value="EUR">EUR (€) - Euro</option>
+                                <option value="BRL">BRL (R$) - Real</option>
+                                <option value="MXN">MXN ($) - Peso Mex.</option>
+                            </select>
+                        </div>
+                        <div class="grupo-ajustes">
+                            <label for="selector-idioma-pub"><i class="fa-solid fa-language" aria-hidden="true"></i> Idioma</label>
+                            <select id="selector-idioma-pub" class="selector-limpio regional-idioma">
+                                <option value="es">Español</option>
+                                <option value="en">English</option>
+                                <option value="pt">Português</option>
+                            </select>
+                        </div>
+                    </div>
+                </details>
+
+                <a href="{% url 'login' %}"{% if ruta == 'login' %} aria-current="page"{% endif %}>Iniciar sesión</a>
+                <a class="boton boton-primario boton-chico" href="{% url 'registro' %}">Crear cuenta</a>
+            {% endif %}
+        </nav>
+        
+        <a class="inicio-movil" href="{% url 'inicio' %}"{% if ruta == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-house" aria-hidden="true"></i><span>Inicio</span></a>
+        <details class="menu-movil" data-desplegable>
+            <summary>
+                <i class="fa-solid fa-bars icono-abrir" aria-hidden="true"></i><i class="fa-solid fa-xmark icono-cerrar" aria-hidden="true"></i>
+                <span class="texto-abrir">Menú</span><span class="texto-cerrar">Cerrar</span>
+                {% if avisos.total %}<span class="contador">{{ avisos.total }}</span>{% endif %}
+            </summary>
+            <nav aria-label="Navegación móvil">
+                <span class="grupo-movil">Navegación</span>
+                <a href="{% url 'inicio' %}"{% if ruta == 'inicio' %} aria-current="page"{% endif %}><i class="fa-solid fa-house" aria-hidden="true"></i>Inicio</a>
+                <a href="{% url 'catalogo' %}"{% if ruta == 'catalogo' or ruta == 'servicio_detalle' %} aria-current="page"{% endif %}><i class="fa-solid fa-layer-group" aria-hidden="true"></i>Servicios</a>
+                <a href="{% url 'inicio' %}#como-funciona"><i class="fa-solid fa-route" aria-hidden="true"></i>Cómo funciona</a>
+                <a href="{% url 'nosotros' %}"{% if ruta == 'nosotros' %} aria-current="page"{% endif %}><i class="fa-solid fa-users" aria-hidden="true"></i>Nosotros</a>
+                
+                <span class="grupo-movil">Región e Idioma</span>
+                <div class="ajustes-regionales-movil" data-no-traducir="1" style="display: grid; gap: 0.65rem; padding: 0.35rem 0.75rem 0.75rem;">
+                    <div class="grupo-ajustes" style="display: flex; flex-direction: column; gap: 0.3rem;">
+                        <label for="selector-moneda-movil" style="font-size: 0.85rem; opacity: 0.85;"><i class="fa-solid fa-coins" aria-hidden="true"></i> Moneda</label>
+                        <select id="selector-moneda-movil" class="selector-limpio regional-moneda" style="width: 100%; min-height: 40px;">
+                            <option value="CLP">CLP ($) - Peso Chileno</option>
+                            <option value="USD">USD ($) - Dólar</option>
+                            <option value="ARS">ARS ($) - Peso Arg.</option>
+                            <option value="EUR">EUR (€) - Euro</option>
+                            <option value="BRL">BRL (R$) - Real</option>
+                            <option value="MXN">MXN ($) - Peso Mex.</option>
+                        </select>
+                    </div>
+                    <div class="grupo-ajustes" style="display: flex; flex-direction: column; gap: 0.3rem;">
+                        <label for="selector-idioma-movil" style="font-size: 0.85rem; opacity: 0.85;"><i class="fa-solid fa-language" aria-hidden="true"></i> Idioma</label>
+                        <select id="selector-idioma-movil" class="selector-limpio regional-idioma" style="width: 100%; min-height: 40px;">
+                            <option value="es">Español</option>
+                            <option value="en">English</option>
+                            <option value="pt">Português</option>
+                        </select>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                    <span class="grupo-movil">Mi cuenta</span>
+                    <a href="{% url 'mis_solicitudes' %}"{% if ruta == 'mis_solicitudes' or ruta == 'ver_solicitud' %} aria-current="page"{% endif %}><i class="fa-regular fa-folder-open" aria-hidden="true"></i>Mis solicitudes{% if avisos.total %}<span class="contador">{{ avisos.total }}</span>{% endif %}</a>
+                    <a href="{% url 'mi_cuenta' %}"{% if ruta == 'mi_cuenta' %} aria-current="page"{% endif %}><i class="fa-regular fa-id-card" aria-hidden="true"></i>Mis datos</a>
+                    {% if user.is_staff %}<a href="{% url 'panel_inicio' %}"><i class="fa-solid fa-gauge" aria-hidden="true"></i>Panel de administración</a>{% endif %}
+                    <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit"><i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Cerrar sesión</button></form>
+                    <a class="boton boton-primario" href="{% url 'nueva_solicitud' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Nueva solicitud</a>
+                {% else %}
+                    <span class="grupo-movil">Mi cuenta</span>
+                    <a href="{% url 'login' %}"{% if ruta == 'login' %} aria-current="page"{% endif %}><i class="fa-solid fa-arrow-right-to-bracket" aria-hidden="true"></i>Iniciar sesión</a>
+                    <a class="boton boton-primario" href="{% url 'registro' %}"><i class="fa-solid fa-user-plus" aria-hidden="true"></i>Crear cuenta</a>
+                {% endif %}
+                <div class="selector-texto" role="group" aria-label="Tamaño del texto">
+                    <span>Tamaño del texto</span>
+                    <div>
+                        <button type="button" data-texto-opcion="normal" aria-pressed="true" aria-label="Texto normal">A</button>
+                        <button type="button" data-texto-opcion="grande" aria-pressed="false" aria-label="Texto grande">A+</button>
+                        <button type="button" data-texto-opcion="muy-grande" aria-pressed="false" aria-label="Texto muy grande">A++</button>
+                    </div>
+                </div>
+            </nav>
+        </details>
+    </div>
+</header>
+{% endwith %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const monedaMovil = document.getElementById('selector-moneda-movil');
+    const idiomaMovil = document.getElementById('selector-idioma-movil');
+    const menuMovil = document.querySelector('.menu-movil');
+
+    const obtenerSelectDesktop = (idAuth, idPub) =>
+        document.getElementById(idAuth) || document.getElementById(idPub);
+
+    const sincronizarDesdeDesktop = () => {
+        const monedaDesk = obtenerSelectDesktop('selector-moneda', 'selector-moneda-pub');
+        const idiomaDesk = obtenerSelectDesktop('selector-idioma', 'selector-idioma-pub');
+        if (monedaDesk && monedaMovil) monedaMovil.value = monedaDesk.value;
+        if (idiomaDesk && idiomaMovil) idiomaMovil.value = idiomaDesk.value;
+    };
+
+    if (menuMovil) {
+        menuMovil.addEventListener('toggle', () => {
+            if (menuMovil.open) sincronizarDesdeDesktop();
+        });
+    }
+
+    if (monedaMovil) {
+        monedaMovil.addEventListener('change', function () {
+            const monedaDesk = obtenerSelectDesktop('selector-moneda', 'selector-moneda-pub');
+            if (monedaDesk && monedaDesk.value !== this.value) {
+                monedaDesk.value = this.value;
+                monedaDesk.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
+
+    if (idiomaMovil) {
+        idiomaMovil.addEventListener('change', function () {
+            const idiomaDesk = obtenerSelectDesktop('selector-idioma', 'selector-idioma-pub');
+            if (idiomaDesk && idiomaDesk.value !== this.value) {
+                idiomaDesk.value = this.value;
+                idiomaDesk.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
+
+    sincronizarDesdeDesktop();
+});
+</script>

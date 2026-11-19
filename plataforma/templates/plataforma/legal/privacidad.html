@@ -1,0 +1,32 @@
+{% extends 'plataforma/base.html' %}
+{# Política de privacidad (Ley 19.628). #}
+{% block title %}Política de privacidad - AXZTRA{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina">
+        <h1>Política de privacidad</h1>
+        <p>Última actualización: 26 de septiembre de 2026.</p>
+    </header>
+    <article class="texto-legal mb-l">
+        <p>En AXZTRA tratamos tus datos personales conforme a la Ley N° 19.628 sobre protección de la vida privada y a la normativa chilena vigente. Esta política explica qué datos recopilamos, para qué los usamos y cómo puedes ejercer tus derechos.</p>
+
+        <h2>Datos que recopilamos</h2>
+        <p>Al crear tu cuenta registramos tu nombre, correo electrónico y, si los ingresas, empresa, RUT, teléfono y ciudad. Al enviar solicitudes guardamos la información de tu proyecto, los archivos que adjuntas, los mensajes con el equipo y el historial de estados. También registramos las consultas que haces al asistente virtual y datos técnicos básicos, como la dirección IP, para proteger la plataforma.</p>
+
+        <h2>Para qué los usamos</h2>
+        <p>Usamos tus datos para gestionar tus solicitudes, preparar cotizaciones, comunicarnos contigo sobre tus proyectos, enviarte avisos por correo y mejorar el servicio. No vendemos ni compartimos tus datos con terceros para fines publicitarios.</p>
+
+        <h2>Conservación y seguridad</h2>
+        <p>Conservamos la información mientras tu cuenta esté activa o sea necesaria para cumplir obligaciones legales. Las contraseñas se almacenan cifradas, el panel de administración exige verificación en dos pasos y los archivos adjuntos solo son accesibles para ti y para el equipo.</p>
+
+        <h2>Tus derechos</h2>
+        <p>Puedes acceder a tus datos, rectificarlos o solicitar su eliminación. Desde la sección Mis datos puedes descargar una copia completa de tu información en formato JSON y eliminar tu cuenta. También puedes desactivar los avisos por correo en cualquier momento.</p>
+
+        <h2>Cookies</h2>
+        <p>Usamos cookies técnicas necesarias para mantener tu sesión iniciada y proteger los formularios. No utilizamos cookies publicitarias.</p>
+
+        <h2>Contacto</h2>
+        <p>Para ejercer tus derechos o hacer consultas sobre esta política escríbenos a <a href="mailto:{{ sitio.correo_contacto }}">{{ sitio.correo_contacto }}</a>.</p>
+    </article>
+</div>
+{% endblock %}

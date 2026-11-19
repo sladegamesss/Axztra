@@ -1,0 +1,15 @@
+{% load axztra %}
+{# Tarjeta de un servicio en el catálogo. #}
+<article class="ficha-servicio">
+    <div class="fila-entre">
+        <span class="icono-caja"><i class="{{ servicio.icono }}" aria-hidden="true"></i></span>
+        {% if mostrar_tipo %}<span class="insignia">{{ servicio.get_tipo_display }}</span>{% endif %}
+    </div>
+    <h3><a href="{{ servicio.get_absolute_url }}">{{ servicio.nombre }}</a></h3>
+    <p>{{ servicio.resumen }}</p>
+    {% if servicio.plazo_referencial %}<p class="pequeno texto-3"><i class="fa-regular fa-clock" aria-hidden="true"></i> {{ servicio.plazo_referencial }}</p>{% endif %}
+    <div class="pie-ficha">
+        <div class="precio">{% if servicio.precio_base %}Desde<strong>{{ servicio.precio_base|clp }}</strong>{% else %}Valor<strong>A cotizar</strong>{% endif %}</div>
+        {% if accion_solicitar %}<a class="boton boton-primario boton-chico" href="{{ servicio.url_solicitud }}">Solicitar</a>{% else %}<a class="boton boton-secundario boton-chico" href="{{ servicio.get_absolute_url }}">Ver detalle</a>{% endif %}
+    </div>
+</article>

@@ -1,0 +1,5 @@
+{% autoescape off %}El cliente {{ solicitud.cliente.get_full_name }} <{{ solicitud.cliente.email }}> canceló la solicitud {{ solicitud.numero }} ({{ solicitud.titulo }}).
+
+Ver en el panel:
+{{ url }}
+{% endautoescape %}

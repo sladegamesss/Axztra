@@ -1,0 +1,13 @@
+{% autoescape off %}Hola {{ solicitud.responsable.first_name|default:solicitud.responsable.email }}:
+
+Quedaste a cargo de la solicitud {{ solicitud.numero }}.
+
+Cliente: {{ solicitud.cliente.get_full_name|default:solicitud.cliente.email }}
+Tipo: {{ solicitud.get_tipo_display }}
+Título: {{ solicitud.titulo }}
+Prioridad: {{ solicitud.get_prioridad_display }}
+Estado: {{ solicitud.estado.nombre }}
+
+Ver en el panel:
+{{ url }}
+{% endautoescape %}

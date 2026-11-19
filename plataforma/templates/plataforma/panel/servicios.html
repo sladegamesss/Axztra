@@ -1,0 +1,69 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# CU18 Gestionar servicios y categorías. #}
+{% load axztra %}
+{% block title %}Servicios - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Servicios y categorías</h1>
+        <p>Lo que publiques aquí aparece de inmediato en el catálogo del sitio.</p>
+    </div>
+    <div class="fila">
+        <a class="boton boton-secundario" href="{% url 'panel_categoria_nueva' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Nueva categoría</a>
+        <a class="boton boton-primario" href="{% url 'panel_servicio_nuevo' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Nuevo servicio</a>
+    </div>
+</header>
+
+<section class="mb-l">
+    <h2>Servicios</h2>
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead><tr><th>Servicio</th><th>Tipo</th><th>Categoría</th><th class="num">Desde</th><th class="num">Solicitudes</th><th>Estado</th><th><span class="visualmente-oculto">Acciones</span></th></tr></thead>
+            <tbody>
+                {% for s in servicios %}
+                <tr>
+                    <td><span class="principal">{{ s.nombre }}</span>{% if s.destacado %} <span class="insignia">Destacado</span>{% endif %}<div class="muy-pequeno texto-3">{{ s.resumen|truncatechars:70 }}</div></td>
+                    <td>{{ s.get_tipo_display }}</td>
+                    <td>{{ s.categoria.nombre|default:"-" }}</td>
+                    <td class="num">{% if s.precio_base %}{{ s.precio_base|clp }}{% else %}A cotizar{% endif %}</td>
+                    <td class="num">{{ s.total_solicitudes }}</td>
+                    <td>{% if s.activo %}<span class="estado estado-verde">Publicado</span>{% else %}<span class="estado estado-gris">Oculto</span>{% endif %}</td>
+                    <td class="acciones-fila">
+                        <a class="boton boton-fantasma boton-chico" href="{% url 'panel_servicio_editar' s.pk %}">Editar</a>
+                        <form method="post" action="{% url 'panel_servicio_estado' s.pk %}">{% csrf_token %}<button type="submit" class="boton boton-fantasma boton-chico">{% if s.activo %}Ocultar{% else %}Publicar{% endif %}</button></form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="centrado">Aún no hay servicios.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section>
+    <h2>Categorías</h2>
+    <div class="tabla-contenedor">
+        <table class="tabla">
+            <thead><tr><th>Categoría</th><th>Ícono</th><th class="num">Orden</th><th class="num">Servicios</th><th>Estado</th><th><span class="visualmente-oculto">Acciones</span></th></tr></thead>
+            <tbody>
+                {% for c in categorias %}
+                <tr>
+                    <td><span class="principal">{{ c.nombre }}</span><div class="muy-pequeno texto-3">{{ c.descripcion|truncatechars:80 }}</div></td>
+                    <td><i class="{{ c.icono }}" aria-hidden="true"></i> <span class="muy-pequeno texto-3">{{ c.icono }}</span></td>
+                    <td class="num">{{ c.orden }}</td>
+                    <td class="num">{{ c.total_servicios }}</td>
+                    <td>{% if c.activa %}<span class="estado estado-verde">Activa</span>{% else %}<span class="estado estado-gris">Inactiva</span>{% endif %}</td>
+                    <td class="acciones-fila">
+                        <a class="boton boton-fantasma boton-chico" href="{% url 'panel_categoria_editar' c.pk %}">Editar</a>
+                        <form method="post" action="{% url 'panel_categoria_estado' c.pk %}">{% csrf_token %}<button type="submit" class="boton boton-fantasma boton-chico">{% if c.activa %}Desactivar{% else %}Activar{% endif %}</button></form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="centrado">Aún no hay categorías.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

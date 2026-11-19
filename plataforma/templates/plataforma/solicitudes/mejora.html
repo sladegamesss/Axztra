@@ -1,0 +1,17 @@
+{% extends 'plataforma/solicitudes/formulario_base.html' %}
+{# Formulario de mejora de un sitio existente. #}
+{% block title %}Mejorar sitio web - AXZTRA{% endblock %}
+{% block miga %}Mejora de sitio{% endblock %}
+{% block icono %}<span class="icono-caja violeta"><i class="fa-solid fa-arrow-trend-up" aria-hidden="true"></i></span>{% endblock %}
+{% block encabezado %}Mejorar tu sitio web{% endblock %}
+{% block introduccion %}Cuéntanos qué quieres mejorar. Revisaremos tu sitio y te enviaremos una cotización.{% endblock %}
+{% block campos %}
+{% include "plataforma/includes/campo.html" with campo=form.titulo %}
+{% include "plataforma/includes/campo.html" with campo=form.url_sitio %}
+<div class="grupo">
+    <div class="grupo-titulo">{{ form.tipos_mejora.label }}<span class="requerido" aria-hidden="true">*</span></div>
+    {% include "plataforma/includes/opciones.html" with campo=form.tipos_mejora requiere="Selecciona al menos un tipo de mejora." icono="fa-solid fa-sliders" %}
+</div>
+{% include "plataforma/includes/campo.html" with campo=form.descripcion %}
+{% include "plataforma/includes/campo.html" with campo=form.fecha_deseada %}
+{% endblock %}

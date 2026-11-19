@@ -1,0 +1,44 @@
+{% extends 'plataforma/panel/base_panel.html' %}
+{# Listado de clientes con exportación a CSV. #}
+{% block title %}Clientes - Panel AXZTRA{% endblock %}
+{% block panel %}
+<header class="panel-cabecera">
+    <div>
+        <h1>Clientes</h1>
+        <p>{{ pagina.paginator.count }} cliente{{ pagina.paginator.count|pluralize }} registrado{{ pagina.paginator.count|pluralize }}.</p>
+    </div>
+    <a class="boton boton-secundario" href="?exportar=csv{% if busqueda %}&amp;q={{ busqueda|urlencode }}{% endif %}"><i class="fa-solid fa-file-csv" aria-hidden="true"></i>Exportar CSV</a>
+</header>
+<form method="get" class="filtros" role="search">
+    <label class="visualmente-oculto" for="c-q">Buscar cliente</label>
+    <input class="control busqueda" type="search" id="c-q" name="q" value="{{ busqueda }}" placeholder="Nombre, correo o empresa" maxlength="80">
+    <button type="submit" class="boton boton-secundario">Buscar</button>
+    {% if busqueda %}<a class="boton boton-fantasma" href="{% url 'panel_clientes' %}">Limpiar</a>{% endif %}
+</form>
+{% if pagina.object_list %}
+<div class="tabla-contenedor">
+    <table class="tabla">
+        <thead><tr><th>Cliente</th><th>Empresa</th><th>Teléfono</th><th class="num">Solicitudes</th><th class="num">En curso</th><th>Registro</th></tr></thead>
+        <tbody>
+            {% for c in pagina %}
+            <tr>
+                <td><span class="principal">{{ c.get_full_name|default:"-" }}</span>{% if not c.is_active %} <span class="insignia">Inactivo</span>{% endif %}<div class="muy-pequeno texto-3"><a href="mailto:{{ c.email }}">{{ c.email }}</a></div></td>
+                <td>{{ c.perfil_cliente.empresa|default:"-" }}</td>
+                <td class="nowrap">{{ c.perfil_cliente.telefono|default:"-" }}</td>
+                <td class="num">{% if c.total %}<a href="{% url 'panel_solicitudes' %}?q={{ c.email|urlencode }}">{{ c.total }}</a>{% else %}0{% endif %}</td>
+                <td class="num">{{ c.activas }}</td>
+                <td class="nowrap">{{ c.date_joined|date:"d-m-Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% include "plataforma/includes/paginacion.html" %}
+{% else %}
+<div class="tarjeta vacio">
+    <i class="fa-solid fa-users" aria-hidden="true"></i>
+    <h3>No hay clientes que coincidan</h3>
+    <p>Prueba con otro nombre, correo o empresa.</p>
+</div>
+{% endif %}
+{% endblock %}

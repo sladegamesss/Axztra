@@ -1,0 +1,70 @@
+{% extends 'plataforma/base.html' %}
+{# CU11 Consultar mis solicitudes: listado del cliente con filtros por estado. #}
+{% load axztra %}
+{% block title %}Mis solicitudes - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor">
+    <header class="cabecera-pagina fila-entre">
+        <div>
+            <h1>Mis solicitudes</h1>
+            <p>Revisa el estado de tus proyectos, responde cotizaciones y conversa con el equipo.</p>
+        </div>
+        <a class="boton boton-primario" href="{% url 'nueva_solicitud' %}"><i class="fa-solid fa-plus" aria-hidden="true"></i>Nueva solicitud</a>
+    </header>
+
+    {% if conteo.todas %}
+    <div class="fila-entre mb-m">
+        <nav class="pestanas sin-margen" aria-label="Filtrar solicitudes">
+            <a href="?filtro=todas"{% if filtro == 'todas' %} aria-current="true"{% endif %}>Todas<span class="cuenta">{{ conteo.todas }}</span></a>
+            <a href="?filtro=activas"{% if filtro == 'activas' %} aria-current="true"{% endif %}>En curso<span class="cuenta">{{ conteo.activas }}</span></a>
+            {% if conteo.responder %}<a href="?filtro=responder"{% if filtro == 'responder' %} aria-current="true"{% endif %}>Por responder<span class="cuenta">{{ conteo.responder }}</span></a>{% endif %}
+            <a href="?filtro=cerradas"{% if filtro == 'cerradas' %} aria-current="true"{% endif %}>Cerradas<span class="cuenta">{{ conteo.cerradas }}</span></a>
+        </nav>
+        <form method="get" role="search" class="fila">
+            <input type="hidden" name="filtro" value="{{ filtro }}">
+            <label class="visualmente-oculto" for="buscar-solicitud">Buscar solicitud</label>
+            <input class="control" type="search" id="buscar-solicitud" name="q" value="{{ busqueda }}" placeholder="Buscar por número o título" maxlength="80">
+        </form>
+    </div>
+
+    {% if pagina.object_list %}
+    <div class="lista-solicitudes">
+        {% for s in pagina %}
+        <a class="fila-solicitud" href="{{ s.get_absolute_url }}">
+            <div>
+                <span class="numero">{{ s.numero }}</span>
+                <strong>{{ s.titulo }}</strong>
+                <span class="meta">{{ s.get_tipo_display }}, ingresada el {{ s.fecha_solicitud|date:"d-m-Y" }}{% if s.responsable %}, a cargo de {{ s.responsable.first_name|default:s.responsable.email }}{% endif %}</span>
+            </div>
+            <div class="lado">
+                {% if s.no_leidos %}<span class="insignia"><i class="fa-regular fa-comment" aria-hidden="true"></i> {{ s.no_leidos }} mensaje{{ s.no_leidos|pluralize }} nuevo{{ s.no_leidos|pluralize }}</span>{% endif %}
+                {% if s.estado.codigo == 'cotizada' %}<span class="insignia"><i class="fa-solid fa-file-invoice-dollar" aria-hidden="true"></i> Cotización por responder</span>{% endif %}
+            </div>
+            <div class="lado">
+                {% include "plataforma/includes/estado.html" with estado=s.estado %}
+                <span class="meta">Actualizada {{ s.fecha_actualizacion|hace }}</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% include "plataforma/includes/paginacion.html" %}
+    {% else %}
+    <div class="tarjeta vacio">
+        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        <h3>No hay solicitudes con este filtro</h3>
+        <p>Prueba con otro filtro o búsqueda.</p>
+        <a class="boton boton-secundario" href="{% url 'mis_solicitudes' %}">Ver todas</a>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="tarjeta vacio">
+        <i class="fa-regular fa-folder-open" aria-hidden="true"></i>
+        <h3>Aún no tienes solicitudes</h3>
+        <p>Crea tu primera solicitud y obtén una estimación referencial en pocos minutos.</p>
+        <a class="boton boton-primario" href="{% url 'nueva_solicitud' %}">Crear mi primera solicitud</a>
+    </div>
+    {% endif %}
+    <div class="mb-l"></div>
+</div>
+{% endblock %}

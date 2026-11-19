@@ -1,0 +1,79 @@
+{% extends 'plataforma/base.html' %}
+{# CU04 Registrarse. #}
+{% block title %}Crear cuenta - AXZTRA{% endblock %}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block content %}
+<div class="contenedor acceso">
+    <div class="acceso-caja ancha">
+        <h1>Crear cuenta</h1>
+        <p class="bajada">Con tu cuenta puedes enviar solicitudes, recibir cotizaciones y seguir el avance de tus proyectos.</p>
+        <div class="tarjeta tarjeta-grande">
+            {% for error in form.non_field_errors %}
+            <div class="alerta alerta-error" role="alert"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i><p>{{ error }}</p></div>
+            {% endfor %}
+            <form method="post" novalidate data-validar>
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ next }}">
+                
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.first_name %}
+                    {% include "plataforma/includes/campo.html" with campo=form.last_name %}
+                </div>
+                
+                {% include "plataforma/includes/campo.html" with campo=form.email %}
+                
+                <!-- 🔥 AQUI ESTÁ LA MAGIA: style="align-items: end;" alinea las cajas por debajo 🔥 -->
+                <div class="grilla grilla-2" style="align-items: end;">
+                    <div class="campo{% if form.empresa.errors %} con-error{% endif %}">
+                        <label for="{{ form.empresa.id_for_label }}">Empresa, emprendimiento u otra</label>
+                        {{ form.empresa }}
+                        {% for error in form.empresa.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                    </div>
+                    
+                    <div class="campo{% if form.telefono.errors or form.codigo_pais.errors %} con-error{% endif %}">
+                        <label for="{{ form.telefono.id_for_label }}">Teléfono</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <div style="width: 100px; flex-shrink: 0;">
+                                {{ form.codigo_pais }}
+                            </div>
+                            <div style="flex-grow: 1;">
+                                {{ form.telefono }}
+                            </div>
+                        </div>
+                        {% for error in form.codigo_pais.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                        {% for error in form.telefono.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                    </div>
+                </div>
+                
+                <div class="grilla grilla-2">
+                    {% include "plataforma/includes/campo.html" with campo=form.password1 %}
+                    {% include "plataforma/includes/campo.html" with campo=form.password2 %}
+                </div>
+                
+                <div class="campo{% if form.acepta_terminos.errors %} con-error{% endif %}">
+                    <div class="campo-casilla">
+                        {{ form.acepta_terminos }}
+                        <label for="{{ form.acepta_terminos.id_for_label }}">Acepto los <a href="{% url 'terminos' %}" target="_blank" rel="noopener">términos de uso</a> y la <a href="{% url 'privacidad' %}" target="_blank" rel="noopener">política de privacidad</a></label>
+                    </div>
+                    {% for error in form.acepta_terminos.errors %}<div class="error">{{ error }}</div>{% endfor %}
+                </div>
+                
+                <button type="submit" class="boton boton-primario ancho-completo boton-grande">Crear mi cuenta</button>
+            </form>
+        </div>
+        <p class="acceso-pie">¿Ya tienes cuenta? <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">Inicia sesión</a></p>
+    </div>
+</div>
+
+<style>
+    select#id_empresa, select#id_codigo_pais {
+        cursor: pointer;
+        appearance: none; /* Elimina la flecha predeterminada en algunos navegadores */
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); /* Agrega una flecha personalizada SVG */
+        background-repeat: no-repeat;
+        background-position: right .7em top 50%;
+        background-size: .65em auto;
+        padding-right: 2em; /* Espacio para la flecha */
+    }
+</style>
+{% endblock %}

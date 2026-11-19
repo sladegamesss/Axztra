@@ -1,0 +1,33 @@
+{# Ventana del asistente virtual (CU03). La lógica está en static/js/app.js. #}
+<button type="button" class="asistente-boton" id="asistente-boton" aria-controls="asistente-ventana" aria-expanded="false">
+    <i class="fa-regular fa-comment-dots" aria-hidden="true"></i><span>¿Dudas? Pregúntame</span>
+</button>
+{% if asistente_invitacion %}
+<div class="asistente-invitacion" id="asistente-invitacion" role="button" tabindex="0">
+    <strong>Asistente AXZTRA</strong>
+    {{ asistente_invitacion }}
+    <button type="button" class="cerrar" aria-label="Cerrar invitación">&times;</button>
+</div>
+{% endif %}
+<section class="asistente-ventana" id="asistente-ventana" hidden aria-label="Asistente virtual"
+         data-url-mensaje="{% url 'asistente_mensaje' %}"
+         data-url-historial="{% url 'asistente_historial' %}"
+         {% if asistente_saludo %}data-saludo="{{ asistente_saludo }}"{% endif %}>
+    <div class="asistente-cabecera">
+        <span class="avatar"><i class="fa-solid fa-robot" aria-hidden="true"></i></span>
+        <div>
+            <strong>Asistente AXZTRA</strong>
+            <small>Disponible</small>
+        </div>
+        <button type="button" data-cerrar-asistente aria-label="Cerrar asistente"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+    </div>
+    <div class="asistente-mensajes" aria-live="polite"></div>
+    <div class="asistente-sugerencias"></div>
+    <form class="asistente-formulario" autocomplete="off">
+        {% csrf_token %}
+        <label for="asistente-entrada" class="visualmente-oculto">Escribe tu consulta</label>
+        <input type="text" id="asistente-entrada" maxlength="500" placeholder="Escribe tu consulta">
+        <button type="submit" aria-label="Enviar consulta"><i class="fa-solid fa-paper-plane" aria-hidden="true"></i></button>
+    </form>
+    <p class="asistente-nota">Orientación referencial. Las cotizaciones siempre las revisa el equipo.</p>
+</section>
