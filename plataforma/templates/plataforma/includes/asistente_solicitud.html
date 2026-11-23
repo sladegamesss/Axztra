@@ -1,6 +1,15 @@
-{# Carga el asistente en las pantallas de solicitud: Botpress si está configurado o el asistente propio. #}
-{% if botpress_scripts %}
-    {% for script in botpress_scripts %}<script src="{{ script }}" defer></script>{% endfor %}
-{% else %}
-    {% include "plataforma/includes/asistente.html" %}
-{% endif %}
+{# Asistente virtual Botpress: se carga solo en las pantallas de Nueva solicitud mediante {% block asistente %}. #}
+<link rel="stylesheet" href="https://vdk-viber-runtime-prod.bot.botpress.host/edge/webchat.css" />
+<script src="https://vdk-viber-runtime-prod.bot.botpress.host/edge/webchat.js"></script>
+<script>
+  fetch("https://vdk-viber-runtime-prod.bot.botpress.host/edge/bots/50a82091-0c09-4dd6-b63b-778d230f5546/config")
+    .then((res) => res.json())
+    .then(({ webchat }) =>
+      VdkEdgeWebchat.mount({
+        ...webchat,
+        mode: "bubble",
+        baseUrl: "https://vdk-viber-runtime-prod.bot.botpress.host",
+        botId: "50a82091-0c09-4dd6-b63b-778d230f5546"
+      })
+    );
+</script>
