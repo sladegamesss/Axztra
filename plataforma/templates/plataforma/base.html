@@ -1,7 +1,6 @@
 {% load static %}<!DOCTYPE html>
 {# Plantilla base: todas las páginas públicas y del cliente la extienden. #}
 {# Incluye la cabecera, los mensajes, el pie y la barra inferior del celular. #}
-{# El asistente virtual NO está aquí: solo lo agregan las pantallas de solicitud con el bloque "asistente". #}
 <html lang="es-CL">
 <head>
     <meta charset="UTF-8">
@@ -29,6 +28,7 @@
     <link rel="stylesheet" href="{% static 'css/animaciones.css' %}">
     <link rel="stylesheet" href="{% static 'css/tema.css' %}">
     <link rel="stylesheet" href="{% static 'css/adaptable.css' %}">
+    <link rel="stylesheet" href="https://vdk-viber-runtime-prod.bot.botpress.host/edge/webchat.css" />
     
     <!-- GOOGLE TRANSLATE: Oculta la barra superior fea que pone Google por defecto -->
     <style> .skiptranslate iframe, body { top: 0 !important; } #google_translate_element { display: none; } </style>
@@ -59,8 +59,6 @@
         {% endif %}
     </nav>
     {% endwith %}
-    {# Las pantallas de solicitud llenan este bloque con el asistente virtual (CU03). #}
-    {% block asistente %}{% endblock %}
 {% endblock %}
 
 <!-- TRADUCTOR AUTOMÁTICO GOOGLE (Oculto visualmente) -->
@@ -83,5 +81,15 @@
 
 <script src="{% static 'js/app.js' %}" defer></script>
 {% block extra_js %}{% endblock %}
+
+<!-- ASISTENTE VIRTUAL BOTPRESS -->
+<script src="https://vdk-viber-runtime-prod.bot.botpress.host/edge/webchat.js"></script>
+<script>
+  fetch("https://vdk-viber-runtime-prod.bot.botpress.host/edge/bots/50a82091-0c09-4dd6-b63b-778d230f5546/config")
+    .then((res) => res.json())
+    .then(({ webchat }) =>
+      VdkEdgeWebchat.mount({ ...webchat, mode: "bubble", baseUrl: "https://vdk-viber-runtime-prod.bot.botpress.host", botId: "50a82091-0c09-4dd6-b63b-778d230f5546" })
+    );
+</script>
 </body>
 </html>
